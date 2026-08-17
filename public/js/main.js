@@ -336,6 +336,9 @@
     const keyboardContinueBtn = signupEmailKeyboard?.querySelector(
       "[data-fake-keyboard-signup-email-continue]",
     );
+    const keyboardDoneBtn = signupEmailKeyboard?.querySelector(
+      "[data-fake-keyboard-signup-email-done]",
+    );
     const signupEmailMq = window.matchMedia("(min-width: 641px)");
     const SIGNUP_DUMMY_EMAIL = "mail@sanne.com";
     const SIGNUP_DUMMY_CODE = "123456";
@@ -350,10 +353,13 @@
         const enabled = Boolean(emailInput?.value.trim());
         if (emailContinueBtn) emailContinueBtn.disabled = !enabled;
         if (keyboardContinueBtn) keyboardContinueBtn.disabled = !enabled;
-        return;
       }
-      const complete = codeDigits.every((digit) => digit !== "");
-      if (keyboardContinueBtn) keyboardContinueBtn.disabled = !complete;
+    };
+
+    const syncKeyboardStickyUi = () => {
+      const isCode = signupEmailStep === "code";
+      if (keyboardContinueBtn) keyboardContinueBtn.hidden = isCode;
+      if (keyboardDoneBtn) keyboardDoneBtn.hidden = !isCode;
     };
 
     const syncEmailClearUi = () => {
@@ -406,7 +412,7 @@
       signupEmailKeyboard?.classList.remove("is-code-mode");
       if (emailPanel) emailPanel.hidden = false;
       if (codePanel) codePanel.hidden = true;
-      if (keyboardContinueBtn) keyboardContinueBtn.textContent = "Continue";
+      syncKeyboardStickyUi();
       syncActionButtons();
     };
 
@@ -419,7 +425,7 @@
       if (emailDisplay) {
         emailDisplay.textContent = emailInput?.value.trim() || SIGNUP_DUMMY_EMAIL;
       }
-      if (keyboardContinueBtn) keyboardContinueBtn.textContent = "Done";
+      syncKeyboardStickyUi();
       resetCodeField();
       focusCodeEntry();
     };
@@ -557,14 +563,16 @@
       else unfocusSignupEmailField();
     };
 
+    const dismissSignupEmailKeyboardUi = () => {
+      hideSignupEmailKeyboard();
+      if (signupEmailStep === "code") unfocusCodeEntry();
+      else unfocusSignupEmailField();
+    };
+
     const handleSignupPrimaryAction = () => {
-      if (signupEmailStep === "email") {
-        if (!emailInput?.value.trim()) return;
-        advanceToCodeStep();
-        return;
-      }
-      if (!codeDigits.every((digit) => digit !== "")) return;
-      showNotInPrototype();
+      if (signupEmailStep !== "email") return;
+      if (!emailInput?.value.trim()) return;
+      advanceToCodeStep();
     };
 
     const handleEmailBack = () => {
@@ -672,7 +680,9 @@
 
       signupEmailKeyboard
         ?.querySelector("[data-fake-keyboard-signup-email-close]")
-        ?.addEventListener("click", hideSignupEmailKeyboard);
+        ?.addEventListener("click", dismissSignupEmailKeyboardUi);
+
+      keyboardDoneBtn?.addEventListener("click", dismissSignupEmailKeyboardUi);
 
       signupEmailKeyboard
         ?.querySelectorAll("[data-fake-keyboard-signup-email-key]")

@@ -194,25 +194,9 @@
       display: grid;
     }
 
-    .fake-keyboard__dismiss {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .fake-keyboard__preview--signup-email {
+    .fake-keyboard__preview--signup-email-done {
       background: #2d2f2f;
       color: #fff;
-
-      &:disabled {
-        background: #2d2f2f;
-        color: #58595a;
-        cursor: default;
-      }
-
-      &:not(:disabled) {
-        background: #2d2f2f;
-        color: #fff;
-      }
     }
   }
 
@@ -3309,7 +3293,7 @@ html[data-active-tab="wallet"] {
   font-size: 16px;
   font-weight: 600;
   line-height: normal;
-  color: #5ac47d;
+  color: #8ADCA5;
 }
 
 .auth-signup__form {
@@ -3693,8 +3677,16 @@ html[data-active-tab="wallet"] {
 .auth-signup-email-page__code-section {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   width: 100%;
+}
+
+.auth-signup-email-page__code-prompt {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: normal;
+  color: #fff;
 }
 
 .auth-signup-email-page__code-label {

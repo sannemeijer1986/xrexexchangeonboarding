@@ -246,20 +246,7 @@ body {
   .fake-keyboard--signup-email.is-code-mode .fake-keyboard__keys--numeric {
     display: grid;
   }
-  .fake-keyboard--signup-email.is-code-mode .fake-keyboard__dismiss {
-    opacity: 0;
-    pointer-events: none;
-  }
-  .fake-keyboard--signup-email.is-code-mode .fake-keyboard__preview--signup-email {
-    background: #2d2f2f;
-    color: #fff;
-  }
-  .fake-keyboard--signup-email.is-code-mode .fake-keyboard__preview--signup-email:disabled {
-    background: #2d2f2f;
-    color: #58595a;
-    cursor: default;
-  }
-  .fake-keyboard--signup-email.is-code-mode .fake-keyboard__preview--signup-email:not(:disabled) {
+  .fake-keyboard--signup-email.is-code-mode .fake-keyboard__preview--signup-email-done {
     background: #2d2f2f;
     color: #fff;
   }
@@ -3253,7 +3240,7 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   font-size: 16px;
   font-weight: 600;
   line-height: normal;
-  color: #5ac47d;
+  color: #8ADCA5;
 }
 
 .auth-signup__form {
@@ -3629,8 +3616,16 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
 .auth-signup-email-page__code-section {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   width: 100%;
+}
+
+.auth-signup-email-page__code-prompt {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: normal;
+  color: #fff;
 }
 
 .auth-signup-email-page__code-label {
