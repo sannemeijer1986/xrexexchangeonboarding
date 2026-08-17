@@ -147,6 +147,9 @@
   document.querySelector("[data-auth-signup-back]")?.addEventListener("click", goBack);
   document.querySelector("[data-auth-signup-login]")?.addEventListener("click", goLogin);
   document
+    .querySelector("[data-auth-signup-corporate]")
+    ?.addEventListener("click", showNotInPrototype);
+  document
     .querySelector("[data-auth-signup-continue]")
     ?.addEventListener("click", openReferralSheet);
 })();

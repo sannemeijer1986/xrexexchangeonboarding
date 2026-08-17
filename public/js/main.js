@@ -394,6 +394,9 @@
       .querySelector("[data-auth-signup-login]")
       ?.addEventListener("click", showNotInPrototype);
     page
+      .querySelector("[data-auth-signup-corporate]")
+      ?.addEventListener("click", showNotInPrototype);
+    page
       .querySelector("[data-auth-signup-continue]")
       ?.addEventListener("click", openReferralSheet);
   };
