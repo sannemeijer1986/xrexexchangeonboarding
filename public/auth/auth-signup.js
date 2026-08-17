@@ -98,15 +98,189 @@
   const signupEmailMq = window.matchMedia("(min-width: 641px)");
   const SIGNUP_DUMMY_EMAIL = "mail@sanne.com";
   const SIGNUP_DUMMY_CODE = "123456";
+  const SIGNUP_DUMMY_PASSWORD = "Passw0rd!";
   const SIGNUP_CODE_LENGTH = 6;
+  const PASSWORD_RULE_KEYS = ["length", "special", "number", "case"];
   const SIGNUP_EMAIL_KEYBOARD_DELAY_MS = 350;
   const SIGNUP_EMAIL_CHAR_DELAY_MS = 20;
   const SIGNUP_CODE_LOADER_VISIBLE_MS = 1500;
   let signupEmailStep = "email";
   let signupEmailTypingTimers = [];
+  let signupPasswordTypingTimers = [];
+  let signupPasswordActiveField = "primary";
   let signupCodeLoaderHideTimer = null;
   let codeDigits = Array.from({ length: SIGNUP_CODE_LENGTH }, () => "");
   let codeActiveIndex = 0;
+
+  const getPasswordFieldEl = (name) =>
+    emailPage?.querySelector(`[data-auth-signup-password-field="${name}"]`);
+  const getPasswordInputEl = (name) =>
+    emailPage?.querySelector(`[data-auth-signup-password-input="${name}"]`);
+  const getPasswordCursorEl = (name) =>
+    emailPage?.querySelector(`[data-auth-signup-password-cursor="${name}"]`);
+
+  const cancelSignupPasswordTyping = () => {
+    signupPasswordTypingTimers.forEach((timer) => clearTimeout(timer));
+    signupPasswordTypingTimers = [];
+  };
+
+  const getPasswordValidation = (value) => ({
+    length: value.length >= 8,
+    special: /[^A-Za-z0-9]/.test(value),
+    number: /\d/.test(value),
+    case: /[a-z]/.test(value) && /[A-Z]/.test(value),
+  });
+
+  const isPasswordValid = (value) => {
+    const rules = getPasswordValidation(value);
+    return PASSWORD_RULE_KEYS.every((key) => rules[key]);
+  };
+
+  const syncPasswordRulesUi = (value = getPasswordInputEl("primary")?.value || "") => {
+    const rules = getPasswordValidation(value);
+    PASSWORD_RULE_KEYS.forEach((key) => {
+      const ruleEl = emailPage?.querySelector(`[data-auth-signup-password-rule="${key}"]`);
+      ruleEl?.classList.toggle("is-valid", rules[key]);
+      const iconEl = ruleEl?.querySelector(".auth-signup-email-page__password-rule-icon");
+      if (iconEl) {
+        iconEl.src = iconEl.src.replace(
+          /icon_check_(gray|green)_s\.svg$/,
+          rules[key] ? "icon_check_green_s.svg" : "icon_check_gray_s.svg",
+        );
+      }
+    });
+  };
+
+  const isPasswordFieldFocused = (name) =>
+    getPasswordFieldEl(name)?.classList.contains("is-focused");
+
+  const syncPasswordFieldUi = (name) => {
+    const fieldEl = getPasswordFieldEl(name);
+    const inputEl = getPasswordInputEl(name);
+    if (!fieldEl || !inputEl) return;
+    fieldEl.classList.toggle("is-filled", Boolean(inputEl.value));
+  };
+
+  const syncPasswordUi = () => {
+    syncPasswordFieldUi("primary");
+    syncPasswordFieldUi("confirm");
+    syncPasswordRulesUi(getPasswordInputEl("primary")?.value || "");
+    syncActionButtons();
+  };
+
+  const isPasswordStepComplete = () => {
+    const primary = getPasswordInputEl("primary")?.value || "";
+    const confirm = getPasswordInputEl("confirm")?.value || "";
+    return (
+      primary === SIGNUP_DUMMY_PASSWORD &&
+      confirm === SIGNUP_DUMMY_PASSWORD &&
+      isPasswordValid(primary)
+    );
+  };
+
+  const focusSignupPassword = (name) => {
+    signupPasswordActiveField = name;
+    ["primary", "confirm"].forEach((fieldName) => {
+      const fieldEl = getPasswordFieldEl(fieldName);
+      const cursorEl = getPasswordCursorEl(fieldName);
+      const isActive = fieldName === name;
+      fieldEl?.classList.toggle("is-focused", isActive);
+      if (isActive) cursorEl?.removeAttribute("hidden");
+      else cursorEl?.setAttribute("hidden", "");
+    });
+    getPasswordInputEl(name)?.focus({ preventScroll: true });
+    syncPasswordUi();
+  };
+
+  const unfocusSignupPassword = (name) => {
+    const fieldEl = getPasswordFieldEl(name);
+    const cursorEl = getPasswordCursorEl(name);
+    const inputEl = getPasswordInputEl(name);
+    fieldEl?.classList.remove("is-focused");
+    cursorEl?.setAttribute("hidden", "");
+    if (document.activeElement === inputEl) {
+      inputEl?.blur();
+    }
+  };
+
+  const unfocusAllPasswordFields = () => {
+    unfocusSignupPassword("primary");
+    unfocusSignupPassword("confirm");
+    syncPasswordUi();
+  };
+
+  const resetPasswordFields = () => {
+    cancelSignupPasswordTyping();
+    ["primary", "confirm"].forEach((name) => {
+      const inputEl = getPasswordInputEl(name);
+      const fieldEl = getPasswordFieldEl(name);
+      if (inputEl) {
+        inputEl.value = "";
+        inputEl.type = "password";
+      }
+      fieldEl?.classList.remove("is-focused", "is-filled");
+      getPasswordCursorEl(name)?.setAttribute("hidden", "");
+    });
+    signupPasswordActiveField = "primary";
+    syncPasswordRulesUi("");
+    syncPasswordUi();
+  };
+
+  const fillSignupPassword = (name) => {
+    const inputEl = getPasswordInputEl(name);
+    const fieldEl = getPasswordFieldEl(name);
+    if (!inputEl || !fieldEl) return;
+
+    if (inputEl.value === SIGNUP_DUMMY_PASSWORD) {
+      fieldEl.classList.add("is-focused", "is-filled");
+      getPasswordCursorEl(name)?.removeAttribute("hidden");
+      inputEl.focus({ preventScroll: true });
+      syncPasswordUi();
+      return;
+    }
+
+    cancelSignupPasswordTyping();
+    inputEl.value = "";
+    fieldEl.classList.add("is-focused");
+    fieldEl.classList.remove("is-filled");
+    getPasswordCursorEl(name)?.removeAttribute("hidden");
+    inputEl.focus({ preventScroll: true });
+
+    SIGNUP_DUMMY_PASSWORD.split("").forEach((_, index) => {
+      const timer = window.setTimeout(() => {
+        inputEl.value = SIGNUP_DUMMY_PASSWORD.slice(0, index + 1);
+        fieldEl.classList.toggle("is-filled", inputEl.value.length > 0);
+        if (name === "primary") {
+          syncPasswordRulesUi(inputEl.value);
+        }
+        syncActionButtons();
+        if (index === SIGNUP_DUMMY_PASSWORD.length - 1) {
+          syncPasswordUi();
+        }
+      }, SIGNUP_EMAIL_CHAR_DELAY_MS * index);
+      signupPasswordTypingTimers.push(timer);
+    });
+  };
+
+  const togglePasswordVisibility = (name) => {
+    const inputEl = getPasswordInputEl(name);
+    if (!inputEl) return;
+    const isVisible = inputEl.type === "text";
+    inputEl.type = isVisible ? "password" : "text";
+  };
+
+  const handlePasswordFieldInteraction = (name) => {
+    signupPasswordActiveField = name;
+    if (!isPasswordFieldFocused(name)) {
+      focusSignupPassword(name);
+      showSignupEmailKeyboard();
+      return;
+    }
+    if (getPasswordInputEl(name)?.value !== SIGNUP_DUMMY_PASSWORD) {
+      fillSignupPassword(name);
+    }
+    showSignupEmailKeyboard();
+  };
 
   const goBack = () => {
     if (emailPage?.classList.contains("is-open")) {
@@ -154,6 +328,10 @@
       const enabled = emailInput?.value.trim() === SIGNUP_DUMMY_EMAIL;
       if (emailContinueBtn) emailContinueBtn.disabled = !enabled;
       if (keyboardContinueBtn) keyboardContinueBtn.disabled = !enabled;
+    } else if (signupEmailStep === "password") {
+      const enabled = isPasswordStepComplete();
+      if (emailContinueBtn) emailContinueBtn.disabled = !enabled;
+      if (keyboardContinueBtn) keyboardContinueBtn.disabled = !enabled;
     }
   };
 
@@ -169,13 +347,12 @@
   };
 
   const syncStepperUi = () => {
-    const isPassword = signupEmailStep === "password";
     stepperSteps.forEach((step, index) => {
-      step.classList.toggle("is-active", isPassword ? index === 1 : index === 0);
-      step.classList.toggle("is-complete", isPassword && index === 0);
+      step.classList.toggle("is-active", index === 0);
+      step.classList.remove("is-complete");
     });
     const firstFill = stepperSteps[0]?.querySelector(".auth-signup-email-page__step-fill");
-    if (firstFill) firstFill.hidden = isPassword;
+    if (firstFill) firstFill.hidden = false;
   };
 
   const syncEmailClearUi = () => {
@@ -298,10 +475,15 @@
     emailPage?.classList.add("is-password-step");
     signupEmailKeyboard?.classList.remove("is-code-mode");
     if (emailPanel) emailPanel.hidden = true;
-    if (codePanel) codePanel.hidden = false;
+    if (codePanel) codePanel.hidden = true;
     syncStepperUi();
     syncKeyboardStickyUi();
+    resetPasswordFields();
     hideSignupEmailKeyboard();
+    window.setTimeout(() => {
+      focusSignupPassword("primary");
+      showSignupEmailKeyboard();
+    }, SIGNUP_EMAIL_KEYBOARD_DELAY_MS);
   };
 
   const advanceToPasswordStep = () => {
@@ -311,6 +493,7 @@
 
   const returnFromPasswordStep = () => {
     hideSignupCodeLoader();
+    resetPasswordFields();
     resetCodeField();
     showEmailStepUi();
   };
@@ -369,6 +552,7 @@
     showEmailStepUi();
     resetEmailField();
     resetCodeField();
+    resetPasswordFields();
   };
 
   const focusSignupEmail = () => {
@@ -471,19 +655,27 @@
     if (!signupEmailKeyboard?.classList.contains("is-visible")) return;
     hideSignupEmailKeyboard();
     if (signupEmailStep === "code") unfocusCodeEntry();
+    else if (signupEmailStep === "password") unfocusAllPasswordFields();
     else unfocusSignupEmailField();
   };
 
   const dismissSignupEmailKeyboardUi = () => {
     hideSignupEmailKeyboard();
     if (signupEmailStep === "code") unfocusCodeEntry();
+    else if (signupEmailStep === "password") unfocusAllPasswordFields();
     else unfocusSignupEmailField();
   };
 
   const handleSignupPrimaryAction = () => {
-    if (signupEmailStep !== "email") return;
-    if (!emailInput?.value.trim()) return;
-    advanceToCodeStep();
+    if (signupEmailStep === "email") {
+      if (!emailInput?.value.trim()) return;
+      advanceToCodeStep();
+      return;
+    }
+    if (signupEmailStep === "password") {
+      if (!isPasswordStepComplete()) return;
+      showNotInPrototype();
+    }
   };
 
   const handleEmailBack = () => {
@@ -572,6 +764,26 @@
     codeGrid?.addEventListener("click", handleCodeFieldInteraction);
     codePasteBtn?.addEventListener("click", handleCodePaste);
 
+    emailPage.querySelectorAll("[data-auth-signup-password-field]").forEach((fieldEl) => {
+      fieldEl.addEventListener("click", () => {
+        const name = fieldEl.getAttribute("data-auth-signup-password-field");
+        if (name === "primary" || name === "confirm") {
+          handlePasswordFieldInteraction(name);
+        }
+      });
+    });
+
+    emailPage.querySelectorAll("[data-auth-signup-password-visibility]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const name = btn.getAttribute("data-auth-signup-password-visibility");
+        if (name === "primary" || name === "confirm") {
+          togglePasswordVisibility(name);
+        }
+      });
+    });
+
     emailClearBtn?.addEventListener("mousedown", (e) => {
       e.preventDefault();
     });
@@ -591,16 +803,30 @@
       ?.querySelectorAll("[data-fake-keyboard-signup-email-key]")
       .forEach((btn) => {
         btn.addEventListener("click", () => {
-          if (signupEmailStep !== "email") return;
-          if (!isEmailFocused()) {
-            focusSignupEmail();
+          if (signupEmailStep === "email") {
+            if (!isEmailFocused()) {
+              focusSignupEmail();
+              showSignupEmailKeyboard();
+              return;
+            }
+            if (emailInput?.value !== SIGNUP_DUMMY_EMAIL) {
+              fillSignupEmail();
+            }
             showSignupEmailKeyboard();
             return;
           }
-          if (emailInput?.value !== SIGNUP_DUMMY_EMAIL) {
-            fillSignupEmail();
+          if (signupEmailStep === "password") {
+            const name = signupPasswordActiveField;
+            if (!isPasswordFieldFocused(name)) {
+              focusSignupPassword(name);
+              showSignupEmailKeyboard();
+              return;
+            }
+            if (getPasswordInputEl(name)?.value !== SIGNUP_DUMMY_PASSWORD) {
+              fillSignupPassword(name);
+            }
+            showSignupEmailKeyboard();
           }
-          showSignupEmailKeyboard();
         });
       });
 
@@ -632,6 +858,8 @@
       if (e.target instanceof Element) {
         if (signupEmailKeyboard.contains(e.target)) return;
         if (e.target.closest("[data-auth-signup-email-field]")) return;
+        if (e.target.closest("[data-auth-signup-password-field]")) return;
+        if (e.target.closest("[data-auth-signup-password-visibility]")) return;
         if (e.target.closest("[data-auth-signup-code-grid]")) return;
         if (e.target.closest("[data-auth-signup-email-edit]")) return;
         if (e.target.closest("[data-auth-signup-email-back]")) return;

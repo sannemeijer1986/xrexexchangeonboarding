@@ -3498,6 +3498,11 @@ html[data-active-tab="wallet"] {
   height: 100%;
   border-radius: 16px;
   background: #275cfd;
+  transition: width 0.35s ease;
+}
+
+.auth-signup-email-page.is-password-step .auth-signup-email-page__step-fill {
+  width: 42.27%;
 }
 
 .auth-signup-email-page__body {
@@ -3514,6 +3519,7 @@ html[data-active-tab="wallet"] {
 .auth-signup-email-page__track {
   display: flex;
   height: 100%;
+  align-items: flex-start;
   transition: transform 0.35s ease;
   will-change: transform;
 }
@@ -3526,13 +3532,13 @@ html[data-active-tab="wallet"] {
   flex: 0 0 100%;
   width: 100%;
   min-width: 0;
-  min-height: 0;
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 24px;
   padding: 24px 16px 16px;
   box-sizing: border-box;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .auth-signup-email-page__password-placeholder {
@@ -3547,6 +3553,109 @@ html[data-active-tab="wallet"] {
   p {
     margin: 0;
   }
+}
+
+.auth-signup-email-page__password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+}
+
+.auth-signup-email-page__password-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+
+.auth-signup-email-page__labeled-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.auth-signup-email-page__field-label {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #9b9c9c;
+}
+
+.auth-signup-email-page__password-field.is-focused .auth-signup-email-page__input-inner {
+  border-color: #fff;
+}
+
+.auth-signup-email-page__password-field.is-filled .auth-signup-email-page__input {
+  letter-spacing: 0.08em;
+}
+
+.auth-signup-email-page__visibility {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  img {
+    width: 24px;
+    height: 24px;
+    display: block;
+    pointer-events: none;
+    opacity: 0.72;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #3f78ff;
+    outline-offset: 2px;
+    border-radius: 999px;
+  }
+}
+
+.auth-signup-email-page__password-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+  width: 100%;
+}
+
+.auth-signup-email-page__password-rules-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.auth-signup-email-page__password-rule {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px;
+  border-radius: 30px;
+  background: #151718;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #9b9c9c;
+  white-space: nowrap;
+
+  &.is-valid {
+    color: #8adca5;
+  }
+}
+
+.auth-signup-email-page__password-rule-icon {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  display: block;
 }
 
 .auth-signup-email-page__panel {
@@ -3564,8 +3673,7 @@ html[data-active-tab="wallet"] {
   gap: 16px;
 }
 
-.auth-signup-email-page.is-code-step .auth-signup-email-page__footer,
-.auth-signup-email-page.is-password-step .auth-signup-email-page__footer {
+.auth-signup-email-page.is-code-step .auth-signup-email-page__footer {
   display: none;
 }
 
@@ -3573,6 +3681,18 @@ html[data-active-tab="wallet"] {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.phone-container p.auth-signup-email-page__moustache {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #8fb8ff;
+}
+
+.auth-signup-email-page__moustache-suffix {
+  color: transparent;
 }
 
 .phone-container h2.auth-signup-email-page__title {
@@ -3709,7 +3829,7 @@ html[data-active-tab="wallet"] {
   font-size: 16px;
   font-weight: 600;
   line-height: normal;
-  color: #8fb8ff;
+  color: #8adca5;
   text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3898,10 +4018,6 @@ html[data-active-tab="wallet"] {
     .auth-signup-email-page__footer {
     opacity: 0;
     pointer-events: none;
-  }
-
-  .phone-container.is-fake-keyboard-signup-email-visible .auth-signup-email-page__body {
-    padding-bottom: calc(280px + env(safe-area-inset-bottom, 0px));
   }
 }
 
