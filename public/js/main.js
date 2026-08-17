@@ -333,6 +333,9 @@
       : [];
     const codePasteBtn = emailPage?.querySelector("[data-auth-signup-code-paste]");
     const signupCodeLoader = emailPage?.querySelector("[data-auth-signup-code-loader]");
+    const stepperSteps = emailPage
+      ? Array.from(emailPage.querySelectorAll(".auth-signup-email-page__step"))
+      : [];
     const signupEmailKeyboard = document.querySelector('[data-fake-keyboard="signup-email"]');
     const keyboardContinueBtn = signupEmailKeyboard?.querySelector(
       "[data-fake-keyboard-signup-email-continue]",
@@ -346,10 +349,10 @@
     const SIGNUP_CODE_LENGTH = 6;
     const SIGNUP_EMAIL_KEYBOARD_DELAY_MS = 350;
     const SIGNUP_EMAIL_CHAR_DELAY_MS = 20;
-    const SIGNUP_CODE_LOADER_DELAY_MS = 500;
+    const SIGNUP_CODE_LOADER_VISIBLE_MS = 1500;
     let signupEmailStep = "email";
     let signupEmailTypingTimers = [];
-    let signupCodeLoaderTimer = null;
+    let signupCodeLoaderHideTimer = null;
     let codeDigits = Array.from({ length: SIGNUP_CODE_LENGTH }, () => "");
     let codeActiveIndex = 0;
 
@@ -370,6 +373,16 @@
       const isCode = signupEmailStep === "code";
       if (keyboardContinueBtn) keyboardContinueBtn.hidden = isCode;
       if (keyboardDoneBtn) keyboardDoneBtn.hidden = !isCode;
+    };
+
+    const syncStepperUi = () => {
+      const isPassword = signupEmailStep === "password";
+      stepperSteps.forEach((step, index) => {
+        step.classList.toggle("is-active", isPassword ? index === 1 : index === 0);
+        step.classList.toggle("is-complete", isPassword && index === 0);
+      });
+      const firstFill = stepperSteps[0]?.querySelector(".auth-signup-email-page__step-fill");
+      if (firstFill) firstFill.hidden = isPassword;
     };
 
     const syncEmailClearUi = () => {
@@ -426,27 +439,26 @@
     };
 
     const hideSignupCodeLoader = () => {
-      if (signupCodeLoaderTimer) {
-        clearTimeout(signupCodeLoaderTimer);
-        signupCodeLoaderTimer = null;
+      if (signupCodeLoaderHideTimer) {
+        clearTimeout(signupCodeLoaderHideTimer);
+        signupCodeLoaderHideTimer = null;
       }
       if (signupCodeLoader) signupCodeLoader.hidden = true;
     };
 
     const showSignupCodeLoader = () => {
-      if (signupCodeLoaderTimer) {
-        clearTimeout(signupCodeLoaderTimer);
-        signupCodeLoaderTimer = null;
-      }
-      signupCodeLoaderTimer = window.setTimeout(() => {
-        signupCodeLoaderTimer = null;
-        if (signupCodeLoader) signupCodeLoader.hidden = false;
-      }, SIGNUP_CODE_LOADER_DELAY_MS);
+      hideSignupCodeLoader();
+      if (signupCodeLoader) signupCodeLoader.hidden = false;
+      signupCodeLoaderHideTimer = window.setTimeout(() => {
+        signupCodeLoaderHideTimer = null;
+        hideSignupCodeLoader();
+        advanceToPasswordStep();
+      }, SIGNUP_CODE_LOADER_VISIBLE_MS);
     };
 
     const submitSignupCode = () => {
       if (signupEmailStep !== "code") return;
-      if (signupCodeLoaderTimer || (signupCodeLoader && !signupCodeLoader.hidden)) return;
+      if (signupCodeLoaderHideTimer || (signupCodeLoader && !signupCodeLoader.hidden)) return;
       fillSignupCodeAndUnfocus();
       dismissSignupEmailKeyboardUi();
       showSignupCodeLoader();
@@ -454,26 +466,60 @@
 
     const showEmailStepUi = () => {
       signupEmailStep = "email";
-      emailPage?.classList.remove("is-code-step");
+      emailPage?.classList.remove("is-code-step", "is-password-step");
       signupEmailKeyboard?.classList.remove("is-code-mode");
       if (emailPanel) emailPanel.hidden = false;
       if (codePanel) codePanel.hidden = true;
+      syncStepperUi();
       syncKeyboardStickyUi();
       syncActionButtons();
     };
 
-    const showCodeStepUi = () => {
+    const showCodeStepUi = ({ resetCode = true } = {}) => {
       signupEmailStep = "code";
       emailPage?.classList.add("is-code-step");
+      emailPage?.classList.remove("is-password-step");
       signupEmailKeyboard?.classList.add("is-code-mode");
       if (emailPanel) emailPanel.hidden = true;
       if (codePanel) codePanel.hidden = false;
       if (emailDisplay) {
         emailDisplay.textContent = emailInput?.value.trim() || SIGNUP_DUMMY_EMAIL;
       }
+      syncStepperUi();
       syncKeyboardStickyUi();
+      if (resetCode) {
+        resetCodeField();
+        requestAnimationFrame(() => focusCodeEntry());
+      } else {
+        if (!isCodeComplete()) {
+          fillSignupCode();
+        }
+        unfocusCodeEntry();
+        syncCodeUi();
+      }
+    };
+
+    const showPasswordStepUi = () => {
+      signupEmailStep = "password";
+      emailPage?.classList.remove("is-code-step");
+      emailPage?.classList.add("is-password-step");
+      signupEmailKeyboard?.classList.remove("is-code-mode");
+      if (emailPanel) emailPanel.hidden = true;
+      if (codePanel) codePanel.hidden = false;
+      syncStepperUi();
+      syncKeyboardStickyUi();
+      hideSignupEmailKeyboard();
+    };
+
+    const advanceToPasswordStep = () => {
+      if (signupEmailStep !== "code") return;
+      showPasswordStepUi();
+    };
+
+    const returnFromPasswordStep = () => {
+      hideSignupCodeLoader();
       resetCodeField();
-      requestAnimationFrame(() => focusCodeEntry());
+      showEmailStepUi();
     };
 
     const resetSignupEmailPageState = () => {
@@ -650,6 +696,10 @@
     };
 
     const handleEmailBack = () => {
+      if (signupEmailStep === "password") {
+        returnFromPasswordStep();
+        return;
+      }
       if (signupEmailStep === "code") {
         returnToEmailStep();
         return;

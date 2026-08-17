@@ -3431,6 +3431,10 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   background: #0e2b9c;
 }
 
+.auth-signup-email-page__step.is-complete .auth-signup-email-page__step-track {
+  background: #275cfd;
+}
+
 .auth-signup-email-page__step-fill {
   position: absolute;
   left: 0;
@@ -3444,10 +3448,49 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
 .auth-signup-email-page__body {
   flex: 1;
   min-height: 0;
+  overflow: hidden;
+}
+
+.auth-signup-email-page__stage {
+  height: 100%;
+  overflow: hidden;
+}
+
+.auth-signup-email-page__track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.35s ease;
+  will-change: transform;
+}
+
+.auth-signup-email-page.is-password-step .auth-signup-email-page__track {
+  transform: translateX(-100%);
+}
+
+.auth-signup-email-page__slide {
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 24px;
   padding: 24px 16px 16px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.auth-signup-email-page__password-placeholder {
+  margin: 0;
+  padding: 16px;
+  border-radius: 14px;
+  background: #1b1d1d;
+  color: #9b9c9c;
+  font-size: 14px;
+  line-height: 20px;
+}
+.auth-signup-email-page__password-placeholder p {
+  margin: 0;
 }
 
 .auth-signup-email-page__panel {
@@ -3464,7 +3507,8 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   gap: 16px;
 }
 
-.auth-signup-email-page.is-code-step .auth-signup-email-page__footer {
+.auth-signup-email-page.is-code-step .auth-signup-email-page__footer,
+.auth-signup-email-page.is-password-step .auth-signup-email-page__footer {
   display: none;
 }
 
