@@ -1887,28 +1887,40 @@ Max 100K</span>
                         <p class="auth-signup-email-page__code-prompt">Enter the code we’ve emailed you</p>
                         <div class="auth-signup-email-page__code-grid" data-auth-signup-code-grid role="group" aria-label="Verification code">
                             <div class="auth-signup-email-page__code-cell is-active" data-auth-signup-code-cell="0">
-                                <span class="auth-signup-email-page__code-digit" data-auth-signup-code-digit></span>
-                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-code-cursor aria-hidden="true"></span>
+                                <span class="auth-signup-email-page__code-cell-inner">
+                                    <span class="auth-signup-email-page__code-digit" data-auth-signup-code-digit></span>
+                                    <span class="auth-signup-email-page__code-cursor" data-auth-signup-code-cursor aria-hidden="true"></span>
+                                </span>
                             </div>
                             <div class="auth-signup-email-page__code-cell" data-auth-signup-code-cell="1">
-                                <span class="auth-signup-email-page__code-digit" data-auth-signup-code-digit></span>
-                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-code-cursor hidden aria-hidden="true"></span>
+                                <span class="auth-signup-email-page__code-cell-inner">
+                                    <span class="auth-signup-email-page__code-digit" data-auth-signup-code-digit></span>
+                                    <span class="auth-signup-email-page__code-cursor" data-auth-signup-code-cursor hidden aria-hidden="true"></span>
+                                </span>
                             </div>
                             <div class="auth-signup-email-page__code-cell" data-auth-signup-code-cell="2">
-                                <span class="auth-signup-email-page__code-digit" data-auth-signup-code-digit></span>
-                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-code-cursor hidden aria-hidden="true"></span>
+                                <span class="auth-signup-email-page__code-cell-inner">
+                                    <span class="auth-signup-email-page__code-digit" data-auth-signup-code-digit></span>
+                                    <span class="auth-signup-email-page__code-cursor" data-auth-signup-code-cursor hidden aria-hidden="true"></span>
+                                </span>
                             </div>
                             <div class="auth-signup-email-page__code-cell" data-auth-signup-code-cell="3">
-                                <span class="auth-signup-email-page__code-digit" data-auth-signup-code-digit></span>
-                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-code-cursor hidden aria-hidden="true"></span>
+                                <span class="auth-signup-email-page__code-cell-inner">
+                                    <span class="auth-signup-email-page__code-digit" data-auth-signup-code-digit></span>
+                                    <span class="auth-signup-email-page__code-cursor" data-auth-signup-code-cursor hidden aria-hidden="true"></span>
+                                </span>
                             </div>
                             <div class="auth-signup-email-page__code-cell" data-auth-signup-code-cell="4">
-                                <span class="auth-signup-email-page__code-digit" data-auth-signup-code-digit></span>
-                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-code-cursor hidden aria-hidden="true"></span>
+                                <span class="auth-signup-email-page__code-cell-inner">
+                                    <span class="auth-signup-email-page__code-digit" data-auth-signup-code-digit></span>
+                                    <span class="auth-signup-email-page__code-cursor" data-auth-signup-code-cursor hidden aria-hidden="true"></span>
+                                </span>
                             </div>
                             <div class="auth-signup-email-page__code-cell" data-auth-signup-code-cell="5">
-                                <span class="auth-signup-email-page__code-digit" data-auth-signup-code-digit></span>
-                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-code-cursor hidden aria-hidden="true"></span>
+                                <span class="auth-signup-email-page__code-cell-inner">
+                                    <span class="auth-signup-email-page__code-digit" data-auth-signup-code-digit></span>
+                                    <span class="auth-signup-email-page__code-cursor" data-auth-signup-code-cursor hidden aria-hidden="true"></span>
+                                </span>
                             </div>
                         </div>
                         <div class="auth-signup-email-page__code-meta">
@@ -1932,6 +1944,13 @@ Max 100K</span>
                     Continue
                 </button>
             </footer>
+
+            <div class="plan-submit-loader" data-auth-signup-code-loader hidden>
+                <div class="plan-submit-loader__backdrop" aria-hidden="true"></div>
+                <div class="plan-submit-loader__card" role="status" aria-live="polite" aria-label="Verifying">
+                    <img class="plan-submit-loader__icon" src="assets/icon-loading.svg" alt="" width="40" height="40" aria-hidden="true" />
+                </div>
+            </div>
         </section>
 
         <section class="finance-themes-page" data-finance-themes-page hidden aria-label="All themes">

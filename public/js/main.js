@@ -332,6 +332,7 @@
       ? Array.from(emailPage.querySelectorAll("[data-auth-signup-code-cell]"))
       : [];
     const codePasteBtn = emailPage?.querySelector("[data-auth-signup-code-paste]");
+    const signupCodeLoader = emailPage?.querySelector("[data-auth-signup-code-loader]");
     const signupEmailKeyboard = document.querySelector('[data-fake-keyboard="signup-email"]');
     const keyboardContinueBtn = signupEmailKeyboard?.querySelector(
       "[data-fake-keyboard-signup-email-continue]",
@@ -344,16 +345,25 @@
     const SIGNUP_DUMMY_CODE = "123456";
     const SIGNUP_CODE_LENGTH = 6;
     const SIGNUP_EMAIL_KEYBOARD_DELAY_MS = 350;
+    const SIGNUP_EMAIL_CHAR_DELAY_MS = 20;
+    const SIGNUP_CODE_LOADER_DELAY_MS = 500;
     let signupEmailStep = "email";
+    let signupEmailTypingTimers = [];
+    let signupCodeLoaderTimer = null;
     let codeDigits = Array.from({ length: SIGNUP_CODE_LENGTH }, () => "");
     let codeActiveIndex = 0;
 
     const syncActionButtons = () => {
       if (signupEmailStep === "email") {
-        const enabled = Boolean(emailInput?.value.trim());
+        const enabled = emailInput?.value.trim() === SIGNUP_DUMMY_EMAIL;
         if (emailContinueBtn) emailContinueBtn.disabled = !enabled;
         if (keyboardContinueBtn) keyboardContinueBtn.disabled = !enabled;
       }
+    };
+
+    const cancelSignupEmailTyping = () => {
+      signupEmailTypingTimers.forEach((timer) => clearTimeout(timer));
+      signupEmailTypingTimers = [];
     };
 
     const syncKeyboardStickyUi = () => {
@@ -368,6 +378,10 @@
     };
 
     const isCodeComplete = () => codeDigits.every((digit) => digit !== "");
+
+    const isEmailFocused = () => emailField?.classList.contains("is-focused");
+
+    const isCodeFocused = () => codeGrid?.classList.contains("is-focused");
 
     const syncCodeUi = () => {
       const complete = isCodeComplete();
@@ -406,6 +420,38 @@
       syncCodeUi();
     };
 
+    const fillSignupCodeAndUnfocus = () => {
+      fillSignupCode();
+      unfocusCodeEntry();
+    };
+
+    const hideSignupCodeLoader = () => {
+      if (signupCodeLoaderTimer) {
+        clearTimeout(signupCodeLoaderTimer);
+        signupCodeLoaderTimer = null;
+      }
+      if (signupCodeLoader) signupCodeLoader.hidden = true;
+    };
+
+    const showSignupCodeLoader = () => {
+      if (signupCodeLoaderTimer) {
+        clearTimeout(signupCodeLoaderTimer);
+        signupCodeLoaderTimer = null;
+      }
+      signupCodeLoaderTimer = window.setTimeout(() => {
+        signupCodeLoaderTimer = null;
+        if (signupCodeLoader) signupCodeLoader.hidden = false;
+      }, SIGNUP_CODE_LOADER_DELAY_MS);
+    };
+
+    const submitSignupCode = () => {
+      if (signupEmailStep !== "code") return;
+      if (signupCodeLoaderTimer || (signupCodeLoader && !signupCodeLoader.hidden)) return;
+      fillSignupCodeAndUnfocus();
+      dismissSignupEmailKeyboardUi();
+      showSignupCodeLoader();
+    };
+
     const showEmailStepUi = () => {
       signupEmailStep = "email";
       emailPage?.classList.remove("is-code-step");
@@ -427,10 +473,11 @@
       }
       syncKeyboardStickyUi();
       resetCodeField();
-      focusCodeEntry();
+      requestAnimationFrame(() => focusCodeEntry());
     };
 
     const resetSignupEmailPageState = () => {
+      hideSignupCodeLoader();
       showEmailStepUi();
       resetEmailField();
       resetCodeField();
@@ -479,6 +526,7 @@
     };
 
     const resetEmailField = () => {
+      cancelSignupEmailTyping();
       if (emailInput) emailInput.value = "";
       emailField?.classList.remove("is-focused", "is-filled");
       emailCursor?.setAttribute("hidden", "");
@@ -503,12 +551,35 @@
 
     const fillSignupEmail = () => {
       if (!emailInput || !emailField) return;
-      emailInput.value = SIGNUP_DUMMY_EMAIL;
-      emailField.classList.add("is-focused", "is-filled");
+      if (emailInput.value === SIGNUP_DUMMY_EMAIL) {
+        emailField.classList.add("is-focused", "is-filled");
+        emailCursor?.removeAttribute("hidden");
+        syncEmailClearUi();
+        syncActionButtons();
+        emailInput.focus({ preventScroll: true });
+        return;
+      }
+
+      cancelSignupEmailTyping();
+      emailInput.value = "";
+      emailField.classList.add("is-focused");
+      emailField.classList.remove("is-filled");
       emailCursor?.removeAttribute("hidden");
       syncEmailClearUi();
       syncActionButtons();
       emailInput.focus({ preventScroll: true });
+
+      SIGNUP_DUMMY_EMAIL.split("").forEach((_, index) => {
+        const timer = window.setTimeout(() => {
+          emailInput.value = SIGNUP_DUMMY_EMAIL.slice(0, index + 1);
+          emailField.classList.toggle("is-filled", emailInput.value.length > 0);
+          syncActionButtons();
+          if (index === SIGNUP_DUMMY_EMAIL.length - 1) {
+            syncEmailClearUi();
+          }
+        }, SIGNUP_EMAIL_CHAR_DELAY_MS * index);
+        signupEmailTypingTimers.push(timer);
+      });
     };
 
     const deleteCodeDigit = () => {
@@ -520,6 +591,7 @@
         codeDigits[index] = "";
         codeActiveIndex = index;
         syncCodeUi();
+        focusCodeEntry();
       }
     };
 
@@ -530,6 +602,7 @@
     };
 
     const returnToEmailStep = () => {
+      hideSignupCodeLoader();
       unfocusCodeEntry();
       showEmailStepUi();
       focusSignupEmail();
@@ -538,6 +611,7 @@
 
     const clearSignupEmail = () => {
       if (!emailInput || !emailField) return;
+      cancelSignupEmailTyping();
       emailInput.value = "";
       emailField.classList.remove("is-filled");
       emailField.classList.add("is-focused");
@@ -635,26 +709,38 @@
     };
 
     const handleEmailFieldInteraction = () => {
-      if (!emailField?.classList.contains("is-filled")) {
-        fillSignupEmail();
-      } else {
+      if (!isEmailFocused()) {
         focusSignupEmail();
+        showSignupEmailKeyboard();
+        return;
+      }
+      if (emailInput?.value !== SIGNUP_DUMMY_EMAIL) {
+        fillSignupEmail();
       }
       showSignupEmailKeyboard();
     };
 
     const handleCodeFieldInteraction = () => {
-      if (!isCodeComplete()) {
-        fillSignupCode();
+      if (isCodeComplete()) {
+        unfocusCodeEntry();
+        return;
       }
-      focusCodeEntry();
-      showSignupEmailKeyboard();
+      if (!isCodeFocused()) {
+        focusCodeEntry();
+        showSignupEmailKeyboard();
+        return;
+      }
+      submitSignupCode();
     };
 
     const handleCodePaste = () => {
-      fillSignupCode();
-      focusCodeEntry();
-      showSignupEmailKeyboard();
+      if (isCodeComplete()) return;
+      if (!isCodeFocused()) {
+        focusCodeEntry();
+        showSignupEmailKeyboard();
+        return;
+      }
+      submitSignupCode();
     };
 
     if (emailPage) {
@@ -662,7 +748,6 @@
         .querySelector("[data-auth-signup-email-back]")
         ?.addEventListener("click", handleEmailBack);
       emailField?.addEventListener("click", handleEmailFieldInteraction);
-      emailInput?.addEventListener("click", handleEmailFieldInteraction);
       emailContinueBtn?.addEventListener("click", handleSignupPrimaryAction);
       keyboardContinueBtn?.addEventListener("click", handleSignupPrimaryAction);
       emailEditBtn?.addEventListener("click", returnToEmailStep);
@@ -689,7 +774,12 @@
         .forEach((btn) => {
           btn.addEventListener("click", () => {
             if (signupEmailStep !== "email") return;
-            if (!emailField?.classList.contains("is-filled")) {
+            if (!isEmailFocused()) {
+              focusSignupEmail();
+              showSignupEmailKeyboard();
+              return;
+            }
+            if (emailInput?.value !== SIGNUP_DUMMY_EMAIL) {
               fillSignupEmail();
             }
             showSignupEmailKeyboard();
@@ -701,11 +791,13 @@
         .forEach((btn) => {
           btn.addEventListener("click", () => {
             if (signupEmailStep !== "code") return;
-            if (!isCodeComplete()) {
-              fillSignupCode();
+            if (isCodeComplete()) return;
+            if (!isCodeFocused()) {
+              focusCodeEntry();
+              showSignupEmailKeyboard();
+              return;
             }
-            focusCodeEntry();
-            showSignupEmailKeyboard();
+            submitSignupCode();
           });
         });
 

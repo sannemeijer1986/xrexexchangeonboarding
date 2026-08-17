@@ -3460,6 +3460,10 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   display: none !important;
 }
 
+.auth-signup-email-page__panel[data-auth-signup-email-panel=code] {
+  gap: 16px;
+}
+
 .auth-signup-email-page.is-code-step .auth-signup-email-page__footer {
   display: none;
 }
@@ -3616,12 +3620,12 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
 .auth-signup-email-page__code-section {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0;
   width: 100%;
 }
 
 .auth-signup-email-page__code-prompt {
-  margin: 0;
+  margin: 0 0 8px;
   font-size: 16px;
   font-weight: 700;
   line-height: normal;
@@ -3640,9 +3644,13 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   display: flex;
   gap: 8px;
   width: 100%;
+  margin-bottom: 16px;
 }
-.auth-signup-email-page__code-grid.is-focused .auth-signup-email-page__code-cell.is-active {
+.auth-signup-email-page__code-grid.is-focused:not(.is-filled) .auth-signup-email-page__code-cell.is-active {
   border-color: #fff;
+}
+.auth-signup-email-page__code-grid.is-filled:not(.is-focused) .auth-signup-email-page__code-cell {
+  border-color: transparent;
 }
 
 .auth-signup-email-page__code-cell {
@@ -3660,8 +3668,16 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   cursor: pointer;
 }
 
+.auth-signup-email-page__code-cell-inner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  min-height: 24px;
+}
+
 .auth-signup-email-page__code-digit {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   line-height: normal;
   color: #fff;
@@ -3683,6 +3699,7 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   align-items: center;
   gap: 10px;
   width: 100%;
+  margin-top: 0;
 }
 
 .auth-signup-email-page__code-resend {
