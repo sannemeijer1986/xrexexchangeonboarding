@@ -9369,224 +9369,135 @@ button.finance-summary__stat-value--chevron {
   border-bottom: 1px solid #252627;
 }
 
-// Trade Grid bot page (Figma 13291:17199)
+// Trade Grid bot page — visitor landing (Figma 13647:12817)
 .trade-grid-page {
   display: flex;
   flex-direction: column;
   background: #0d0e0f;
   color: #fff;
   margin-top: 0;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
-.trade-grid-page__hero {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: 24px 16px 24px;
-}
-
-.trade-grid-page__value-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 24px;
-}
-
-.trade-grid-page__value-main {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.trade-grid-page__value-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  color: #9b9c9c;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1;
-}
-
-.trade-grid-page__value-amount {
-  border: 0;
-  background: transparent;
-  color: #fff;
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0;
-  text-align: left;
-}
-
-.trade-grid-page__value-amount img {
-  width: 24px;
-  height: 24px;
-  display: block;
-  flex-shrink: 0;
-}
-
-.trade-grid-page__guide-btn {
-  width: 32px;
-  height: 32px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  padding: 0;
-  cursor: pointer;
-}
-
-.trade-grid-page__guide-btn img {
-  width: 24px;
-  height: 24px;
-  display: block;
-}
-
-.trade-grid-page__actions {
-  display: flex;
-  gap: 16px;
-}
-
-.trade-grid-page__create-btn,
-.trade-grid-page__virtual-btn {
-  flex: 1;
-  min-width: 0;
-  height: 40px;
-  border: 0;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 8px 12px;
-}
-
-.trade-grid-page__create-btn {
-  background: #275cfd;
-  color: #fff;
-}
-
-.trade-grid-page__virtual-btn {
-  background: #2d2f2f;
-  color: #fff;
-}
-
-.trade-grid-page__ongoing {
+.trade-grid-page__body {
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  background: #151718;
-  border-top: 1px solid #252627;
+  padding: 24px 16px 0;
 }
 
-.trade-grid-page__ongoing-head {
+.trade-grid-page__intro {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
-  padding: 16px;
   flex-shrink: 0;
 }
 
-.trade-grid-page__ongoing-title {
-  flex: 1;
+.phone-container h2.trade-grid-page__title {
   margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: normal;
   color: #fff;
 }
 
-.trade-grid-page__ongoing-tools {
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.trade-grid-page__ongoing-tool {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.trade-grid-page__ongoing-tool img {
-  display: block;
-}
-
-.trade-grid-page__ongoing-tool--expand {
-  width: 28px;
-  height: 28px;
-  margin-right: -6px;
-}
-
-.trade-grid-page__ongoing-tool--expand img {
-  width: 28px;
-  height: 28px;
-}
-
-.trade-grid-page__ongoing-tool--dropdown {
-  width: 20px;
-  height: 20px;
-}
-
-.trade-grid-page__ongoing-tool--dropdown img {
-  width: 20px;
-  height: 20px;
-}
-
-.trade-grid-page__empty {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  padding: 16px 16px 32px;
-}
-
-.trade-grid-page__empty-art {
-  width: 152px;
-  height: 118px;
-  object-fit: contain;
-}
-
-.trade-grid-page__empty-copy {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.phone-container p.trade-grid-page__empty-text {
+.phone-container p.trade-grid-page__desc {
   margin: 0;
-  color: #fff;
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
-  text-align: center;
+  color: #fff;
 }
 
-.trade-grid-page__learn-more {
+.trade-grid-page__how-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
   border: 0;
   background: transparent;
-  color: #3f78ff;
-  font-size: 14px;
+  font-family: inherit;
+  font-size: 16px;
   font-weight: 700;
-  line-height: 1;
-  padding: 0;
+  color: #3f78ff;
   cursor: pointer;
+  line-height: normal;
+}
+
+.trade-grid-page__how-link:focus-visible {
+  outline: 2px solid #3f78ff;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.trade-grid-page__how-icon {
+  flex-shrink: 0;
+  display: block;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.trade-grid-page__how-chev {
+  flex-shrink: 0;
+  display: block;
+}
+
+.trade-grid-page__hero-illu {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 16px 0 0;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.trade-grid-page__footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 16px calc(32px + env(safe-area-inset-bottom, 0px));
+  background: #0d0e0f;
+}
+
+.trade-grid-page__cta {
+  width: 100%;
+  height: 48px;
+  border: 0;
+  border-radius: 16px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.trade-grid-page__cta--primary {
+  background: #275cfd;
+  color: #fff;
+  align-self: stretch;
+}
+
+.trade-grid-page__cta--secondary {
+  width: auto;
+  background: #2d2f2f;
+  color: #fff;
+}
+
+.trade-grid-page__cta:focus-visible {
+  outline: 2px solid #3f78ff;
+  outline-offset: 2px;
 }
 
 // Trade · Grid bot — 4-step creating guide (Figma 13299:12784+)
@@ -9789,7 +9700,7 @@ button.finance-summary__stat-value--chevron {
   color: #ffffff;
 }
 
-// Trade · Grid bot: fill the scroll viewport so Ongoing stretches to the bottom.
+// Trade · Grid bot: fill the scroll viewport so footer CTAs sit at the bottom.
 .content--trade--grid .content-inner {
   display: flex;
   flex-direction: column;

@@ -1514,51 +1514,24 @@
                         </div>
                         <div data-trade-page="grid" hidden>
                             <div class="finance__body trade-grid-page">
-                                <section class="trade-grid-page__hero">
-                                    <div class="trade-grid-page__value-row">
-                                        <div class="trade-grid-page__value-main">
-                                            <div class="trade-grid-page__value-label">
-                                                <span>Total value ≈</span>
-                                                <img src="assets/icon_eye.svg" alt="" width="16" height="16" aria-hidden="true" />
-                                            </div>
-                                            <button class="trade-grid-page__value-amount" type="button">
-                                                <span>0.00 USD</span>
-                                                <img src="assets/icon_dropdown.svg" alt="" width="24" height="24" aria-hidden="true" />
-                                            </button>
-                                        </div>
-                                        <button class="trade-grid-page__guide-btn" type="button" aria-label="Grid bot guide" data-trade-grid-guide-open>
-                                            <img src="assets/icon_guide.svg" alt="" width="24" height="24" aria-hidden="true" />
+                                <div class="trade-grid-page__body">
+                                    <section class="trade-grid-page__intro" aria-label="Grid Bot overview">
+                                        <h2 class="trade-grid-page__title">Grid Bot</h2>
+                                        <p class="trade-grid-page__desc">Buy low and sell high automatically, allowing you to profit even from small price fluctuations.</p>
+                                        <button type="button" class="trade-grid-page__how-link" data-trade-grid-guide-open>
+                                            <img class="trade-grid-page__how-icon" src="assets/icon_chartdat_guideblue.svg" alt="" width="20" height="20" aria-hidden="true" />
+                                            <span>How it works</span>
+                                            <svg class="trade-grid-page__how-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
                                         </button>
-                                    </div>
-                                    <div class="trade-grid-page__actions">
-                                        <button class="trade-grid-page__create-btn" type="button" data-visitor-login-cta>
-                                            <img src="assets/icon_plus_white.svg" alt="" width="20" height="20" aria-hidden="true" />
-                                            <span>Create bot</span>
-                                        </button>
-                                        <button class="trade-grid-page__virtual-btn" type="button" data-visitor-login-cta>Virtual trading</button>
-                                    </div>
-                                </section>
-
-                                <section class="trade-grid-page__ongoing">
-                                    <header class="trade-grid-page__ongoing-head">
-                                        <h2 class="trade-grid-page__ongoing-title">Ongoing (0)</h2>
-                                        <div class="trade-grid-page__ongoing-tools">
-                                            <span class="trade-grid-page__ongoing-tool trade-grid-page__ongoing-tool--expand" aria-hidden="true">
-                                                <img src="assets/icon_gb_expand.svg" alt="" width="28" height="28" />
-                                            </span>
-                                            <span class="trade-grid-page__ongoing-tool trade-grid-page__ongoing-tool--dropdown" aria-hidden="true">
-                                                <img src="assets/icon_gb_dropdown.svg" alt="" width="20" height="20" />
-                                            </span>
-                                        </div>
-                                    </header>
-                                    <div class="trade-grid-page__empty">
-                                        <img class="trade-grid-page__empty-art" src="assets/illu_gridbot.svg" alt="" width="152" height="118" />
-                                        <div class="trade-grid-page__empty-copy">
-                                            <p class="trade-grid-page__empty-text">Grid bot helps you trade automatically</p>
-                                            <button class="trade-grid-page__learn-more" type="button" data-trade-grid-guide-open>Learn more</button>
-                                        </div>
-                                    </div>
-                                </section>
+                                    </section>
+                                    <img class="trade-grid-page__hero-illu" src="assets/grid_illustration.png" alt="" width="331" height="259" aria-hidden="true" />
+                                </div>
+                                <footer class="trade-grid-page__footer">
+                                    <button class="trade-grid-page__cta trade-grid-page__cta--primary" type="button" data-visitor-login-cta>Get started</button>
+                                    <button class="trade-grid-page__cta trade-grid-page__cta--secondary" type="button" data-visitor-login-cta>Virtual Trading</button>
+                                </footer>
                             </div>
                         </div>
                         <div data-trade-page="convert" hidden>
