@@ -1,0 +1,26 @@
+{
+  "name": "xrexexchangekyc",
+  "version": "1.0.0",
+  "description": "iOS Prototype",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "audit:i18n-runtime": "node scripts/audit-runtime-i18n.js",
+    "audit:i18n-missing-zh": "node scripts/audit-runtime-i18n-missing-zh.js",
+    "build:css": "mkdir -p public/css && npx sass src/scss/main.scss public/css/main.css --style=compressed --no-source-map",
+    "compile:css": "npx sass src/scss/main.scss public/css/main.css --style=expanded --source-map",
+    "watch:css": "npx sass --watch src/scss/main.scss:public/css/main.css --style=expanded --source-map",
+    "watch:css:poll": "npx sass --watch src/scss/main.scss:public/css/main.css --style=expanded --source-map --poll 1000",
+    "start": "npm run watch:css:poll",
+    "start:static": "npx --yes serve -s public -l 5173",
+    "dev": "npm run watch:css:poll",
+    "dev:public": "npm-run-all -p watch:css:poll start:static"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "npm-run-all": "^4.1.5",
+    "sass": "^1.93.3"
+  }
+}

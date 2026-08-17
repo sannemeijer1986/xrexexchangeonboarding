@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0D0E0F">
+    <title>Sign up to XREX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/main.css" />
+</head>
+
+<body>
+    <div class="phone-container phone-container--auth-signup">
+        <div class="top-chrome">
+            <div class="status-bar safe-area-top">
+                <div class="status-bar__left">
+                    <span>9:41</span>
+                </div>
+                <div class="status-bar__right">
+                    <img class="status-bar__icons" src="../assets/icons_statusbar.svg" alt="Status icons" />
+                </div>
+            </div>
+        </div>
+
+        <main class="auth-signup" aria-label="Sign up to XREX">
+            <header class="auth-signup__header">
+                <button class="auth-signup__icon-btn" type="button" data-auth-signup-back aria-label="Back">
+                    <img src="../assets/icon_back.svg" alt="" />
+                </button>
+                <div class="auth-signup__header-spacer" aria-hidden="true"></div>
+                <button class="auth-signup__icon-btn" type="button" aria-label="Support">
+                    <img src="../assets/icon_intercom.svg" alt="" />
+                </button>
+            </header>
+
+            <div class="auth-signup__hero-wrap">
+                <div class="auth-signup__hero-coins" aria-hidden="true">
+                    <div class="auth-signup__hero-track" data-auth-signup-hero-track></div>
+                </div>
+                <div class="auth-signup__hero-mask" aria-hidden="true"></div>
+            </div>
+
+            <div class="auth-signup__intro">
+                <img class="auth-signup__logo" src="../assets/logo_nolabel.svg" alt="" width="40" height="40" />
+                <div class="auth-signup__copy">
+                    <h1 class="auth-signup__title">Welcome to XREX</h1>
+                    <p class="auth-signup__subtitle">Effortlessly and securely trade, earn, and manage your cryptocurrencies.</p>
+                </div>
+            </div>
+
+            <div class="auth-signup__form">
+                <button class="auth-signup__btn auth-signup__btn--primary" type="button" data-auth-signup-continue>
+                    Sign up
+                </button>
+
+                <div class="auth-signup__divider" aria-hidden="true">
+                    <span class="auth-signup__divider-line"></span>
+                    <span class="auth-signup__divider-text">Already have an account?</span>
+                    <span class="auth-signup__divider-line"></span>
+                </div>
+
+                <button class="auth-signup__btn auth-signup__btn--secondary" type="button" data-auth-signup-login>
+                    Log in
+                </button>
+            </div>
+        </main>
+
+        <div
+            class="currency-sheet auth-referral-sheet"
+            data-auth-referral-sheet
+            hidden
+            aria-modal="true"
+            role="dialog"
+            aria-label="Referral code"
+        >
+            <button class="currency-sheet__backdrop" type="button" data-auth-referral-sheet-close aria-label="Close"></button>
+            <div class="currency-sheet__panel">
+                <div class="currency-sheet__handle-wrap">
+                    <div class="currency-sheet__handle"></div>
+                </div>
+                <div class="currency-sheet__body auth-referral-sheet__body">
+                    <div class="auth-referral-sheet__hero">
+                        <img class="auth-referral-sheet__icon" src="../assets/icon_gift_blue.svg" alt="" width="58" height="58" />
+                        <h2 class="auth-referral-sheet__title">Get benefits by signing up with a referral code!</h2>
+                    </div>
+                    <label class="auth-referral-sheet__field">
+                        <span class="auth-referral-sheet__label">Referral code (Optional)</span>
+                        <div class="auth-referral-sheet__input-wrap">
+                            <input
+                                class="auth-referral-sheet__input"
+                                type="text"
+                                placeholder="Enter referral code"
+                                autocomplete="off"
+                                data-auth-referral-sheet-input
+                            />
+                            <button class="auth-referral-sheet__paste" type="button" data-auth-referral-sheet-paste>Paste</button>
+                        </div>
+                    </label>
+                </div>
+                <div class="currency-sheet__footer currency-sheet__footer--split auth-referral-sheet__footer">
+                    <button
+                        class="schedule-time-sheet__btn schedule-time-sheet__btn--secondary"
+                        type="button"
+                        data-auth-referral-sheet-skip
+                    >
+                        Skip
+                    </button>
+                    <button
+                        class="schedule-time-sheet__btn schedule-time-sheet__btn--primary auth-referral-sheet__next"
+                        type="button"
+                        data-auth-referral-sheet-next
+                    >
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="snackbar" data-snackbar hidden role="status" aria-live="polite">
+            <div class="snackbar__text" data-snackbar-text>Not in prototype</div>
+        </div>
+    </div>
+
+    <script src="auth-signup.js"></script>
+</body>
+
+</html>
