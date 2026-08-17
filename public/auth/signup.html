@@ -82,53 +82,124 @@
             </div>
         </main>
 
-        <div
-            class="currency-sheet auth-referral-sheet"
-            data-auth-referral-sheet
-            hidden
-            aria-modal="true"
-            role="dialog"
-            aria-label="Referral code"
-        >
-            <button class="currency-sheet__backdrop" type="button" data-auth-referral-sheet-close aria-label="Close"></button>
-            <div class="currency-sheet__panel">
-                <div class="currency-sheet__handle-wrap">
-                    <div class="currency-sheet__handle"></div>
-                </div>
-                <div class="currency-sheet__body auth-referral-sheet__body">
-                    <div class="auth-referral-sheet__hero">
-                        <img class="auth-referral-sheet__icon" src="../assets/icon_gift_blue.svg" alt="" width="58" height="58" />
-                        <h2 class="auth-referral-sheet__title">Get benefits by signing up with a referral code!</h2>
+        <section class="auth-signup-email-page" data-auth-signup-email-page hidden aria-label="Sign up email">
+            <header class="auth-signup-email-page__header">
+                <button class="auth-signup-email-page__icon-btn" type="button" data-auth-signup-email-back aria-label="Back">
+                    <img src="../assets/icon_back.svg" alt="" />
+                </button>
+                <div class="auth-signup-email-page__stepper" aria-hidden="true">
+                    <div class="auth-signup-email-page__step is-active">
+                        <span class="auth-signup-email-page__step-track"></span>
+                        <span class="auth-signup-email-page__step-fill"></span>
                     </div>
-                    <label class="auth-referral-sheet__field">
-                        <span class="auth-referral-sheet__label">Referral code (Optional)</span>
-                        <div class="auth-referral-sheet__input-wrap">
-                            <input
-                                class="auth-referral-sheet__input"
-                                type="text"
-                                placeholder="Enter referral code"
-                                autocomplete="off"
-                                data-auth-referral-sheet-input
-                            />
-                            <button class="auth-referral-sheet__paste" type="button" data-auth-referral-sheet-paste>Paste</button>
-                        </div>
-                    </label>
+                    <div class="auth-signup-email-page__step">
+                        <span class="auth-signup-email-page__step-track"></span>
+                    </div>
+                    <div class="auth-signup-email-page__step">
+                        <span class="auth-signup-email-page__step-track"></span>
+                    </div>
+                    <div class="auth-signup-email-page__step">
+                        <span class="auth-signup-email-page__step-track"></span>
+                    </div>
                 </div>
-                <div class="currency-sheet__footer currency-sheet__footer--split auth-referral-sheet__footer">
-                    <button
-                        class="schedule-time-sheet__btn schedule-time-sheet__btn--secondary"
-                        type="button"
-                        data-auth-referral-sheet-skip
-                    >
-                        Skip
-                    </button>
-                    <button
-                        class="schedule-time-sheet__btn schedule-time-sheet__btn--primary auth-referral-sheet__next"
-                        type="button"
-                        data-auth-referral-sheet-next
-                    >
-                        Next
-                    </button>
+                <button class="auth-signup-email-page__icon-btn" type="button" aria-label="Support">
+                    <img src="../assets/icon_intercom.svg" alt="" />
+                </button>
+            </header>
+
+            <div class="auth-signup-email-page__body">
+                <div class="auth-signup-email-page__copy">
+                    <h2 class="auth-signup-email-page__title">What’s your email address?</h2>
+                    <p class="auth-signup-email-page__desc">We'll send a 6-digit code to confirm it's yours</p>
+                </div>
+                <div class="auth-signup-email-page__field" data-auth-signup-email-field>
+                    <div class="auth-signup-email-page__input-inner">
+                        <input
+                            class="auth-signup-email-page__input"
+                            type="email"
+                            inputmode="email"
+                            placeholder="Enter your email"
+                            autocomplete="off"
+                            readonly
+                            data-auth-signup-email-input
+                        />
+                        <span class="auth-signup-email-page__cursor" data-auth-signup-email-cursor hidden aria-hidden="true"></span>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="auth-signup-email-page__footer">
+                <button
+                    class="auth-signup-email-page__continue"
+                    type="button"
+                    data-auth-signup-email-continue
+                    disabled
+                >
+                    Continue
+                </button>
+            </footer>
+        </section>
+
+        <div class="fake-keyboard fake-keyboard--signup-email" data-fake-keyboard="signup-email" aria-hidden="true" hidden>
+            <div class="fake-keyboard__panel" role="presentation">
+                <div class="fake-keyboard__sticky fake-keyboard__sticky--signup-email">
+                    <div class="fake-keyboard__top-actions fake-keyboard__top-actions--signup-email">
+                        <button class="fake-keyboard__dismiss" type="button" data-fake-keyboard-signup-email-close aria-label="Dismiss keyboard">
+                            <img src="../assets/icon_chevron_down_white.svg" alt="" width="24" height="24" />
+                        </button>
+                        <span class="fake-keyboard__top-spacer" aria-hidden="true"></span>
+                        <button
+                            class="fake-keyboard__preview fake-keyboard__preview--signup-email"
+                            type="button"
+                            data-fake-keyboard-signup-email-continue
+                            disabled
+                        >
+                            Continue
+                        </button>
+                    </div>
+                </div>
+                <div class="fake-keyboard__keys fake-keyboard__keys--alpha" aria-hidden="true">
+                    <div class="fake-keyboard__alpha-row">
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>Q</button>
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>W</button>
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>E</button>
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>R</button>
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>T</button>
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>Y</button>
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>U</button>
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>I</button>
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>O</button>
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>P</button>
+                    </div>
+                    <div class="fake-keyboard__alpha-row fake-keyboard__alpha-row--mid">
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>A</button>
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>S</button>
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>D</button>
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>F</button>
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>G</button>
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>H</button>
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>J</button>
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>K</button>
+                        <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>L</button>
+                    </div>
+                    <div class="fake-keyboard__alpha-row fake-keyboard__alpha-row--shift">
+                        <button type="button" class="fake-keyboard__alpha-key fake-keyboard__alpha-key--utility" aria-label="Shift">⇧</button>
+                        <div class="fake-keyboard__alpha-row-mid">
+                            <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>Z</button>
+                            <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>X</button>
+                            <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>C</button>
+                            <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>V</button>
+                            <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>B</button>
+                            <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>N</button>
+                            <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>M</button>
+                        </div>
+                        <button type="button" class="fake-keyboard__alpha-key fake-keyboard__alpha-key--utility fake-keyboard__alpha-key--delete" aria-label="Delete">⌫</button>
+                    </div>
+                    <div class="fake-keyboard__alpha-row fake-keyboard__alpha-row--bottom">
+                        <button type="button" class="fake-keyboard__alpha-key fake-keyboard__alpha-key--utility fake-keyboard__alpha-key--nums">123</button>
+                        <button type="button" class="fake-keyboard__alpha-key fake-keyboard__alpha-key--space" data-fake-keyboard-signup-email-key>space</button>
+                        <button type="button" class="fake-keyboard__alpha-key fake-keyboard__alpha-key--utility fake-keyboard__alpha-key--go" data-fake-keyboard-signup-email-key>Go</button>
+                    </div>
                 </div>
             </div>
         </div>
