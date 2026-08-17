@@ -108,22 +108,91 @@
             </header>
 
             <div class="auth-signup-email-page__body">
-                <div class="auth-signup-email-page__copy">
-                    <h2 class="auth-signup-email-page__title">What’s your email address?</h2>
-                    <p class="auth-signup-email-page__desc">We'll send a 6-digit code to confirm it's yours</p>
+                <div class="auth-signup-email-page__panel" data-auth-signup-email-panel="email">
+                    <div class="auth-signup-email-page__copy">
+                        <h2 class="auth-signup-email-page__title">What’s your email address?</h2>
+                        <p class="auth-signup-email-page__desc">We'll send a 6-digit code to confirm it's yours</p>
+                    </div>
+                    <div class="auth-signup-email-page__field" data-auth-signup-email-field>
+                        <div
+                            class="auth-signup-email-page__input-inner"
+                            data-lpignore="true"
+                            data-1p-ignore
+                            data-bwignore
+                            data-dashlane-ignore
+                        >
+                            <div class="auth-signup-email-page__input-main">
+                                <input
+                                    class="auth-signup-email-page__input"
+                                    type="text"
+                                    inputmode="email"
+                                    placeholder="Enter your email"
+                                    autocomplete="off"
+                                    readonly
+                                    data-lpignore="true"
+                                    data-1p-ignore
+                                    data-bwignore
+                                    data-dashlane-ignore
+                                    data-auth-signup-email-input
+                                />
+                                <span class="auth-signup-email-page__cursor" data-auth-signup-email-cursor hidden aria-hidden="true"></span>
+                            </div>
+                            <button
+                                type="button"
+                                class="auth-signup-email-page__clear"
+                                data-auth-signup-email-clear
+                                aria-label="Clear email"
+                                hidden
+                            >
+                                <img src="../assets/icon_clearinput.svg" alt="" width="24" height="24" />
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="auth-signup-email-page__field" data-auth-signup-email-field>
-                    <div class="auth-signup-email-page__input-inner">
-                        <input
-                            class="auth-signup-email-page__input"
-                            type="email"
-                            inputmode="email"
-                            placeholder="Enter your email"
-                            autocomplete="off"
-                            readonly
-                            data-auth-signup-email-input
-                        />
-                        <span class="auth-signup-email-page__cursor" data-auth-signup-email-cursor hidden aria-hidden="true"></span>
+
+                <div class="auth-signup-email-page__panel" data-auth-signup-email-panel="code" hidden>
+                    <div class="auth-signup-email-page__copy auth-signup-email-page__copy--code">
+                        <h2 class="auth-signup-email-page__title">Enter the code we emailed you</h2>
+                        <button type="button" class="auth-signup-email-page__email-edit" data-auth-signup-email-edit>
+                            <span class="auth-signup-email-page__email-display" data-auth-signup-email-display>mail@sanne.com</span>
+                            <img class="auth-signup-email-page__email-edit-icon" src="../assets/edit_blue.svg" alt="" width="20" height="20" />
+                        </button>
+                    </div>
+                    <div class="auth-signup-email-page__code-section">
+                        <p class="auth-signup-email-page__code-label">Verification code</p>
+                        <div class="auth-signup-email-page__code-grid" data-auth-signup-code-grid role="group" aria-label="Verification code">
+                            <div class="auth-signup-email-page__code-cell is-active" data-auth-signup-code-cell="0">
+                                <span class="auth-signup-email-page__code-digit" data-auth-signup-code-digit></span>
+                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-code-cursor aria-hidden="true"></span>
+                            </div>
+                            <div class="auth-signup-email-page__code-cell" data-auth-signup-code-cell="1">
+                                <span class="auth-signup-email-page__code-digit" data-auth-signup-code-digit></span>
+                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-code-cursor hidden aria-hidden="true"></span>
+                            </div>
+                            <div class="auth-signup-email-page__code-cell" data-auth-signup-code-cell="2">
+                                <span class="auth-signup-email-page__code-digit" data-auth-signup-code-digit></span>
+                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-code-cursor hidden aria-hidden="true"></span>
+                            </div>
+                            <div class="auth-signup-email-page__code-cell" data-auth-signup-code-cell="3">
+                                <span class="auth-signup-email-page__code-digit" data-auth-signup-code-digit></span>
+                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-code-cursor hidden aria-hidden="true"></span>
+                            </div>
+                            <div class="auth-signup-email-page__code-cell" data-auth-signup-code-cell="4">
+                                <span class="auth-signup-email-page__code-digit" data-auth-signup-code-digit></span>
+                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-code-cursor hidden aria-hidden="true"></span>
+                            </div>
+                            <div class="auth-signup-email-page__code-cell" data-auth-signup-code-cell="5">
+                                <span class="auth-signup-email-page__code-digit" data-auth-signup-code-digit></span>
+                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-code-cursor hidden aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <div class="auth-signup-email-page__code-meta">
+                            <span class="auth-signup-email-page__code-resend" data-auth-signup-code-resend>Resend in 0:42</span>
+                            <button type="button" class="auth-signup-email-page__code-paste" data-auth-signup-code-paste>
+                                <img src="../assets/copy_blue.svg" alt="" width="16" height="16" />
+                                Paste
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -200,6 +269,22 @@
                         <button type="button" class="fake-keyboard__alpha-key fake-keyboard__alpha-key--space" data-fake-keyboard-signup-email-key>space</button>
                         <button type="button" class="fake-keyboard__alpha-key fake-keyboard__alpha-key--utility fake-keyboard__alpha-key--go" data-fake-keyboard-signup-email-key>Go</button>
                     </div>
+                </div>
+                <div class="fake-keyboard__keys fake-keyboard__keys--numeric" data-fake-keyboard-signup-email-numeric hidden aria-hidden="true">
+                    <button type="button" class="fake-keyboard__key" data-fake-keyboard-signup-email-digit="1"><span>1</span></button>
+                    <button type="button" class="fake-keyboard__key" data-fake-keyboard-signup-email-digit="2"><span>2</span><small>ABC</small></button>
+                    <button type="button" class="fake-keyboard__key" data-fake-keyboard-signup-email-digit="3"><span>3</span><small>DEF</small></button>
+                    <button type="button" class="fake-keyboard__key" data-fake-keyboard-signup-email-digit="4"><span>4</span><small>GHI</small></button>
+                    <button type="button" class="fake-keyboard__key" data-fake-keyboard-signup-email-digit="5"><span>5</span><small>JKL</small></button>
+                    <button type="button" class="fake-keyboard__key" data-fake-keyboard-signup-email-digit="6"><span>6</span><small>MNO</small></button>
+                    <button type="button" class="fake-keyboard__key" data-fake-keyboard-signup-email-digit="7"><span>7</span><small>PQRS</small></button>
+                    <button type="button" class="fake-keyboard__key" data-fake-keyboard-signup-email-digit="8"><span>8</span><small>TUV</small></button>
+                    <button type="button" class="fake-keyboard__key" data-fake-keyboard-signup-email-digit="9"><span>9</span><small>WXYZ</small></button>
+                    <div class="fake-keyboard__key fake-keyboard__key--empty" aria-hidden="true"></div>
+                    <button type="button" class="fake-keyboard__key" data-fake-keyboard-signup-email-digit="0"><span>0</span></button>
+                    <button type="button" class="fake-keyboard__delete" data-fake-keyboard-signup-email-delete aria-label="Delete">
+                        <span aria-hidden="true">⌫</span>
+                    </button>
                 </div>
             </div>
         </div>
