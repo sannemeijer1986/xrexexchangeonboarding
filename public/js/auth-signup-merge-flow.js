@@ -120,8 +120,7 @@
 
   const syncChromeLabels = () => {
     if (!isHybrid()) {
-      if (footerBtn) footerBtn.textContent = "Continue";
-      if (keyboardContinueBtn) keyboardContinueBtn.textContent = "Continue";
+      window.__syncProgSignupActionLabels?.();
       return;
     }
     if (!isHybridManagedStep()) {

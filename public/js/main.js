@@ -612,6 +612,19 @@
       showSignupEmailKeyboard();
     };
 
+    const syncSignupActionLabels = () => {
+      if (
+        window.__hybridSignup?.isActive?.() &&
+        window.__hybridSignup?.isManagedStep?.()
+      ) {
+        return;
+      }
+      const sendCodeStep = signupEmailStep === "email" || signupEmailStep === "mobile";
+      const label = sendCodeStep ? "Send code" : "Continue";
+      if (emailContinueBtn) emailContinueBtn.textContent = label;
+      if (keyboardContinueBtn) keyboardContinueBtn.textContent = label;
+    };
+
     const syncActionButtons = () => {
       if (
         window.__hybridSignup?.isActive?.() &&
@@ -620,6 +633,7 @@
         window.__hybridSignup.syncActionUi?.();
         return;
       }
+      syncSignupActionLabels();
       if (signupEmailStep === "email") {
         const enabled = emailInput?.value.trim() === SIGNUP_DUMMY_EMAIL;
         if (emailContinueBtn) emailContinueBtn.disabled = !enabled;
@@ -983,6 +997,7 @@
     };
 
     window.__resetSignupFlowForMergeModeSwitch = resetSignupFlowForMergeModeSwitch;
+    window.__syncProgSignupActionLabels = syncSignupActionLabels;
 
     let signupEmailKeyboardDismissTimer = null;
 

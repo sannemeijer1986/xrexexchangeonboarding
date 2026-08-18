@@ -403,7 +403,15 @@
 
   const showNotInPrototype = () => showSnackbar("Not in prototype");
 
+  const syncSignupActionLabels = () => {
+    const sendCodeStep = signupEmailStep === "email" || signupEmailStep === "mobile";
+    const label = sendCodeStep ? "Send code" : "Continue";
+    if (emailContinueBtn) emailContinueBtn.textContent = label;
+    if (keyboardContinueBtn) keyboardContinueBtn.textContent = label;
+  };
+
   const syncActionButtons = () => {
+    syncSignupActionLabels();
     if (signupEmailStep === "email") {
       const enabled = emailInput?.value.trim() === SIGNUP_DUMMY_EMAIL;
       if (emailContinueBtn) emailContinueBtn.disabled = !enabled;
