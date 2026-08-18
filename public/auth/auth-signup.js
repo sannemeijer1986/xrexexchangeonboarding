@@ -84,6 +84,19 @@
     ? Array.from(emailPage.querySelectorAll("[data-auth-signup-code-cell]"))
     : [];
   const codePasteBtn = emailPage?.querySelector("[data-auth-signup-code-paste]");
+  const mobilePanel = emailPage?.querySelector('[data-auth-signup-email-panel="mobile"]');
+  const mobileCodePanel = emailPage?.querySelector('[data-auth-signup-email-panel="mobile-code"]');
+  const mobileField = emailPage?.querySelector("[data-auth-signup-mobile-field]");
+  const mobileInput = emailPage?.querySelector("[data-auth-signup-mobile-input]");
+  const mobileCursor = emailPage?.querySelector("[data-auth-signup-mobile-cursor]");
+  const mobileClearBtn = emailPage?.querySelector("[data-auth-signup-mobile-clear]");
+  const mobileDisplay = emailPage?.querySelector("[data-auth-signup-mobile-display]");
+  const mobileEditBtn = emailPage?.querySelector("[data-auth-signup-mobile-edit]");
+  const mobileCodeGrid = emailPage?.querySelector("[data-auth-signup-mobile-code-grid]");
+  const mobileCodeCells = emailPage
+    ? Array.from(emailPage.querySelectorAll("[data-auth-signup-mobile-code-cell]"))
+    : [];
+  const mobileCodePasteBtn = emailPage?.querySelector("[data-auth-signup-mobile-code-paste]");
   const signupCodeLoader = emailPage?.querySelector("[data-auth-signup-code-loader]");
   const stepperSteps = emailPage
     ? Array.from(emailPage.querySelectorAll(".auth-signup-email-page__step"))
@@ -99,6 +112,7 @@
   const SIGNUP_DUMMY_EMAIL = "mail@sanne.com";
   const SIGNUP_DUMMY_CODE = "123456";
   const SIGNUP_DUMMY_PASSWORD = "Passw0rd!";
+  const SIGNUP_DUMMY_MOBILE = "0975561399";
   const SIGNUP_CODE_LENGTH = 6;
   const PASSWORD_RULE_KEYS = ["length", "special", "number", "case"];
   const SIGNUP_EMAIL_KEYBOARD_DELAY_MS = 350;
@@ -106,11 +120,26 @@
   const SIGNUP_CODE_LOADER_VISIBLE_MS = 1500;
   let signupEmailStep = "email";
   let signupEmailTypingTimers = [];
+  let signupMobileTypingTimers = [];
   let signupPasswordTypingTimers = [];
+  let signupPasswordTypingGeneration = 0;
   let signupPasswordActiveField = "primary";
   let signupCodeLoaderHideTimer = null;
   let codeDigits = Array.from({ length: SIGNUP_CODE_LENGTH }, () => "");
   let codeActiveIndex = 0;
+  let mobileCodeDigits = Array.from({ length: SIGNUP_CODE_LENGTH }, () => "");
+  let mobileCodeActiveIndex = 0;
+
+  const isVerificationCodeStep = () =>
+    signupEmailStep === "code" || signupEmailStep === "mobile-code";
+
+  const syncSignupKeyboardMode = () => {
+    signupEmailKeyboard?.classList.toggle("is-code-mode", isVerificationCodeStep());
+    signupEmailKeyboard?.classList.toggle(
+      "is-mobile-numeric-mode",
+      signupEmailStep === "mobile",
+    );
+  };
 
   const getPasswordFieldEl = (name) =>
     emailPage?.querySelector(`[data-auth-signup-password-field="${name}"]`);
@@ -122,6 +151,27 @@
   const cancelSignupPasswordTyping = () => {
     signupPasswordTypingTimers.forEach((timer) => clearTimeout(timer));
     signupPasswordTypingTimers = [];
+    signupPasswordTypingGeneration += 1;
+  };
+
+  const getActiveSignupPasswordField = () => {
+    const focusedEl = emailPage?.querySelector('[data-auth-signup-password-field].is-focused');
+    const name = focusedEl?.getAttribute("data-auth-signup-password-field");
+    if (name === "primary" || name === "confirm") return name;
+    return signupPasswordActiveField;
+  };
+
+  const syncPasswordVisibilityUi = (name) => {
+    const inputEl = getPasswordInputEl(name);
+    const btn = emailPage?.querySelector(`[data-auth-signup-password-visibility="${name}"]`);
+    const iconEl = btn?.querySelector("img");
+    if (!inputEl || !iconEl) return;
+    const isVisible = inputEl.type === "text";
+    iconEl.src = iconEl.src.replace(
+      /icon_eye(?:_on|_off)?\.svg$/,
+      isVisible ? "icon_eye_off.svg" : "icon_eye_on.svg",
+    );
+    btn?.setAttribute("aria-label", isVisible ? "Hide password" : "Show password");
   };
 
   const getPasswordValidation = (value) => ({
@@ -220,6 +270,7 @@
       }
       fieldEl?.classList.remove("is-focused", "is-filled");
       getPasswordCursorEl(name)?.setAttribute("hidden", "");
+      syncPasswordVisibilityUi(name);
     });
     signupPasswordActiveField = "primary";
     syncPasswordRulesUi("");
@@ -246,8 +297,10 @@
     getPasswordCursorEl(name)?.removeAttribute("hidden");
     inputEl.focus({ preventScroll: true });
 
+    const typingGeneration = signupPasswordTypingGeneration;
     SIGNUP_DUMMY_PASSWORD.split("").forEach((_, index) => {
       const timer = window.setTimeout(() => {
+        if (typingGeneration !== signupPasswordTypingGeneration) return;
         inputEl.value = SIGNUP_DUMMY_PASSWORD.slice(0, index + 1);
         fieldEl.classList.toggle("is-filled", inputEl.value.length > 0);
         if (name === "primary") {
@@ -267,6 +320,30 @@
     if (!inputEl) return;
     const isVisible = inputEl.type === "text";
     inputEl.type = isVisible ? "password" : "text";
+    syncPasswordVisibilityUi(name);
+  };
+
+  const handleSignupPasswordDelete = (name = getActiveSignupPasswordField()) => {
+    if (signupEmailStep !== "password") return;
+    const inputEl = getPasswordInputEl(name);
+    const fieldEl = getPasswordFieldEl(name);
+    const typingInProgress = signupPasswordTypingTimers.length > 0;
+    if (!inputEl || !fieldEl) return;
+    if (!inputEl.value && !typingInProgress) return;
+
+    cancelSignupPasswordTyping();
+    inputEl.value = "";
+    inputEl.type = "password";
+    syncPasswordVisibilityUi(name);
+    fieldEl.classList.remove("is-filled");
+    fieldEl.classList.add("is-focused");
+    getPasswordCursorEl(name)?.removeAttribute("hidden");
+    if (name === "primary") {
+      syncPasswordRulesUi("");
+    }
+    syncPasswordUi();
+    focusSignupPassword(name);
+    showSignupEmailKeyboard();
   };
 
   const handlePasswordFieldInteraction = (name) => {
@@ -332,6 +409,10 @@
       const enabled = isPasswordStepComplete();
       if (emailContinueBtn) emailContinueBtn.disabled = !enabled;
       if (keyboardContinueBtn) keyboardContinueBtn.disabled = !enabled;
+    } else if (signupEmailStep === "mobile") {
+      const enabled = mobileInput?.value.trim() === SIGNUP_DUMMY_MOBILE;
+      if (emailContinueBtn) emailContinueBtn.disabled = !enabled;
+      if (keyboardContinueBtn) keyboardContinueBtn.disabled = !enabled;
     }
   };
 
@@ -341,9 +422,10 @@
   };
 
   const syncKeyboardStickyUi = () => {
-    const isCode = signupEmailStep === "code";
-    if (keyboardContinueBtn) keyboardContinueBtn.hidden = isCode;
-    if (keyboardDoneBtn) keyboardDoneBtn.hidden = !isCode;
+    const hideContinue = isVerificationCodeStep();
+    if (keyboardContinueBtn) keyboardContinueBtn.hidden = hideContinue;
+    if (keyboardDoneBtn) keyboardDoneBtn.hidden = !hideContinue;
+    syncSignupKeyboardMode();
   };
 
   const syncStepperUi = () => {
@@ -416,13 +498,13 @@
     if (signupCodeLoader) signupCodeLoader.hidden = true;
   };
 
-  const showSignupCodeLoader = () => {
+  const showSignupCodeLoader = (onComplete = advanceToPasswordStep) => {
     hideSignupCodeLoader();
     if (signupCodeLoader) signupCodeLoader.hidden = false;
     signupCodeLoaderHideTimer = window.setTimeout(() => {
       signupCodeLoaderHideTimer = null;
       hideSignupCodeLoader();
-      advanceToPasswordStep();
+      onComplete();
     }, SIGNUP_CODE_LOADER_VISIBLE_MS);
   };
 
@@ -436,10 +518,16 @@
 
   const showEmailStepUi = () => {
     signupEmailStep = "email";
-    emailPage?.classList.remove("is-code-step", "is-password-step");
-    signupEmailKeyboard?.classList.remove("is-code-mode");
+    emailPage?.classList.remove(
+      "is-code-step",
+      "is-password-step",
+      "is-mobile-step",
+      "is-mobile-code-step",
+    );
     if (emailPanel) emailPanel.hidden = false;
     if (codePanel) codePanel.hidden = true;
+    if (mobilePanel) mobilePanel.hidden = true;
+    if (mobileCodePanel) mobileCodePanel.hidden = true;
     syncStepperUi();
     syncKeyboardStickyUi();
     syncActionButtons();
@@ -448,10 +536,11 @@
   const showCodeStepUi = ({ resetCode = true } = {}) => {
     signupEmailStep = "code";
     emailPage?.classList.add("is-code-step");
-    emailPage?.classList.remove("is-password-step");
-    signupEmailKeyboard?.classList.add("is-code-mode");
+    emailPage?.classList.remove("is-password-step", "is-mobile-step", "is-mobile-code-step");
     if (emailPanel) emailPanel.hidden = true;
     if (codePanel) codePanel.hidden = false;
+    if (mobilePanel) mobilePanel.hidden = true;
+    if (mobileCodePanel) mobileCodePanel.hidden = true;
     if (emailDisplay) {
       emailDisplay.textContent = emailInput?.value.trim() || SIGNUP_DUMMY_EMAIL;
     }
@@ -471,11 +560,12 @@
 
   const showPasswordStepUi = () => {
     signupEmailStep = "password";
-    emailPage?.classList.remove("is-code-step");
+    emailPage?.classList.remove("is-code-step", "is-mobile-step", "is-mobile-code-step");
     emailPage?.classList.add("is-password-step");
-    signupEmailKeyboard?.classList.remove("is-code-mode");
     if (emailPanel) emailPanel.hidden = true;
     if (codePanel) codePanel.hidden = true;
+    if (mobilePanel) mobilePanel.hidden = true;
+    if (mobileCodePanel) mobileCodePanel.hidden = true;
     syncStepperUi();
     syncKeyboardStickyUi();
     resetPasswordFields();
@@ -484,6 +574,76 @@
       focusSignupPassword("primary");
       showSignupEmailKeyboard();
     }, SIGNUP_EMAIL_KEYBOARD_DELAY_MS);
+  };
+
+  const showMobileStepUi = ({ resetMobile = false } = {}) => {
+    signupEmailStep = "mobile";
+    emailPage?.classList.remove("is-code-step", "is-password-step", "is-mobile-code-step");
+    emailPage?.classList.add("is-mobile-step");
+    if (emailPanel) emailPanel.hidden = true;
+    if (codePanel) codePanel.hidden = true;
+    if (mobilePanel) mobilePanel.hidden = false;
+    if (mobileCodePanel) mobileCodePanel.hidden = true;
+    if (resetMobile) resetMobileField();
+    syncStepperUi();
+    syncKeyboardStickyUi();
+    syncActionButtons();
+    hideSignupEmailKeyboard();
+    window.setTimeout(() => {
+      focusSignupMobile();
+      showSignupEmailKeyboard();
+    }, SIGNUP_EMAIL_KEYBOARD_DELAY_MS);
+  };
+
+  const showMobileCodeStepUi = ({ resetCode = true } = {}) => {
+    signupEmailStep = "mobile-code";
+    emailPage?.classList.remove("is-password-step");
+    emailPage?.classList.add("is-mobile-step", "is-mobile-code-step");
+    if (emailPanel) emailPanel.hidden = true;
+    if (codePanel) codePanel.hidden = true;
+    if (mobilePanel) mobilePanel.hidden = true;
+    if (mobileCodePanel) mobileCodePanel.hidden = false;
+    if (mobileDisplay) {
+      mobileDisplay.textContent = mobileInput?.value.trim() || SIGNUP_DUMMY_MOBILE;
+    }
+    syncStepperUi();
+    syncKeyboardStickyUi();
+    if (resetCode) {
+      resetMobileCodeField();
+      requestAnimationFrame(() => focusMobileCodeEntry());
+    } else {
+      if (!isMobileCodeComplete()) {
+        fillSignupMobileCode();
+      }
+      unfocusMobileCodeEntry();
+      syncMobileCodeUi();
+    }
+  };
+
+  const advanceToMobileStep = () => {
+    if (signupEmailStep !== "password") return;
+    showMobileStepUi({ resetMobile: true });
+  };
+
+  const advanceToMobileCodeStep = () => {
+    if (!mobileInput?.value.trim()) return;
+    showMobileCodeStepUi();
+    showSignupEmailKeyboard();
+  };
+
+  const returnFromMobileStep = () => {
+    hideSignupCodeLoader();
+    resetMobileField();
+    resetMobileCodeField();
+    showPasswordStepUi();
+  };
+
+  const returnToMobileStep = () => {
+    hideSignupCodeLoader();
+    unfocusMobileCodeEntry();
+    showMobileStepUi();
+    focusSignupMobile();
+    syncSignupEmailKeyboardVisible();
   };
 
   const advanceToPasswordStep = () => {
@@ -553,6 +713,8 @@
     resetEmailField();
     resetCodeField();
     resetPasswordFields();
+    resetMobileField();
+    resetMobileCodeField();
   };
 
   const focusSignupEmail = () => {
@@ -603,6 +765,10 @@
     });
   };
 
+  const clearSignupPassword = (name = getActiveSignupPasswordField()) => {
+    handleSignupPasswordDelete(name);
+  };
+
   const deleteCodeDigit = () => {
     if (signupEmailStep !== "code") return;
     let index = codeActiveIndex;
@@ -643,6 +809,197 @@
     showSignupEmailKeyboard();
   };
 
+  const cancelSignupMobileTyping = () => {
+    signupMobileTypingTimers.forEach((timer) => clearTimeout(timer));
+    signupMobileTypingTimers = [];
+  };
+
+  const syncMobileClearUi = () => {
+    const hasValue = Boolean(mobileInput?.value.trim());
+    if (mobileClearBtn) mobileClearBtn.hidden = !hasValue;
+  };
+
+  const isMobileFocused = () => mobileField?.classList.contains("is-focused");
+
+  const resetMobileField = () => {
+    cancelSignupMobileTyping();
+    if (mobileInput) mobileInput.value = "";
+    mobileField?.classList.remove("is-focused", "is-filled");
+    mobileCursor?.setAttribute("hidden", "");
+    syncMobileClearUi();
+    syncActionButtons();
+  };
+
+  const focusSignupMobile = () => {
+    mobileField?.classList.add("is-focused");
+    mobileInput?.focus({ preventScroll: true });
+  };
+
+  const unfocusSignupMobile = () => {
+    mobileField?.classList.remove("is-focused");
+    mobileCursor?.setAttribute("hidden", "");
+    if (document.activeElement === mobileInput) {
+      mobileInput?.blur();
+    }
+  };
+
+  const fillSignupMobile = () => {
+    if (!mobileInput || !mobileField) return;
+    if (mobileInput.value === SIGNUP_DUMMY_MOBILE) {
+      mobileField.classList.add("is-focused", "is-filled");
+      mobileCursor?.removeAttribute("hidden");
+      syncMobileClearUi();
+      syncActionButtons();
+      mobileInput.focus({ preventScroll: true });
+      return;
+    }
+
+    cancelSignupMobileTyping();
+    mobileInput.value = "";
+    mobileField.classList.add("is-focused");
+    mobileField.classList.remove("is-filled");
+    mobileCursor?.removeAttribute("hidden");
+    syncMobileClearUi();
+    syncActionButtons();
+    mobileInput.focus({ preventScroll: true });
+
+    SIGNUP_DUMMY_MOBILE.split("").forEach((_, index) => {
+      const timer = window.setTimeout(() => {
+        mobileInput.value = SIGNUP_DUMMY_MOBILE.slice(0, index + 1);
+        mobileField.classList.toggle("is-filled", mobileInput.value.length > 0);
+        syncActionButtons();
+        if (index === SIGNUP_DUMMY_MOBILE.length - 1) {
+          syncMobileClearUi();
+        }
+      }, SIGNUP_EMAIL_CHAR_DELAY_MS * index);
+      signupMobileTypingTimers.push(timer);
+    });
+  };
+
+  const clearSignupMobile = () => {
+    if (!mobileInput || !mobileField) return;
+    cancelSignupMobileTyping();
+    mobileInput.value = "";
+    mobileField.classList.remove("is-filled");
+    mobileField.classList.add("is-focused");
+    mobileCursor?.removeAttribute("hidden");
+    syncMobileClearUi();
+    syncActionButtons();
+    focusSignupMobile();
+    showSignupEmailKeyboard();
+  };
+
+  const handleMobileFieldInteraction = () => {
+    if (!isMobileFocused()) {
+      focusSignupMobile();
+      showSignupEmailKeyboard();
+      return;
+    }
+    if (mobileInput?.value !== SIGNUP_DUMMY_MOBILE) {
+      fillSignupMobile();
+    }
+    showSignupEmailKeyboard();
+  };
+
+  const isMobileCodeComplete = () => mobileCodeDigits.every((digit) => digit !== "");
+
+  const isMobileCodeFocused = () => mobileCodeGrid?.classList.contains("is-focused");
+
+  const syncMobileCodeUi = () => {
+    const complete = isMobileCodeComplete();
+    const focused = mobileCodeGrid?.classList.contains("is-focused");
+    mobileCodeGrid?.classList.toggle("is-filled", complete);
+
+    mobileCodeCells.forEach((cell, index) => {
+      const digitEl = cell.querySelector("[data-auth-signup-mobile-code-digit]");
+      const cursorEl = cell.querySelector("[data-auth-signup-mobile-code-cursor]");
+      const isActive =
+        signupEmailStep === "mobile-code" &&
+        focused &&
+        !complete &&
+        index === mobileCodeActiveIndex;
+      cell.classList.toggle("is-active", isActive);
+      if (digitEl) digitEl.textContent = mobileCodeDigits[index] || "";
+      if (cursorEl) {
+        if (isActive && !mobileCodeDigits[index]) cursorEl.removeAttribute("hidden");
+        else cursorEl.setAttribute("hidden", "");
+      }
+    });
+  };
+
+  const resetMobileCodeField = () => {
+    mobileCodeDigits = Array.from({ length: SIGNUP_CODE_LENGTH }, () => "");
+    mobileCodeActiveIndex = 0;
+    mobileCodeGrid?.classList.remove("is-focused", "is-filled");
+    syncMobileCodeUi();
+  };
+
+  const fillSignupMobileCode = () => {
+    if (signupEmailStep !== "mobile-code") return;
+    mobileCodeDigits = SIGNUP_DUMMY_CODE.split("").slice(0, SIGNUP_CODE_LENGTH);
+    mobileCodeActiveIndex = SIGNUP_CODE_LENGTH;
+    syncMobileCodeUi();
+  };
+
+  const fillSignupMobileCodeAndUnfocus = () => {
+    fillSignupMobileCode();
+    unfocusMobileCodeEntry();
+  };
+
+  const focusMobileCodeEntry = () => {
+    mobileCodeGrid?.classList.add("is-focused");
+    syncMobileCodeUi();
+  };
+
+  const unfocusMobileCodeEntry = () => {
+    mobileCodeGrid?.classList.remove("is-focused");
+    syncMobileCodeUi();
+  };
+
+  const submitSignupMobileCode = () => {
+    if (signupEmailStep !== "mobile-code") return;
+    if (signupCodeLoaderHideTimer || (signupCodeLoader && !signupCodeLoader.hidden)) return;
+    fillSignupMobileCodeAndUnfocus();
+    dismissSignupEmailKeyboardUi();
+    showSignupCodeLoader(showNotInPrototype);
+  };
+
+  const deleteMobileCodeDigit = () => {
+    if (signupEmailStep !== "mobile-code") return;
+    let index = mobileCodeActiveIndex;
+    if (index >= SIGNUP_CODE_LENGTH) index = SIGNUP_CODE_LENGTH - 1;
+    if (index > 0 && mobileCodeDigits[index] === "") index -= 1;
+    if (mobileCodeDigits[index] !== "") {
+      mobileCodeDigits[index] = "";
+      mobileCodeActiveIndex = index;
+      syncMobileCodeUi();
+      focusMobileCodeEntry();
+    }
+  };
+
+  const handleMobileCodeFieldInteraction = () => {
+    if (isMobileCodeComplete()) {
+      unfocusMobileCodeEntry();
+      return;
+    }
+    if (!isMobileCodeFocused()) {
+      focusMobileCodeEntry();
+      showSignupEmailKeyboard();
+      return;
+    }
+    submitSignupMobileCode();
+  };
+
+  const handleMobileCodePaste = () => {
+    if (isMobileCodeComplete()) return;
+    if (!isMobileCodeFocused()) {
+      focusMobileCodeEntry();
+      showSignupEmailKeyboard();
+      return;
+    }
+    submitSignupMobileCode();
+  };
+
   const unfocusSignupEmailField = () => {
     emailField?.classList.remove("is-focused");
     emailCursor?.setAttribute("hidden", "");
@@ -655,14 +1012,18 @@
     if (!signupEmailKeyboard?.classList.contains("is-visible")) return;
     hideSignupEmailKeyboard();
     if (signupEmailStep === "code") unfocusCodeEntry();
+    else if (signupEmailStep === "mobile-code") unfocusMobileCodeEntry();
     else if (signupEmailStep === "password") unfocusAllPasswordFields();
+    else if (signupEmailStep === "mobile") unfocusSignupMobile();
     else unfocusSignupEmailField();
   };
 
   const dismissSignupEmailKeyboardUi = () => {
     hideSignupEmailKeyboard();
     if (signupEmailStep === "code") unfocusCodeEntry();
+    else if (signupEmailStep === "mobile-code") unfocusMobileCodeEntry();
     else if (signupEmailStep === "password") unfocusAllPasswordFields();
+    else if (signupEmailStep === "mobile") unfocusSignupMobile();
     else unfocusSignupEmailField();
   };
 
@@ -674,11 +1035,24 @@
     }
     if (signupEmailStep === "password") {
       if (!isPasswordStepComplete()) return;
-      showNotInPrototype();
+      advanceToMobileStep();
+      return;
+    }
+    if (signupEmailStep === "mobile") {
+      if (mobileInput?.value.trim() !== SIGNUP_DUMMY_MOBILE) return;
+      advanceToMobileCodeStep();
     }
   };
 
   const handleEmailBack = () => {
+    if (signupEmailStep === "mobile-code") {
+      returnToMobileStep();
+      return;
+    }
+    if (signupEmailStep === "mobile") {
+      returnFromMobileStep();
+      return;
+    }
     if (signupEmailStep === "password") {
       returnFromPasswordStep();
       return;
@@ -761,6 +1135,10 @@
     emailContinueBtn?.addEventListener("click", handleSignupPrimaryAction);
     keyboardContinueBtn?.addEventListener("click", handleSignupPrimaryAction);
     emailEditBtn?.addEventListener("click", returnToEmailStep);
+    mobileField?.addEventListener("click", handleMobileFieldInteraction);
+    mobileEditBtn?.addEventListener("click", returnToMobileStep);
+    mobileCodeGrid?.addEventListener("click", handleMobileCodeFieldInteraction);
+    mobileCodePasteBtn?.addEventListener("click", handleMobileCodePaste);
     codeGrid?.addEventListener("click", handleCodeFieldInteraction);
     codePasteBtn?.addEventListener("click", handleCodePaste);
 
@@ -791,6 +1169,15 @@
       e.preventDefault();
       e.stopPropagation();
       clearSignupEmail();
+    });
+
+    mobileClearBtn?.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+    });
+    mobileClearBtn?.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      clearSignupMobile();
     });
 
     signupEmailKeyboard
@@ -826,6 +1213,18 @@
               fillSignupPassword(name);
             }
             showSignupEmailKeyboard();
+            return;
+          }
+          if (signupEmailStep === "mobile") {
+            if (!isMobileFocused()) {
+              focusSignupMobile();
+              showSignupEmailKeyboard();
+              return;
+            }
+            if (mobileInput?.value !== SIGNUP_DUMMY_MOBILE) {
+              fillSignupMobile();
+            }
+            showSignupEmailKeyboard();
           }
         });
       });
@@ -834,23 +1233,76 @@
       ?.querySelectorAll("[data-fake-keyboard-signup-email-digit]")
       .forEach((btn) => {
         btn.addEventListener("click", () => {
-          if (signupEmailStep !== "code") return;
-          if (isCodeComplete()) return;
-          if (!isCodeFocused()) {
-            focusCodeEntry();
-            showSignupEmailKeyboard();
+          if (signupEmailStep === "code") {
+            if (isCodeComplete()) return;
+            if (!isCodeFocused()) {
+              focusCodeEntry();
+              showSignupEmailKeyboard();
+              return;
+            }
+            submitSignupCode();
             return;
           }
-          submitSignupCode();
+          if (signupEmailStep === "mobile-code") {
+            if (isMobileCodeComplete()) return;
+            if (!isMobileCodeFocused()) {
+              focusMobileCodeEntry();
+              showSignupEmailKeyboard();
+              return;
+            }
+            submitSignupMobileCode();
+            return;
+          }
+          if (signupEmailStep === "mobile") {
+            if (!isMobileFocused()) {
+              focusSignupMobile();
+              showSignupEmailKeyboard();
+              return;
+            }
+            if (mobileInput?.value !== SIGNUP_DUMMY_MOBILE) {
+              fillSignupMobile();
+            }
+            showSignupEmailKeyboard();
+          }
         });
       });
 
     signupEmailKeyboard
-      ?.querySelector("[data-fake-keyboard-signup-email-delete]")
-      ?.addEventListener("click", () => {
-        deleteCodeDigit();
-        showSignupEmailKeyboard();
+      ?.querySelectorAll("[data-fake-keyboard-signup-email-delete]")
+      ?.forEach((btn) => {
+        btn.addEventListener("mousedown", (e) => {
+          e.preventDefault();
+        });
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          if (signupEmailStep === "password") {
+            handleSignupPasswordDelete();
+            return;
+          }
+          if (signupEmailStep === "mobile") {
+            clearSignupMobile();
+            return;
+          }
+          if (signupEmailStep === "mobile-code") {
+            deleteMobileCodeDigit();
+            showSignupEmailKeyboard();
+            return;
+          }
+          deleteCodeDigit();
+          showSignupEmailKeyboard();
+        });
       });
+
+    emailPage.querySelectorAll("[data-auth-signup-password-input]").forEach((inputEl) => {
+      inputEl.addEventListener("keydown", (e) => {
+        if (signupEmailStep !== "password" || e.key !== "Backspace") return;
+        e.preventDefault();
+        const name = inputEl.getAttribute("data-auth-signup-password-input");
+        if (name === "primary" || name === "confirm") {
+          handleSignupPasswordDelete(name);
+        }
+      });
+    });
 
     document.addEventListener("pointerdown", (e) => {
       if (!signupEmailMq.matches || !emailPage?.classList.contains("is-open")) return;
@@ -858,10 +1310,14 @@
       if (e.target instanceof Element) {
         if (signupEmailKeyboard.contains(e.target)) return;
         if (e.target.closest("[data-auth-signup-email-field]")) return;
+        if (e.target.closest("[data-auth-signup-mobile-field]")) return;
+        if (e.target.closest("[data-auth-signup-mobile-prefix]")) return;
         if (e.target.closest("[data-auth-signup-password-field]")) return;
         if (e.target.closest("[data-auth-signup-password-visibility]")) return;
         if (e.target.closest("[data-auth-signup-code-grid]")) return;
+        if (e.target.closest("[data-auth-signup-mobile-code-grid]")) return;
         if (e.target.closest("[data-auth-signup-email-edit]")) return;
+        if (e.target.closest("[data-auth-signup-mobile-edit]")) return;
         if (e.target.closest("[data-auth-signup-email-back]")) return;
       }
       dismissSignupEmailKeyboardFromOutside();

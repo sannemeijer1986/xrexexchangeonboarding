@@ -160,8 +160,8 @@
                     ></div>
                     <div class="home-visitor__body">
                         <p class="home-visitor__title">
-                            Just a few steps to<br />
-                            unlock the best of XREX!
+                            Hi, this is XREX!<br />
+                            Trade crypto with confidence. We're right here with you.
                         </p>
                         <button class="home-visitor__cta" type="button" data-home-visitor-cta>
                             Sign up / Log in
@@ -1529,7 +1529,7 @@
                                     <img class="trade-grid-page__hero-illu" src="assets/grid_illustration.png" alt="" width="331" height="259" aria-hidden="true" />
                                 </div>
                                 <footer class="trade-grid-page__footer">
-                                    <button class="trade-grid-page__cta trade-grid-page__cta--primary" type="button" data-visitor-login-cta>Get started</button>
+                                    <button class="trade-grid-page__cta trade-grid-page__cta--primary" type="button" data-visitor-login-cta>Sign up / Log in</button>
                                     <button class="trade-grid-page__cta trade-grid-page__cta--secondary" type="button" data-visitor-login-cta>Virtual Trading</button>
                                 </footer>
                             </div>
@@ -1823,9 +1823,6 @@ Max 100K</span>
                     <div class="auth-signup-email-page__step">
                         <span class="auth-signup-email-page__step-track"></span>
                     </div>
-                    <div class="auth-signup-email-page__step">
-                        <span class="auth-signup-email-page__step-track"></span>
-                    </div>
                 </div>
                 <button class="auth-signup-email-page__icon-btn" type="button" aria-label="Support">
                     <img src="assets/icon_intercom.svg" alt="" />
@@ -1975,7 +1972,7 @@ Max 100K</span>
                                                         data-auth-signup-password-visibility="primary"
                                                         aria-label="Show password"
                                                     >
-                                                        <img src="assets/icon_eye.svg" alt="" width="24" height="24" />
+                                                        <img src="assets/icon_eye_on.svg" alt="" width="24" height="24" />
                                                     </button>
                                                 </div>
                                             </div>
@@ -2055,12 +2052,134 @@ Max 100K</span>
                                                     data-auth-signup-password-visibility="confirm"
                                                     aria-label="Show password"
                                                 >
-                                                    <img src="assets/icon_eye.svg" alt="" width="24" height="24" />
+                                                    <img src="assets/icon_eye_on.svg" alt="" width="24" height="24" />
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="auth-signup-email-page__slide" data-auth-signup-email-slide="mobile">
+                            <div class="auth-signup-email-page__panel" data-auth-signup-email-panel="mobile">
+                                <div class="auth-signup-email-page__copy">
+                                    <p class="auth-signup-email-page__moustache">Sign up · Step 3</p>
+                                    <h2 class="auth-signup-email-page__title">What’s your mobile number?</h2>
+                                    <p class="auth-signup-email-page__desc">We'll send a 6-digit code to confirm it's yours</p>
+                                </div>
+                                <div class="auth-signup-email-page__field" data-auth-signup-mobile-field>
+                                    <div
+                                        class="auth-signup-email-page__input-inner"
+                                        role="presentation"
+                                    >
+                                        <button
+                                            type="button"
+                                            class="auth-signup-email-page__mobile-prefix"
+                                            data-auth-signup-mobile-prefix
+                                            aria-label="Country code +886"
+                                        >
+                                            <img src="assets/icon_taiwan_flag.svg" alt="" width="16" height="16" />
+                                            <span>+886</span>
+                                            <img src="assets/icon_chevron_down_grey.svg" alt="" width="16" height="16" />
+                                        </button>
+                                        <div class="auth-signup-email-page__input-main">
+                                            <input
+                                                class="auth-signup-email-page__input"
+                                                type="tel"
+                                                inputmode="numeric"
+                                                placeholder="Enter your number"
+                                                readonly
+                                                autocomplete="off"
+                                                data-auth-signup-mobile-input
+                                            />
+                                            <span
+                                                class="auth-signup-email-page__cursor"
+                                                data-auth-signup-mobile-cursor
+                                                hidden
+                                                aria-hidden="true"
+                                            ></span>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            class="auth-signup-email-page__clear"
+                                            data-auth-signup-mobile-clear
+                                            hidden
+                                            aria-label="Clear mobile number"
+                                        >
+                                            <img src="assets/icon_clearinput.svg" alt="" width="24" height="24" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="auth-signup-email-page__panel" data-auth-signup-email-panel="mobile-code" hidden>
+                                <div class="auth-signup-email-page__copy auth-signup-email-page__copy--code">
+                                    <p class="auth-signup-email-page__moustache">Sign up · Step 3</p>
+                                    <h2 class="auth-signup-email-page__title">What’s your mobile number?</h2>
+                                    <button type="button" class="auth-signup-email-page__email-edit" data-auth-signup-mobile-edit>
+                                        <span class="auth-signup-email-page__email-display" data-auth-signup-mobile-display>0975561399</span>
+                                        <img class="auth-signup-email-page__email-edit-icon" src="assets/edit_gray.svg" alt="" width="20" height="20" />
+                                    </button>
+                                </div>
+                                <div class="auth-signup-email-page__code-section">
+                                    <p class="auth-signup-email-page__code-prompt">Enter the code we sent you by SMS</p>
+                                    <div class="auth-signup-email-page__code-grid" data-auth-signup-mobile-code-grid role="group" aria-label="SMS verification code">
+                                        <div class="auth-signup-email-page__code-cell is-active" data-auth-signup-mobile-code-cell="0">
+                                            <span class="auth-signup-email-page__code-cell-inner">
+                                                <span class="auth-signup-email-page__code-digit" data-auth-signup-mobile-code-digit></span>
+                                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-mobile-code-cursor aria-hidden="true"></span>
+                                            </span>
+                                        </div>
+                                        <div class="auth-signup-email-page__code-cell" data-auth-signup-mobile-code-cell="1">
+                                            <span class="auth-signup-email-page__code-cell-inner">
+                                                <span class="auth-signup-email-page__code-digit" data-auth-signup-mobile-code-digit></span>
+                                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-mobile-code-cursor hidden aria-hidden="true"></span>
+                                            </span>
+                                        </div>
+                                        <div class="auth-signup-email-page__code-cell" data-auth-signup-mobile-code-cell="2">
+                                            <span class="auth-signup-email-page__code-cell-inner">
+                                                <span class="auth-signup-email-page__code-digit" data-auth-signup-mobile-code-digit></span>
+                                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-mobile-code-cursor hidden aria-hidden="true"></span>
+                                            </span>
+                                        </div>
+                                        <div class="auth-signup-email-page__code-cell" data-auth-signup-mobile-code-cell="3">
+                                            <span class="auth-signup-email-page__code-cell-inner">
+                                                <span class="auth-signup-email-page__code-digit" data-auth-signup-mobile-code-digit></span>
+                                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-mobile-code-cursor hidden aria-hidden="true"></span>
+                                            </span>
+                                        </div>
+                                        <div class="auth-signup-email-page__code-cell" data-auth-signup-mobile-code-cell="4">
+                                            <span class="auth-signup-email-page__code-cell-inner">
+                                                <span class="auth-signup-email-page__code-digit" data-auth-signup-mobile-code-digit></span>
+                                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-mobile-code-cursor hidden aria-hidden="true"></span>
+                                            </span>
+                                        </div>
+                                        <div class="auth-signup-email-page__code-cell" data-auth-signup-mobile-code-cell="5">
+                                            <span class="auth-signup-email-page__code-cell-inner">
+                                                <span class="auth-signup-email-page__code-digit" data-auth-signup-mobile-code-digit></span>
+                                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-mobile-code-cursor hidden aria-hidden="true"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="auth-signup-email-page__code-meta">
+                                        <span class="auth-signup-email-page__code-resend" data-auth-signup-mobile-code-resend>Resend in 0:42</span>
+                                        <button type="button" class="auth-signup-email-page__code-paste" data-auth-signup-mobile-code-paste>
+                                            <img src="assets/copy_blue.svg" alt="" width="16" height="16" />
+                                            Paste
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="auth-signup-email-page__trust">
+                                <div class="auth-signup-email-page__trust-heading">
+                                    <span class="auth-signup-email-page__trust-icon" aria-hidden="true">
+                                        <img src="assets/icon_shield_large.svg" alt="" width="20" height="20" />
+                                    </span>
+                                    <p class="auth-signup-email-page__trust-title">Why we ask</p>
+                                </div>
+                                <p class="auth-signup-email-page__trust-body">Your number keeps your account safer. We'll only use it to protect you, not for marketing.</p>
                             </div>
                         </div>
                     </div>
@@ -3418,8 +3537,23 @@ Max 100K</span>
                 <div class="plan-detail-panel__allocation-section">
                     <div class="plan-detail-panel__alloc-header">
                         <div class="plan-detail-panel__alloc-header-main">
-                            <div class="plan-detail-panel__alloc-header-title-group">
-                                <div class="plan-detail-panel__section-label">Allocation (<span data-plan-detail-alloc-count>1</span>)</div>
+                            <div class="plan-detail-panel__alloc-header-summary">
+                                <div class="plan-detail-panel__alloc-total" data-plan-detail-alloc-subtitle>
+                                    <div class="plan-detail-panel__alloc-total-row">
+                                        <div class="plan-detail-panel__alloc-total-leading">
+                                            <div class="plan-detail-panel__section-label">Allocation (<span data-plan-detail-alloc-count>1</span>)</div>
+                                            <div class="plan-detail-panel__alloc-total-hint-row" data-plan-detail-alloc-total-hint hidden>
+                                                <button type="button" class="plan-detail-panel__alloc-reset" data-alloc-reset hidden>Set equal</button>
+                                            </div>
+                                        </div>
+                                        <div class="plan-detail-panel__alloc-total-value" data-plan-detail-alloc-total-value-wrap hidden aria-live="polite">
+                                            <img class="plan-detail-panel__alloc-total-check" src="assets/icon_check_green.svg" alt="" width="16" height="16" data-plan-detail-alloc-total-check hidden />
+                                            <span class="plan-detail-panel__alloc-total-current" data-plan-detail-alloc-total-current>0%</span>
+                                            <span class="plan-detail-panel__alloc-total-target" data-plan-detail-alloc-total-target hidden> / 100%</span>
+                                        </div>
+                                    </div>
+                                    <div class="plan-detail-panel__alloc-total-error" data-plan-detail-alloc-total-error hidden></div>
+                                </div>
                                 <div class="plan-detail-panel__alloc-header-historic-inline" data-plan-detail-alloc-header-historic data-plan-detail-historic-perf-sheet-trigger>
                                     <div class="plan-detail-panel__alloc-header-historic-label-row" data-plan-detail-alloc-historic-label-row>
                                         <span class="plan-detail-panel__historic-performance-label plan-detail-panel__historic-performance-label--below" data-plan-detail-historic-performance-label>Past 5Y perf.</span>
@@ -3460,23 +3594,6 @@ Max 100K</span>
                         </div>
                     </div>
                     <div class="plan-detail-panel__allocation-list" data-plan-detail-allocation></div>
-                    <!-- Historic performance row (Figma: 5Y historical performance); tone wrapper moves into single alloc-item when one asset -->
-                    <div class="plan-detail-panel__historic-performance-row">
-                        <div class="plan-detail-panel__alloc-total" data-plan-detail-alloc-subtitle hidden>
-                            <div class="plan-detail-panel__alloc-total-row">
-                                <div class="plan-detail-panel__alloc-total-label">Remaining allocation (of 100%)</div>
-                                <div class="plan-detail-panel__alloc-total-value" aria-live="polite">
-                                    <img class="plan-detail-panel__alloc-total-check" src="assets/icon_check_green.svg" alt="" width="16" height="16" data-plan-detail-alloc-total-check hidden />
-                                    <span class="plan-detail-panel__alloc-total-current" data-plan-detail-alloc-total-current>0%</span>
-                                    <span class="plan-detail-panel__alloc-total-target" data-plan-detail-alloc-total-target> / 100%</span>
-                                </div>
-                            </div>
-                            <div class="plan-detail-panel__alloc-total-hint-row">
-                                <button type="button" class="plan-detail-panel__alloc-reset" data-alloc-reset hidden>Set equal</button>
-                                <div class="plan-detail-panel__alloc-total-error" data-plan-detail-alloc-total-error hidden></div>
-                            </div>
-                        </div>
-                    </div>
                     <!-- Shown when plan has assets (empty state uses the wrap inside alloc-empty) -->
                     <div class="plan-detail-panel__add-assets-wrap plan-detail-panel__add-assets-wrap--below-list">
                         <button class="plan-detail-panel__add-assets" type="button">Add assets</button>
@@ -5813,7 +5930,7 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
                             <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>N</button>
                             <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>M</button>
                         </div>
-                        <button type="button" class="fake-keyboard__alpha-key fake-keyboard__alpha-key--utility fake-keyboard__alpha-key--delete" aria-label="Delete">⌫</button>
+                        <button type="button" class="fake-keyboard__alpha-key fake-keyboard__alpha-key--utility fake-keyboard__alpha-key--delete" data-fake-keyboard-signup-email-delete aria-label="Delete">⌫</button>
                     </div>
                     <div class="fake-keyboard__alpha-row fake-keyboard__alpha-row--bottom">
                         <button type="button" class="fake-keyboard__alpha-key fake-keyboard__alpha-key--utility fake-keyboard__alpha-key--nums">123</button>

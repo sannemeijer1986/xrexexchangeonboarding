@@ -250,7 +250,7 @@
                                                         data-auth-signup-password-visibility="primary"
                                                         aria-label="Show password"
                                                     >
-                                                        <img src="../assets/icon_eye.svg" alt="" width="24" height="24" />
+                                                        <img src="../assets/icon_eye_on.svg" alt="" width="24" height="24" />
                                                     </button>
                                                 </div>
                                             </div>
@@ -330,12 +330,134 @@
                                                     data-auth-signup-password-visibility="confirm"
                                                     aria-label="Show password"
                                                 >
-                                                    <img src="../assets/icon_eye.svg" alt="" width="24" height="24" />
+                                                    <img src="../assets/icon_eye_on.svg" alt="" width="24" height="24" />
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="auth-signup-email-page__slide" data-auth-signup-email-slide="mobile">
+                            <div class="auth-signup-email-page__panel" data-auth-signup-email-panel="mobile">
+                                <div class="auth-signup-email-page__copy">
+                                    <p class="auth-signup-email-page__moustache">Sign up · Step 3</p>
+                                    <h2 class="auth-signup-email-page__title">What’s your mobile number?</h2>
+                                    <p class="auth-signup-email-page__desc">We'll send a 6-digit code to confirm it's yours</p>
+                                </div>
+                                <div class="auth-signup-email-page__field" data-auth-signup-mobile-field>
+                                    <div
+                                        class="auth-signup-email-page__input-inner"
+                                        role="presentation"
+                                    >
+                                        <button
+                                            type="button"
+                                            class="auth-signup-email-page__mobile-prefix"
+                                            data-auth-signup-mobile-prefix
+                                            aria-label="Country code +886"
+                                        >
+                                            <img src="../assets/icon_taiwan_flag.svg" alt="" width="16" height="16" />
+                                            <span>+886</span>
+                                            <img src="../assets/icon_chevron_down_grey.svg" alt="" width="16" height="16" />
+                                        </button>
+                                        <div class="auth-signup-email-page__input-main">
+                                            <input
+                                                class="auth-signup-email-page__input"
+                                                type="tel"
+                                                inputmode="numeric"
+                                                placeholder="Enter your number"
+                                                readonly
+                                                autocomplete="off"
+                                                data-auth-signup-mobile-input
+                                            />
+                                            <span
+                                                class="auth-signup-email-page__cursor"
+                                                data-auth-signup-mobile-cursor
+                                                hidden
+                                                aria-hidden="true"
+                                            ></span>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            class="auth-signup-email-page__clear"
+                                            data-auth-signup-mobile-clear
+                                            hidden
+                                            aria-label="Clear mobile number"
+                                        >
+                                            <img src="../assets/icon_clearinput.svg" alt="" width="24" height="24" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="auth-signup-email-page__panel" data-auth-signup-email-panel="mobile-code" hidden>
+                                <div class="auth-signup-email-page__copy auth-signup-email-page__copy--code">
+                                    <p class="auth-signup-email-page__moustache">Sign up · Step 3</p>
+                                    <h2 class="auth-signup-email-page__title">What’s your mobile number?</h2>
+                                    <button type="button" class="auth-signup-email-page__email-edit" data-auth-signup-mobile-edit>
+                                        <span class="auth-signup-email-page__email-display" data-auth-signup-mobile-display>0975561399</span>
+                                        <img class="auth-signup-email-page__email-edit-icon" src="../assets/edit_gray.svg" alt="" width="20" height="20" />
+                                    </button>
+                                </div>
+                                <div class="auth-signup-email-page__code-section">
+                                    <p class="auth-signup-email-page__code-prompt">Enter the code we sent you by SMS</p>
+                                    <div class="auth-signup-email-page__code-grid" data-auth-signup-mobile-code-grid role="group" aria-label="SMS verification code">
+                                        <div class="auth-signup-email-page__code-cell is-active" data-auth-signup-mobile-code-cell="0">
+                                            <span class="auth-signup-email-page__code-cell-inner">
+                                                <span class="auth-signup-email-page__code-digit" data-auth-signup-mobile-code-digit></span>
+                                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-mobile-code-cursor aria-hidden="true"></span>
+                                            </span>
+                                        </div>
+                                        <div class="auth-signup-email-page__code-cell" data-auth-signup-mobile-code-cell="1">
+                                            <span class="auth-signup-email-page__code-cell-inner">
+                                                <span class="auth-signup-email-page__code-digit" data-auth-signup-mobile-code-digit></span>
+                                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-mobile-code-cursor hidden aria-hidden="true"></span>
+                                            </span>
+                                        </div>
+                                        <div class="auth-signup-email-page__code-cell" data-auth-signup-mobile-code-cell="2">
+                                            <span class="auth-signup-email-page__code-cell-inner">
+                                                <span class="auth-signup-email-page__code-digit" data-auth-signup-mobile-code-digit></span>
+                                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-mobile-code-cursor hidden aria-hidden="true"></span>
+                                            </span>
+                                        </div>
+                                        <div class="auth-signup-email-page__code-cell" data-auth-signup-mobile-code-cell="3">
+                                            <span class="auth-signup-email-page__code-cell-inner">
+                                                <span class="auth-signup-email-page__code-digit" data-auth-signup-mobile-code-digit></span>
+                                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-mobile-code-cursor hidden aria-hidden="true"></span>
+                                            </span>
+                                        </div>
+                                        <div class="auth-signup-email-page__code-cell" data-auth-signup-mobile-code-cell="4">
+                                            <span class="auth-signup-email-page__code-cell-inner">
+                                                <span class="auth-signup-email-page__code-digit" data-auth-signup-mobile-code-digit></span>
+                                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-mobile-code-cursor hidden aria-hidden="true"></span>
+                                            </span>
+                                        </div>
+                                        <div class="auth-signup-email-page__code-cell" data-auth-signup-mobile-code-cell="5">
+                                            <span class="auth-signup-email-page__code-cell-inner">
+                                                <span class="auth-signup-email-page__code-digit" data-auth-signup-mobile-code-digit></span>
+                                                <span class="auth-signup-email-page__code-cursor" data-auth-signup-mobile-code-cursor hidden aria-hidden="true"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="auth-signup-email-page__code-meta">
+                                        <span class="auth-signup-email-page__code-resend" data-auth-signup-mobile-code-resend>Resend in 0:42</span>
+                                        <button type="button" class="auth-signup-email-page__code-paste" data-auth-signup-mobile-code-paste>
+                                            <img src="../assets/copy_blue.svg" alt="" width="16" height="16" />
+                                            Paste
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="auth-signup-email-page__trust">
+                                <div class="auth-signup-email-page__trust-heading">
+                                    <span class="auth-signup-email-page__trust-icon" aria-hidden="true">
+                                        <img src="../assets/icon_shield_large.svg" alt="" width="20" height="20" />
+                                    </span>
+                                    <p class="auth-signup-email-page__trust-title">Why we ask</p>
+                                </div>
+                                <p class="auth-signup-email-page__trust-body">Your number keeps your account safer. We'll only use it to protect you, not for marketing.</p>
                             </div>
                         </div>
                     </div>
@@ -422,7 +544,7 @@
                             <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>N</button>
                             <button type="button" class="fake-keyboard__alpha-key" data-fake-keyboard-signup-email-key>M</button>
                         </div>
-                        <button type="button" class="fake-keyboard__alpha-key fake-keyboard__alpha-key--utility fake-keyboard__alpha-key--delete" aria-label="Delete">⌫</button>
+                        <button type="button" class="fake-keyboard__alpha-key fake-keyboard__alpha-key--utility fake-keyboard__alpha-key--delete" data-fake-keyboard-signup-email-delete aria-label="Delete">⌫</button>
                     </div>
                     <div class="fake-keyboard__alpha-row fake-keyboard__alpha-row--bottom">
                         <button type="button" class="fake-keyboard__alpha-key fake-keyboard__alpha-key--utility fake-keyboard__alpha-key--nums">123</button>
