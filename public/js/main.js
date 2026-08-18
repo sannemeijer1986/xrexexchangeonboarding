@@ -633,6 +633,9 @@
         window.__hybridSignup.syncActionUi?.();
         return;
       }
+      if (emailContinueBtn && !isVerificationCodeStep()) {
+        emailContinueBtn.hidden = false;
+      }
       syncSignupActionLabels();
       if (signupEmailStep === "email") {
         const enabled = emailInput?.value.trim() === SIGNUP_DUMMY_EMAIL;
@@ -769,6 +772,7 @@
       if (mobileCodePanel) mobileCodePanel.hidden = true;
       syncStepperUi();
       syncKeyboardStickyUi();
+      if (emailContinueBtn) emailContinueBtn.hidden = false;
       syncActionButtons();
     };
 

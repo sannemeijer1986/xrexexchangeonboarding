@@ -13,6 +13,10 @@
   const SIGNUP_EMAIL_KEYBOARD_DELAY_MS = 350;
   const SIGNUP_EMAIL_CHAR_DELAY_MS = 20;
   const SIGNUP_CODE_LOADER_VISIBLE_MS = 1500;
+  const HYBRID_EMAIL_DESC_DEFAULT = "We'll send a code to verify it's yours";
+  const HYBRID_EMAIL_DESC_SENT = "Code should arrive shortly in your email";
+  const HYBRID_MOBILE_DESC_DEFAULT = "We'll send a code to confirm it's yours";
+  const HYBRID_MOBILE_DESC_SENT = "Code should arrive shortly by SMS";
 
   const getMode = () => {
     const sel = document.querySelector("[data-prototype-merge-mail-phone]");
@@ -45,8 +49,8 @@
   const hybridEmailClear = emailPage?.querySelector("[data-auth-signup-hybrid-email-clear]");
   const hybridEmailSubmitted = emailPage?.querySelector("[data-auth-signup-hybrid-email-submitted]");
   const hybridEmailDisplay = emailPage?.querySelector("[data-auth-signup-hybrid-email-display]");
+  const hybridEmailDesc = emailPage?.querySelector("[data-auth-signup-hybrid-email-desc]");
   const hybridCodeBlock = emailPage?.querySelector("[data-auth-signup-hybrid-code-block]");
-  const hybridCodeHeading = emailPage?.querySelector("[data-auth-signup-hybrid-code-heading]");
   const hybridCodePrompt = emailPage?.querySelector("[data-auth-signup-hybrid-code-prompt]");
   const hybridCodeGrid = emailPage?.querySelector("[data-auth-signup-hybrid-code-grid]");
   const hybridCodeMeta = emailPage?.querySelector("[data-auth-signup-hybrid-code-meta]");
@@ -64,11 +68,9 @@
   const hybridMobileDisplayText = emailPage?.querySelector(
     "[data-auth-signup-hybrid-mobile-display-text]",
   );
+  const hybridMobileDesc = emailPage?.querySelector("[data-auth-signup-hybrid-mobile-desc]");
   const hybridMobileCodeBlock = emailPage?.querySelector(
     "[data-auth-signup-hybrid-mobile-code-block]",
-  );
-  const hybridMobileCodeHeading = emailPage?.querySelector(
-    "[data-auth-signup-hybrid-mobile-code-heading]",
   );
   const hybridMobileCodePrompt = emailPage?.querySelector(
     "[data-auth-signup-hybrid-mobile-code-prompt]",
@@ -147,8 +149,14 @@
   };
 
   const syncHybridActionUi = () => {
-    if (!isHybrid()) return;
-    if (!isHybridManagedStep()) return;
+    if (!isHybrid()) {
+      if (footerBtn) footerBtn.hidden = false;
+      return;
+    }
+    if (!isHybridManagedStep()) {
+      if (footerBtn) footerBtn.hidden = false;
+      return;
+    }
     syncChromeLabels();
     if (phase === "code" || phase === "mobile-code") {
       if (footerBtn) footerBtn.hidden = true;
@@ -366,18 +374,40 @@
     }
   };
 
+  const syncHybridEmailDesc = () => {
+    if (!hybridEmailDesc) return;
+    const sent =
+      phase === "code" || hybridEmailField?.classList.contains("is-submitted");
+    hybridEmailDesc.textContent = sent ? HYBRID_EMAIL_DESC_SENT : HYBRID_EMAIL_DESC_DEFAULT;
+  };
+
   const syncHybridCodeChrome = () => {
     const locked = hybridCodeBlock?.classList.contains("is-locked") ?? true;
-    if (hybridCodeHeading) hybridCodeHeading.hidden = !locked;
-    if (hybridCodePrompt) hybridCodePrompt.hidden = locked;
-    if (hybridCodeMeta) hybridCodeMeta.hidden = locked;
+    if (hybridCodeBlock) hybridCodeBlock.hidden = locked;
+    syncHybridEmailDesc();
+  };
+
+  const syncHybridMobileDesc = () => {
+    if (!hybridMobileDesc) return;
+    const sent =
+      phase === "mobile-code" || hybridMobileField?.classList.contains("is-submitted");
+    hybridMobileDesc.textContent = sent ? HYBRID_MOBILE_DESC_SENT : HYBRID_MOBILE_DESC_DEFAULT;
   };
 
   const syncHybridMobileCodeChrome = () => {
     const locked = hybridMobileCodeBlock?.classList.contains("is-locked") ?? true;
-    if (hybridMobileCodeHeading) hybridMobileCodeHeading.hidden = !locked;
-    if (hybridMobileCodePrompt) hybridMobileCodePrompt.hidden = locked;
-    if (hybridMobileCodeMeta) hybridMobileCodeMeta.hidden = locked;
+    if (hybridMobileCodeBlock) hybridMobileCodeBlock.hidden = locked;
+    syncHybridMobileDesc();
+  };
+
+  const lockHybridMobileCode = () => {
+    hybridMobileCodeBlock?.classList.add("is-locked");
+    hybridMobileCodeGrid?.classList.add("auth-signup-email-page__code-grid--hybrid");
+    syncHybridMobileCodeChrome();
+    mobileCodeDigits = Array.from({ length: SIGNUP_CODE_LENGTH }, () => "");
+    mobileCodeActiveIndex = 0;
+    hybridMobileCodeGrid?.classList.remove("is-focused", "is-filled");
+    syncHybridMobileCodeUi();
   };
 
   const unlockHybridCode = () => {
@@ -555,13 +585,7 @@
     if (!hybridMobileField) return;
     hybridMobileField.classList.remove("is-submitted");
     syncHybridMobilePresentation();
-    hybridMobileCodeBlock?.classList.add("is-locked");
-    hybridMobileCodeGrid?.classList.add("auth-signup-email-page__code-grid--hybrid");
-    syncHybridMobileCodeChrome();
-    mobileCodeDigits = Array.from({ length: SIGNUP_CODE_LENGTH }, () => "");
-    mobileCodeActiveIndex = 0;
-    hybridMobileCodeGrid?.classList.remove("is-focused", "is-filled");
-    syncHybridMobileCodeUi();
+    lockHybridMobileCode();
     phase = "mobile";
     footerDismissedAfterContinue = false;
     emailPage?.classList.remove("is-hybrid-mobile-code-active", "is-mobile-code-step");
@@ -591,7 +615,7 @@
   };
 
   const focusHybridMobileCodeEntry = (index = 0) => {
-    if (phase !== "mobile-code") return;
+    if (phase !== "mobile-code" || hybridMobileCodeBlock?.classList.contains("is-locked")) return;
     hybridMobileField?.classList.remove("is-focused");
     hybridMobileCursor?.setAttribute("hidden", "");
     mobileCodeActiveIndex = Math.max(0, Math.min(index, SIGNUP_CODE_LENGTH - 1));
@@ -605,7 +629,7 @@
   };
 
   const handleHybridMobileCodeInteraction = (cellIndex = null) => {
-    if (!isHybrid() || phase !== "mobile-code") return;
+    if (!isHybrid() || phase !== "mobile-code" || hybridMobileCodeBlock?.classList.contains("is-locked")) return;
     const complete = mobileCodeDigits.every((d) => d !== "");
     if (complete) {
       hybridMobileCodeGrid?.classList.remove("is-focused");
@@ -670,15 +694,9 @@
     syncHybridMobilePresentation();
     hybridMobileCursor?.setAttribute("hidden", "");
     syncHybridMobileClear();
-    hybridMobileCodeBlock?.classList.add("is-locked");
-    hybridMobileCodeGrid?.classList.add("auth-signup-email-page__code-grid--hybrid");
-    syncHybridMobileCodeChrome();
-    mobileCodeDigits = Array.from({ length: SIGNUP_CODE_LENGTH }, () => "");
-    mobileCodeActiveIndex = 0;
-    hybridMobileCodeGrid?.classList.remove("is-focused", "is-filled");
+    lockHybridMobileCode();
     emailPage?.classList.remove("is-hybrid-mobile-code-active", "is-mobile-code-step");
     syncSignupKeyboardMode();
-    syncHybridMobileCodeUi();
     syncHybridActionUi();
   };
 
@@ -983,8 +1001,15 @@
         return true;
       }
       if (phase === "mobile-code") {
+        lockHybridMobileCode();
         phase = "mobile";
-        resetHybridMobile();
+        emailPage?.classList.remove("is-hybrid-mobile-code-active", "is-mobile-code-step");
+        hybridMobileField?.classList.remove("is-submitted");
+        syncHybridMobilePresentation();
+        if (hybridMobileInput?.value.trim()) {
+          hybridMobileField?.classList.add("is-filled");
+          syncHybridMobileClear();
+        }
         syncSignupKeyboardMode();
         syncHybridActionUi();
         focusHybridMobile();

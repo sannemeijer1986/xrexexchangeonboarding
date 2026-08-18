@@ -1791,16 +1791,15 @@ Max 100K</span>
                         <button class="auth-signup__btn auth-signup__btn--primary" type="button" data-auth-signup-continue>
                             Sign up
                         </button>
-                        <button class="auth-signup__btn auth-signup__btn--secondary" type="button" data-auth-signup-corporate>
-                            Corporate account
+                        <button class="auth-signup__btn auth-signup__btn--secondary" type="button" data-auth-signup-login>
+                            Log in
                         </button>
                     </div>
 
-                    <div class="auth-signup__login-prompt">
-                        <span class="auth-signup__login-text">Have an account?</span>
-                        <button class="auth-signup__login-link" type="button" data-auth-signup-login>
-                            Log in
-                            <img class="auth-signup__login-chevron" src="assets/icon_chevron_right_blue.svg" alt="" width="16" height="16" />
+                    <div class="auth-signup__business-prompt">
+                        <p class="auth-signup__business-text">Signing up as a business?</p>
+                        <button class="auth-signup__business-link" type="button" data-auth-signup-corporate>
+                            Open Corporate account
                         </button>
                     </div>
                 </div>
@@ -1946,15 +1945,9 @@ Max 100K</span>
                             <div class="auth-signup-email-page__copy auth-signup-email-page__copy--hybrid">
                                 <p class="auth-signup-email-page__moustache">Sign up · Step 1</p>
                                 <h2 class="auth-signup-email-page__title">What’s your email?</h2>
+                                <p class="auth-signup-email-page__desc" data-auth-signup-hybrid-email-desc>We'll send a code to verify it's yours</p>
                             </div>
-                            <div class="auth-signup-email-page__hybrid-step-group">
-                                <div class="auth-signup-email-page__hybrid-step-label is-active">
-                                    <span class="auth-signup-email-page__hybrid-step-badge" aria-hidden="true">
-                                        <span class="auth-signup-email-page__hybrid-step-number">1</span>
-                                    </span>
-                                    <span class="auth-signup-email-page__hybrid-step-text">Email</span>
-                                </div>
-                                <div class="auth-signup-email-page__field" data-auth-signup-hybrid-email-field>
+                            <div class="auth-signup-email-page__field" data-auth-signup-hybrid-email-field>
                                 <div class="auth-signup-email-page__input-inner" data-auth-signup-hybrid-email-editor data-lpignore="true" data-1p-ignore data-bwignore data-dashlane-ignore>
                                     <div class="auth-signup-email-page__input-main">
                                         <span class="auth-signup-email-page__field-placeholder" data-auth-signup-hybrid-email-placeholder>Enter your email</span>
@@ -1965,39 +1958,24 @@ Max 100K</span>
                                         <img src="assets/icon_clearinput.svg" alt="" width="24" height="24" />
                                     </button>
                                 </div>
-                                <button type="button" class="auth-signup-email-page__input-inner auth-signup-email-page__input-inner--submitted" data-auth-signup-hybrid-email-submitted hidden aria-label="Edit email">
-                                    <img class="auth-signup-email-page__field-submitted-check" src="assets/icon_check_green_s.svg" alt="" width="24" height="24" aria-hidden="true" />
+                                <button type="button" class="auth-signup-email-page__input-inner auth-signup-email-page__input-inner--submitted auth-signup-email-page__input-inner--hybrid-submitted" data-auth-signup-hybrid-email-submitted hidden aria-label="Edit email">
+                                    <img class="auth-signup-email-page__field-submitted-check" src="assets/icon_check_green_s.svg" alt="" width="20" height="20" aria-hidden="true" />
                                     <span class="auth-signup-email-page__field-submitted-value" data-auth-signup-hybrid-email-display>mail@sanne.com</span>
                                     <img class="auth-signup-email-page__field-submitted-edit" src="assets/icon_edit_white.svg" alt="" width="20" height="20" aria-hidden="true" />
                                 </button>
                             </div>
-                            </div>
                         </div>
-                        <div class="auth-signup-email-page__hybrid-code-block is-locked" data-auth-signup-hybrid-code-block>
-                            <div class="auth-signup-email-page__hybrid-step-label" data-auth-signup-hybrid-code-heading>
-                                <span class="auth-signup-email-page__hybrid-step-badge" aria-hidden="true">
-                                    <span class="auth-signup-email-page__hybrid-step-number">2</span>
-                                </span>
-                                <span class="auth-signup-email-page__hybrid-step-text">
-                                    Verification code
-                                    <img src="assets/icon_lock_placeholder.svg" alt="" width="20" height="20" aria-hidden="true" />
-                                </span>
-                            </div>
-                            <div class="auth-signup-email-page__hybrid-step-label is-active" data-auth-signup-hybrid-code-prompt hidden>
-                                <span class="auth-signup-email-page__hybrid-step-badge" aria-hidden="true">
-                                    <span class="auth-signup-email-page__hybrid-step-number">2</span>
-                                </span>
-                                <span class="auth-signup-email-page__hybrid-step-text">Enter the code we’ve emailed you</span>
-                            </div>
+                        <div class="auth-signup-email-page__hybrid-code-block is-locked" data-auth-signup-hybrid-code-block hidden>
+                            <p class="auth-signup-email-page__code-prompt auth-signup-email-page__hybrid-code-prompt" data-auth-signup-hybrid-code-prompt>Enter the code we’ve emailed you</p>
                             <div class="auth-signup-email-page__code-grid auth-signup-email-page__code-grid--hybrid" data-auth-signup-hybrid-code-grid role="group" aria-label="Verification code">
-                                <div class="auth-signup-email-page__code-cell" data-auth-signup-hybrid-code-cell="0"><span class="auth-signup-email-page__code-cell-inner"><span class="auth-signup-email-page__code-digit" data-auth-signup-hybrid-code-digit></span><span class="auth-signup-email-page__code-cursor" data-auth-signup-hybrid-code-cursor aria-hidden="true"></span></span></div>
+                                <div class="auth-signup-email-page__code-cell" data-auth-signup-hybrid-code-cell="0"><span class="auth-signup-email-page__code-cell-inner"><span class="auth-signup-email-page__code-digit" data-auth-signup-hybrid-code-digit></span><span class="auth-signup-email-page__code-cursor" data-auth-signup-hybrid-code-cursor hidden aria-hidden="true"></span></span></div>
                                 <div class="auth-signup-email-page__code-cell" data-auth-signup-hybrid-code-cell="1"><span class="auth-signup-email-page__code-cell-inner"><span class="auth-signup-email-page__code-digit" data-auth-signup-hybrid-code-digit></span><span class="auth-signup-email-page__code-cursor" data-auth-signup-hybrid-code-cursor hidden aria-hidden="true"></span></span></div>
                                 <div class="auth-signup-email-page__code-cell" data-auth-signup-hybrid-code-cell="2"><span class="auth-signup-email-page__code-cell-inner"><span class="auth-signup-email-page__code-digit" data-auth-signup-hybrid-code-digit></span><span class="auth-signup-email-page__code-cursor" data-auth-signup-hybrid-code-cursor hidden aria-hidden="true"></span></span></div>
                                 <div class="auth-signup-email-page__code-cell" data-auth-signup-hybrid-code-cell="3"><span class="auth-signup-email-page__code-cell-inner"><span class="auth-signup-email-page__code-digit" data-auth-signup-hybrid-code-digit></span><span class="auth-signup-email-page__code-cursor" data-auth-signup-hybrid-code-cursor hidden aria-hidden="true"></span></span></div>
                                 <div class="auth-signup-email-page__code-cell" data-auth-signup-hybrid-code-cell="4"><span class="auth-signup-email-page__code-cell-inner"><span class="auth-signup-email-page__code-digit" data-auth-signup-hybrid-code-digit></span><span class="auth-signup-email-page__code-cursor" data-auth-signup-hybrid-code-cursor hidden aria-hidden="true"></span></span></div>
                                 <div class="auth-signup-email-page__code-cell" data-auth-signup-hybrid-code-cell="5"><span class="auth-signup-email-page__code-cell-inner"><span class="auth-signup-email-page__code-digit" data-auth-signup-hybrid-code-digit></span><span class="auth-signup-email-page__code-cursor" data-auth-signup-hybrid-code-cursor hidden aria-hidden="true"></span></span></div>
                             </div>
-                            <div class="auth-signup-email-page__code-meta" data-auth-signup-hybrid-code-meta hidden>
+                            <div class="auth-signup-email-page__code-meta" data-auth-signup-hybrid-code-meta>
                                 <div class="auth-signup-email-page__code-resend" data-auth-signup-hybrid-code-resend data-signup-resend>
                                     <span class="auth-signup-email-page__code-resend-countdown" data-signup-resend-countdown>Resend in 0:42</span>
                                     <button type="button" class="auth-signup-email-page__code-resend-btn" data-signup-resend-action hidden>Resend code</button>
@@ -2259,15 +2237,9 @@ Max 100K</span>
                                         <div class="auth-signup-email-page__copy auth-signup-email-page__copy--hybrid">
                                             <p class="auth-signup-email-page__moustache">Sign up · Step 2</p>
                                             <h2 class="auth-signup-email-page__title">What’s your phone number?</h2>
+                                            <p class="auth-signup-email-page__desc" data-auth-signup-hybrid-mobile-desc>We'll send a code to confirm it's yours</p>
                                         </div>
-                                        <div class="auth-signup-email-page__hybrid-step-group">
-                                            <div class="auth-signup-email-page__hybrid-step-label is-active">
-                                                <span class="auth-signup-email-page__hybrid-step-badge" aria-hidden="true">
-                                                    <span class="auth-signup-email-page__hybrid-step-number">1</span>
-                                                </span>
-                                                <span class="auth-signup-email-page__hybrid-step-text">Mobile</span>
-                                            </div>
-                                            <div class="auth-signup-email-page__field" data-auth-signup-hybrid-mobile-field>
+                                        <div class="auth-signup-email-page__field" data-auth-signup-hybrid-mobile-field>
                                             <div class="auth-signup-email-page__input-inner" data-auth-signup-hybrid-mobile-editor role="presentation">
                                                 <button type="button" class="auth-signup-email-page__mobile-prefix" data-auth-signup-hybrid-mobile-prefix aria-label="Country code +886">
                                                     <img src="assets/icon_taiwan_flag.svg" alt="" width="16" height="16" />
@@ -2283,8 +2255,8 @@ Max 100K</span>
                                                     <img src="assets/icon_clearinput.svg" alt="" width="24" height="24" />
                                                 </button>
                                             </div>
-                                            <button type="button" class="auth-signup-email-page__input-inner auth-signup-email-page__input-inner--submitted" data-auth-signup-hybrid-mobile-submitted hidden aria-label="Edit mobile number">
-                                                <img class="auth-signup-email-page__field-submitted-check" src="assets/icon_check_green_s.svg" alt="" width="24" height="24" aria-hidden="true" />
+                                            <button type="button" class="auth-signup-email-page__input-inner auth-signup-email-page__input-inner--submitted auth-signup-email-page__input-inner--hybrid-submitted" data-auth-signup-hybrid-mobile-submitted hidden aria-label="Edit mobile number">
+                                                <img class="auth-signup-email-page__field-submitted-check" src="assets/icon_check_green_s.svg" alt="" width="20" height="20" aria-hidden="true" />
                                                 <span class="auth-signup-email-page__field-submitted-value auth-signup-email-page__field-submitted-value--mobile" data-auth-signup-hybrid-mobile-display>
                                                     <img class="auth-signup-email-page__field-submitted-flag" src="assets/icon_taiwan_flag.svg" alt="" width="16" height="16" aria-hidden="true" />
                                                     <span data-auth-signup-hybrid-mobile-display-text>+886 0975561399</span>
@@ -2292,24 +2264,9 @@ Max 100K</span>
                                                 <img class="auth-signup-email-page__field-submitted-edit" src="assets/icon_edit_white.svg" alt="" width="20" height="20" aria-hidden="true" />
                                             </button>
                                         </div>
-                                        </div>
                                     </div>
-                                    <div class="auth-signup-email-page__hybrid-code-block is-locked" data-auth-signup-hybrid-mobile-code-block>
-                                        <div class="auth-signup-email-page__hybrid-step-label" data-auth-signup-hybrid-mobile-code-heading>
-                                            <span class="auth-signup-email-page__hybrid-step-badge" aria-hidden="true">
-                                                <span class="auth-signup-email-page__hybrid-step-number">2</span>
-                                            </span>
-                                            <span class="auth-signup-email-page__hybrid-step-text">
-                                                Verification code
-                                                <img src="assets/icon_lock_placeholder.svg" alt="" width="20" height="20" aria-hidden="true" />
-                                            </span>
-                                        </div>
-                                        <div class="auth-signup-email-page__hybrid-step-label is-active" data-auth-signup-hybrid-mobile-code-prompt hidden>
-                                            <span class="auth-signup-email-page__hybrid-step-badge" aria-hidden="true">
-                                                <span class="auth-signup-email-page__hybrid-step-number">2</span>
-                                            </span>
-                                            <span class="auth-signup-email-page__hybrid-step-text">Enter the code we sent you by SMS</span>
-                                        </div>
+                                    <div class="auth-signup-email-page__hybrid-code-block is-locked" data-auth-signup-hybrid-mobile-code-block hidden>
+                                        <p class="auth-signup-email-page__code-prompt auth-signup-email-page__hybrid-code-prompt" data-auth-signup-hybrid-mobile-code-prompt>Enter the code we sent you by SMS</p>
                                         <div class="auth-signup-email-page__code-grid auth-signup-email-page__code-grid--hybrid" data-auth-signup-hybrid-mobile-code-grid role="group" aria-label="SMS verification code">
                                             <div class="auth-signup-email-page__code-cell" data-auth-signup-hybrid-mobile-code-cell="0"><span class="auth-signup-email-page__code-cell-inner"><span class="auth-signup-email-page__code-digit" data-auth-signup-hybrid-mobile-code-digit></span><span class="auth-signup-email-page__code-cursor" data-auth-signup-hybrid-mobile-code-cursor hidden aria-hidden="true"></span></span></div>
                                             <div class="auth-signup-email-page__code-cell" data-auth-signup-hybrid-mobile-code-cell="1"><span class="auth-signup-email-page__code-cell-inner"><span class="auth-signup-email-page__code-digit" data-auth-signup-hybrid-mobile-code-digit></span><span class="auth-signup-email-page__code-cursor" data-auth-signup-hybrid-mobile-code-cursor hidden aria-hidden="true"></span></span></div>
@@ -2318,7 +2275,7 @@ Max 100K</span>
                                             <div class="auth-signup-email-page__code-cell" data-auth-signup-hybrid-mobile-code-cell="4"><span class="auth-signup-email-page__code-cell-inner"><span class="auth-signup-email-page__code-digit" data-auth-signup-hybrid-mobile-code-digit></span><span class="auth-signup-email-page__code-cursor" data-auth-signup-hybrid-mobile-code-cursor hidden aria-hidden="true"></span></span></div>
                                             <div class="auth-signup-email-page__code-cell" data-auth-signup-hybrid-mobile-code-cell="5"><span class="auth-signup-email-page__code-cell-inner"><span class="auth-signup-email-page__code-digit" data-auth-signup-hybrid-mobile-code-digit></span><span class="auth-signup-email-page__code-cursor" data-auth-signup-hybrid-mobile-code-cursor hidden aria-hidden="true"></span></span></div>
                                         </div>
-                                        <div class="auth-signup-email-page__code-meta" data-auth-signup-hybrid-mobile-code-meta hidden>
+                                        <div class="auth-signup-email-page__code-meta" data-auth-signup-hybrid-mobile-code-meta>
                                             <div class="auth-signup-email-page__code-resend" data-auth-signup-hybrid-mobile-code-resend data-signup-resend>
                                                 <span class="auth-signup-email-page__code-resend-countdown" data-signup-resend-countdown>Resend in 0:42</span>
                                                 <button type="button" class="auth-signup-email-page__code-resend-btn" data-signup-resend-action hidden>Resend code</button>
@@ -6259,7 +6216,7 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
                     </select>
                 </div>
             </div>
-            <div class="build-badge__section-row" hidden>
+            <div class="build-badge__section-row">
                 <div class="build-badge__section-title">Merge mail/phone</div>
                 <div class="build-badge__checkbox-group">
                     <select class="build-badge__select" id="prototype-merge-mail-phone" data-prototype-merge-mail-phone

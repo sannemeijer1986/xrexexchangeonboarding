@@ -3172,7 +3172,7 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 0 16px 24px;
+  padding: 24px 16px 8px 16px;
   flex-shrink: 0;
 }
 
@@ -3265,26 +3265,25 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   width: 100%;
 }
 
-.auth-signup__login-prompt {
+.auth-signup__business-prompt {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 4px;
   width: 100%;
 }
 
-.auth-signup__login-text {
+.auth-signup__business-text {
+  margin: 0 !important;
   font-size: 16px;
   font-weight: 600;
   line-height: normal;
   color: #ffffff;
-  white-space: nowrap;
+  text-align: center;
 }
 
-.auth-signup__login-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
+.auth-signup__business-link {
   margin: 0;
   padding: 0;
   border: 0;
@@ -3295,14 +3294,12 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   line-height: normal;
   color: #3f78ff;
   cursor: pointer;
-  white-space: nowrap;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
 }
-
-.auth-signup__login-chevron {
-  flex-shrink: 0;
-  display: block;
-  width: 16px;
-  height: 16px;
+.auth-signup__business-link:focus-visible {
+  outline: 2px solid #3f78ff;
+  outline-offset: 2px;
 }
 
 .auth-signup__btn {
@@ -3678,7 +3675,7 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
 .auth-signup-email-page__panel--hybrid-verify {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 24px;
   width: 100%;
 }
 
@@ -3760,6 +3757,9 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   gap: 16px;
   width: 100%;
 }
+.auth-signup-email-page__hybrid-code-block[hidden] {
+  display: none !important;
+}
 .auth-signup-email-page__hybrid-code-block .auth-signup-email-page__code-grid {
   margin-bottom: 0;
 }
@@ -3768,6 +3768,25 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
 }
 .auth-signup-email-page__hybrid-code-block.is-locked .auth-signup-email-page__code-cursor {
   display: none !important;
+}
+
+.auth-signup-email-page__hybrid-code-prompt {
+  margin: 0;
+}
+
+.auth-signup-email-page__input-inner--hybrid-submitted {
+  padding: 0 16px 0 12px;
+  background: #1b1d1d;
+  border-color: transparent;
+}
+.auth-signup-email-page__input-inner--hybrid-submitted .auth-signup-email-page__field-submitted-check {
+  width: 20px;
+  height: 20px;
+}
+
+.auth-signup-email-page__hybrid-code-block:not(.is-locked) .auth-signup-email-page__code-grid.is-filled .auth-signup-email-page__code-digit {
+  font-size: 20px;
+  font-weight: 700;
 }
 
 .auth-signup-email-page__code-grid--hybrid .auth-signup-email-page__code-cell {
