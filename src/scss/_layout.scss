@@ -14369,6 +14369,10 @@ div.currency-sheet__item-icon {
   justify-content: space-between;
   gap: 8px;
   margin-top: 4px;
+
+  &[hidden] {
+    display: none !important;
+  }
 }
 
 .build-badge__checkbox {
