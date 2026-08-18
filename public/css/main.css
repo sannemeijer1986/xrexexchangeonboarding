@@ -3449,11 +3449,11 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   transition: width 0.35s ease;
 }
 
-.auth-signup-email-page.is-password-step .auth-signup-email-page__step-fill {
+.auth-signup-email-page.is-mobile-step .auth-signup-email-page__step-fill {
   width: 42.27%;
 }
 
-.auth-signup-email-page.is-mobile-step .auth-signup-email-page__step-fill {
+.auth-signup-email-page.is-password-step .auth-signup-email-page__step-fill {
   width: 59.22%;
 }
 
@@ -3476,12 +3476,24 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   will-change: transform;
 }
 
-.auth-signup-email-page.is-password-step .auth-signup-email-page__track {
+.auth-signup-email-page.is-mobile-step .auth-signup-email-page__track {
   transform: translateX(-100%);
 }
 
-.auth-signup-email-page.is-mobile-step .auth-signup-email-page__track {
+.auth-signup-email-page.is-password-step .auth-signup-email-page__track {
   transform: translateX(-200%);
+}
+
+.auth-signup-email-page__slide[data-auth-signup-email-slide=verify] {
+  order: 1;
+}
+
+.auth-signup-email-page__slide[data-auth-signup-email-slide=mobile] {
+  order: 2;
+}
+
+.auth-signup-email-page__slide[data-auth-signup-email-slide=password] {
+  order: 3;
 }
 
 .auth-signup-email-page__slide {
@@ -4132,10 +4144,36 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
 .auth-signup-email-page__code-resend {
   flex: 1;
   min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.auth-signup-email-page__code-resend-countdown {
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
   color: #9b9c9c;
+}
+
+.auth-signup-email-page__code-resend-btn {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: #3f78ff;
+  cursor: pointer;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+.auth-signup-email-page__code-resend-btn[hidden] {
+  display: none !important;
+}
+
+.auth-signup-email-page__code-resend-countdown[hidden] {
+  display: none !important;
 }
 
 .auth-signup-email-page__code-paste {
@@ -4155,10 +4193,7 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   -webkit-tap-highlight-color: transparent;
 }
 .auth-signup-email-page__code-paste img {
-  width: 16px;
-  height: 16px;
-  display: block;
-  pointer-events: none;
+  display: none;
 }
 .auth-signup-email-page__code-paste:focus-visible {
   outline: 2px solid #3f78ff;

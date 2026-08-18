@@ -1836,9 +1836,9 @@ Max 100K</span>
                 <div class="auth-signup-email-page__flow auth-signup-email-page__flow--prog" data-auth-signup-flow="prog">
                 <div class="auth-signup-email-page__panel" data-auth-signup-email-panel="email">
                     <div class="auth-signup-email-page__copy">
-                        <p class="auth-signup-email-page__moustache">Sign up · Step 1<span class="auth-signup-email-page__moustache-suffix">/2</span></p>
+                        <p class="auth-signup-email-page__moustache">Sign up · Step 1<span class="auth-signup-email-page__moustache-suffix">/3</span></p>
                         <h2 class="auth-signup-email-page__title">What’s your email?</h2>
-                        <p class="auth-signup-email-page__desc">We'll send a 6-digit code to confirm it's yours</p>
+                        <p class="auth-signup-email-page__desc">We'll send a code to confirm it's yours</p>
                     </div>
                     <div class="auth-signup-email-page__field" data-auth-signup-email-field>
                         <div
@@ -1879,7 +1879,7 @@ Max 100K</span>
 
                 <div class="auth-signup-email-page__panel" data-auth-signup-email-panel="code" hidden>
                     <div class="auth-signup-email-page__copy auth-signup-email-page__copy--code">
-                        <p class="auth-signup-email-page__moustache">Sign up · Step 1<span class="auth-signup-email-page__moustache-suffix">/2</span></p>
+                        <p class="auth-signup-email-page__moustache">Sign up · Step 1<span class="auth-signup-email-page__moustache-suffix">/3</span></p>
                         <h2 class="auth-signup-email-page__title">What’s your email?</h2>
                         <button type="button" class="auth-signup-email-page__email-edit" data-auth-signup-email-edit>
                             <span class="auth-signup-email-page__email-display" data-auth-signup-email-display>mail@sanne.com</span>
@@ -1927,7 +1927,10 @@ Max 100K</span>
                             </div>
                         </div>
                         <div class="auth-signup-email-page__code-meta">
-                            <span class="auth-signup-email-page__code-resend" data-auth-signup-code-resend>Resend in 0:42</span>
+                            <div class="auth-signup-email-page__code-resend" data-auth-signup-code-resend data-signup-resend>
+                                <span class="auth-signup-email-page__code-resend-countdown" data-signup-resend-countdown>Resend in 0:42</span>
+                                <button type="button" class="auth-signup-email-page__code-resend-btn" data-signup-resend-action hidden>Resend code</button>
+                            </div>
                             <button type="button" class="auth-signup-email-page__code-paste" data-auth-signup-code-paste>
                                 <img src="assets/copy_blue.svg" alt="" width="16" height="16" />
                                 Paste
@@ -1995,7 +1998,10 @@ Max 100K</span>
                                 <div class="auth-signup-email-page__code-cell" data-auth-signup-hybrid-code-cell="5"><span class="auth-signup-email-page__code-cell-inner"><span class="auth-signup-email-page__code-digit" data-auth-signup-hybrid-code-digit></span><span class="auth-signup-email-page__code-cursor" data-auth-signup-hybrid-code-cursor hidden aria-hidden="true"></span></span></div>
                             </div>
                             <div class="auth-signup-email-page__code-meta" data-auth-signup-hybrid-code-meta hidden>
-                                <span class="auth-signup-email-page__code-resend" data-auth-signup-hybrid-code-resend>Resend in 0:42</span>
+                                <div class="auth-signup-email-page__code-resend" data-auth-signup-hybrid-code-resend data-signup-resend>
+                                    <span class="auth-signup-email-page__code-resend-countdown" data-signup-resend-countdown>Resend in 0:42</span>
+                                    <button type="button" class="auth-signup-email-page__code-resend-btn" data-signup-resend-action hidden>Resend code</button>
+                                </div>
                                 <button type="button" class="auth-signup-email-page__code-paste" data-auth-signup-hybrid-code-paste>
                                     <img src="assets/copy_blue.svg" alt="" width="16" height="16" />
                                     Paste
@@ -2009,7 +2015,7 @@ Max 100K</span>
                         <div class="auth-signup-email-page__slide" data-auth-signup-email-slide="password">
                             <div class="auth-signup-email-page__panel" data-auth-signup-email-panel="password">
                                 <div class="auth-signup-email-page__copy">
-                                    <p class="auth-signup-email-page__moustache">Sign up · Step 2<span class="auth-signup-email-page__moustache-suffix">/2</span></p>
+                                    <p class="auth-signup-email-page__moustache">Sign up · Step 3<span class="auth-signup-email-page__moustache-suffix">/3</span></p>
                                     <h2 class="auth-signup-email-page__title">Set a password</h2>
                                 </div>
                                 <div class="auth-signup-email-page__password-form">
@@ -2135,9 +2141,9 @@ Max 100K</span>
                             <div class="auth-signup-email-page__flow auth-signup-email-page__flow--prog" data-auth-signup-flow="prog-mobile">
                             <div class="auth-signup-email-page__panel" data-auth-signup-email-panel="mobile">
                                 <div class="auth-signup-email-page__copy">
-                                    <p class="auth-signup-email-page__moustache">Sign up · Step 3</p>
-                                    <h2 class="auth-signup-email-page__title">What’s your mobile number?</h2>
-                                    <p class="auth-signup-email-page__desc">We'll send a 6-digit code to confirm it's yours</p>
+                                    <p class="auth-signup-email-page__moustache">Sign up · Step 2<span class="auth-signup-email-page__moustache-suffix">/3</span></p>
+                                    <h2 class="auth-signup-email-page__title">What’s your phone number?</h2>
+                                    <p class="auth-signup-email-page__desc">We'll send a code to confirm it's yours</p>
                                 </div>
                                 <div class="auth-signup-email-page__field" data-auth-signup-mobile-field>
                                     <div
@@ -2186,8 +2192,8 @@ Max 100K</span>
 
                             <div class="auth-signup-email-page__panel" data-auth-signup-email-panel="mobile-code" hidden>
                                 <div class="auth-signup-email-page__copy auth-signup-email-page__copy--code">
-                                    <p class="auth-signup-email-page__moustache">Sign up · Step 3</p>
-                                    <h2 class="auth-signup-email-page__title">What’s your mobile number?</h2>
+                                    <p class="auth-signup-email-page__moustache">Sign up · Step 2<span class="auth-signup-email-page__moustache-suffix">/3</span></p>
+                                    <h2 class="auth-signup-email-page__title">What’s your phone number?</h2>
                                     <button type="button" class="auth-signup-email-page__email-edit" data-auth-signup-mobile-edit>
                                         <span class="auth-signup-email-page__email-display" data-auth-signup-mobile-display>+886 0975561399</span>
                                         <img class="auth-signup-email-page__email-edit-icon" src="assets/edit_gray.svg" alt="" width="20" height="20" />
@@ -2234,7 +2240,10 @@ Max 100K</span>
                                         </div>
                                     </div>
                                     <div class="auth-signup-email-page__code-meta">
-                                        <span class="auth-signup-email-page__code-resend" data-auth-signup-mobile-code-resend>Resend in 0:42</span>
+                                        <div class="auth-signup-email-page__code-resend" data-auth-signup-mobile-code-resend data-signup-resend>
+                                            <span class="auth-signup-email-page__code-resend-countdown" data-signup-resend-countdown>Resend in 0:42</span>
+                                            <button type="button" class="auth-signup-email-page__code-resend-btn" data-signup-resend-action hidden>Resend code</button>
+                                        </div>
                                         <button type="button" class="auth-signup-email-page__code-paste" data-auth-signup-mobile-code-paste>
                                             <img src="assets/copy_blue.svg" alt="" width="16" height="16" />
                                             Paste
@@ -2248,8 +2257,8 @@ Max 100K</span>
                                 <div class="auth-signup-email-page__panel auth-signup-email-page__panel--hybrid-verify">
                                     <div class="auth-signup-email-page__hybrid-stack">
                                         <div class="auth-signup-email-page__copy auth-signup-email-page__copy--hybrid">
-                                            <p class="auth-signup-email-page__moustache">Sign up · Step 3</p>
-                                            <h2 class="auth-signup-email-page__title">What’s your mobile number?</h2>
+                                            <p class="auth-signup-email-page__moustache">Sign up · Step 2</p>
+                                            <h2 class="auth-signup-email-page__title">What’s your phone number?</h2>
                                         </div>
                                         <div class="auth-signup-email-page__hybrid-step-group">
                                             <div class="auth-signup-email-page__hybrid-step-label is-active">
@@ -2310,7 +2319,10 @@ Max 100K</span>
                                             <div class="auth-signup-email-page__code-cell" data-auth-signup-hybrid-mobile-code-cell="5"><span class="auth-signup-email-page__code-cell-inner"><span class="auth-signup-email-page__code-digit" data-auth-signup-hybrid-mobile-code-digit></span><span class="auth-signup-email-page__code-cursor" data-auth-signup-hybrid-mobile-code-cursor hidden aria-hidden="true"></span></span></div>
                                         </div>
                                         <div class="auth-signup-email-page__code-meta" data-auth-signup-hybrid-mobile-code-meta hidden>
-                                            <span class="auth-signup-email-page__code-resend" data-auth-signup-hybrid-mobile-code-resend>Resend in 0:42</span>
+                                            <div class="auth-signup-email-page__code-resend" data-auth-signup-hybrid-mobile-code-resend data-signup-resend>
+                                                <span class="auth-signup-email-page__code-resend-countdown" data-signup-resend-countdown>Resend in 0:42</span>
+                                                <button type="button" class="auth-signup-email-page__code-resend-btn" data-signup-resend-action hidden>Resend code</button>
+                                            </div>
                                             <button type="button" class="auth-signup-email-page__code-paste" data-auth-signup-hybrid-mobile-code-paste>
                                                 <img src="assets/copy_blue.svg" alt="" width="16" height="16" />
                                                 Paste
@@ -6247,7 +6259,7 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
                     </select>
                 </div>
             </div>
-            <div class="build-badge__section-row">
+            <div class="build-badge__section-row" hidden>
                 <div class="build-badge__section-title">Merge mail/phone</div>
                 <div class="build-badge__checkbox-group">
                     <select class="build-badge__select" id="prototype-merge-mail-phone" data-prototype-merge-mail-phone
@@ -6272,6 +6284,7 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
     </div>
 
     <script defer src="js/i18n.js"></script>
+    <script defer src="js/auth-signup-resend-countdown.js"></script>
     <script defer src="js/main.js"></script>
     <script defer src="js/auth-signup-merge-flow.js"></script>
 </body>

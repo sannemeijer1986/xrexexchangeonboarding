@@ -385,6 +385,7 @@
     hybridCodeBlock?.classList.remove("is-locked");
     hybridCodeGrid?.classList.remove("auth-signup-email-page__code-grid--hybrid");
     syncHybridCodeChrome();
+    window.__signupResendCountdown?.start("[data-auth-signup-hybrid-code-resend]");
     phase = "code";
     emailPage?.classList.add("is-hybrid-code-active", "is-code-step");
     codeActiveIndex = 0;
@@ -437,7 +438,7 @@
     codeLoaderTimer = window.setTimeout(() => {
       codeLoaderTimer = null;
       if (signupCodeLoader) signupCodeLoader.hidden = true;
-      window.__hybridSignupAdvancePassword?.();
+      window.__hybridSignupAdvanceMobile?.();
     }, SIGNUP_CODE_LOADER_VISIBLE_MS);
   };
 
@@ -578,6 +579,7 @@
     hybridMobileCodeBlock?.classList.remove("is-locked");
     hybridMobileCodeGrid?.classList.remove("auth-signup-email-page__code-grid--hybrid");
     syncHybridMobileCodeChrome();
+    window.__signupResendCountdown?.start("[data-auth-signup-hybrid-mobile-code-resend]");
     phase = "mobile-code";
     emailPage?.classList.add("is-hybrid-mobile-code-active", "is-mobile-code-step");
     mobileCodeActiveIndex = 0;
@@ -655,7 +657,7 @@
     codeLoaderTimer = window.setTimeout(() => {
       codeLoaderTimer = null;
       if (signupCodeLoader) signupCodeLoader.hidden = true;
-      window.__hybridSignupShowNotInPrototype?.();
+      window.__hybridSignupAdvancePassword?.();
     }, SIGNUP_CODE_LOADER_VISIBLE_MS);
   };
 
@@ -989,6 +991,28 @@
         return true;
       }
       return false;
+    },
+    handleBackFromMobile: () => {
+      resetHybridMobile();
+      phase = "code";
+      emailPage?.classList.remove(
+        "is-mobile-step",
+        "is-mobile-code-step",
+        "is-hybrid-mobile-code-active",
+        "is-password-step",
+      );
+      emailPage?.classList.add("is-hybrid-code-active", "is-code-step");
+      hybridCodeBlock?.classList.remove("is-locked");
+      hybridCodeGrid?.classList.remove("auth-signup-email-page__code-grid--hybrid");
+      syncHybridCodeChrome();
+      codeDigits = SIGNUP_DUMMY_CODE.split("").slice(0, SIGNUP_CODE_LENGTH);
+      codeActiveIndex = SIGNUP_CODE_LENGTH;
+      hybridCodeGrid?.classList.remove("is-focused");
+      hybridCodeGrid?.classList.add("is-filled");
+      syncHybridCodeUi();
+      syncSignupKeyboardMode();
+      syncHybridActionUi();
+      hideKeyboard();
     },
   };
 

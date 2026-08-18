@@ -731,7 +731,7 @@
       if (signupCodeLoader) signupCodeLoader.hidden = true;
     };
 
-    const showSignupCodeLoader = (onComplete = advanceToPasswordStep) => {
+    const showSignupCodeLoader = (onComplete = advanceToMobileStep) => {
       hideSignupCodeLoader();
       if (signupCodeLoader) signupCodeLoader.hidden = false;
       signupCodeLoaderHideTimer = window.setTimeout(() => {
@@ -785,6 +785,7 @@
       }
       syncStepperUi();
       syncKeyboardStickyUi();
+      window.__signupResendCountdown?.start("[data-auth-signup-code-resend]");
       if (resetCode) {
         resetCodeField();
         requestAnimationFrame(() => focusCodeEntry());
@@ -868,6 +869,7 @@
       }
       syncStepperUi();
       syncKeyboardStickyUi();
+      window.__signupResendCountdown?.start("[data-auth-signup-mobile-code-resend]");
       if (resetCode) {
         resetMobileCodeField();
         requestAnimationFrame(() => focusMobileCodeEntry());
@@ -881,7 +883,7 @@
     };
 
     const advanceToMobileStep = () => {
-      if (signupEmailStep !== "password") return;
+      if (signupEmailStep !== "code") return;
       showMobileStepUi({ resetMobile: true });
     };
 
@@ -895,7 +897,12 @@
       hideSignupCodeLoader();
       resetMobileField();
       resetMobileCodeField();
-      showPasswordStepUi();
+      if (window.__hybridSignup?.isActive?.()) {
+        signupEmailStep = "code";
+        window.__hybridSignup.handleBackFromMobile?.();
+        return;
+      }
+      showCodeStepUi({ resetCode: false });
     };
 
     const returnToMobileStep = () => {
@@ -907,15 +914,18 @@
     };
 
     const advanceToPasswordStep = () => {
-      if (signupEmailStep !== "code") return;
+      if (signupEmailStep !== "mobile-code") return;
       showPasswordStepUi();
     };
 
     const returnFromPasswordStep = () => {
       hideSignupCodeLoader();
       resetPasswordFields();
-      resetCodeField();
-      showEmailStepUi();
+      if (mobileInput?.value.trim()) {
+        showMobileCodeStepUi({ resetCode: false });
+        return;
+      }
+      showMobileStepUi();
     };
 
     const resetSignupEmailPageState = () => {
@@ -1294,7 +1304,7 @@
       if (signupCodeLoaderHideTimer || (signupCodeLoader && !signupCodeLoader.hidden)) return;
       fillSignupMobileCodeAndUnfocus();
       dismissSignupEmailKeyboardUi();
-      showSignupCodeLoader(showNotInPrototype);
+      showSignupCodeLoader(advanceToPasswordStep);
     };
 
     const deleteMobileCodeDigit = () => {
@@ -1371,7 +1381,7 @@
       }
       if (signupEmailStep === "password") {
         if (!isPasswordStepComplete()) return;
-        advanceToMobileStep();
+        showNotInPrototype();
         return;
       }
       if (signupEmailStep === "mobile") {
@@ -1493,6 +1503,7 @@
     };
 
     if (emailPage) {
+      window.__hybridSignupAdvanceMobile = () => showMobileStepUi({ resetMobile: true });
       window.__hybridSignupAdvancePassword = () => showPasswordStepUi();
       window.__hybridSignupShowNotInPrototype = () => showNotInPrototype();
       emailPage
