@@ -15189,6 +15189,15 @@ div.currency-sheet__item-icon::before {
   margin-bottom: 0;
 }
 
+.plan-detail-panel__alloc-total-trailing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
 .plan-detail-panel__alloc-total-label {
   display: none;
 }
@@ -15196,8 +15205,9 @@ div.currency-sheet__item-icon::before {
 .plan-detail-panel__alloc-total-value {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   flex-shrink: 0;
-  align-self: flex-start;
+  align-self: flex-end;
   font-family: "Manrope", sans-serif;
   font-weight: 700;
   font-size: 20px;
@@ -15230,7 +15240,7 @@ div.currency-sheet__item-icon::before {
 
 .plan-detail-panel__alloc-total-error {
   display: block;
-  text-align: left;
+  text-align: right;
   font-family: "Manrope", sans-serif;
   font-weight: 600;
   font-size: 12px;

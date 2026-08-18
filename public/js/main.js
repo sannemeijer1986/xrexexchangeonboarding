@@ -16173,12 +16173,19 @@
           } else {
             errEl.hidden = false;
             if (remainingRaw > 0.45) {
-              errEl.textContent = `Add ${formatAllocTotalPct(remainingRaw)} to continue`;
+              const pct = formatAllocTotalPct(remainingRaw);
+              errEl.textContent = window.I18N?.t
+                ? window.I18N.t("Increase {pct} to continue", { pct })
+                : `Increase ${pct} to continue`;
             } else if (remainingRaw < -0.45) {
-              const over = sum - 100;
-              errEl.textContent = `Reduce ${formatAllocTotalPct(over)} to continue`;
+              const pct = formatAllocTotalPct(sum - 100);
+              errEl.textContent = window.I18N?.t
+                ? window.I18N.t("Decrease {pct} to continue", { pct })
+                : `Decrease ${pct} to continue`;
             } else {
-              errEl.textContent = "Allocation should add up to 100%";
+              errEl.textContent = window.I18N?.t
+                ? window.I18N.t("Allocation should add up to 100%")
+                : "Allocation should add up to 100%";
             }
           }
         }

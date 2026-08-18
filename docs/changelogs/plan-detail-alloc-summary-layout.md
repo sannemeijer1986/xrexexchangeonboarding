@@ -1,6 +1,6 @@
-# Plan detail — allocation summary layout migration
+# Plan detail — allocation summary layout
 
-Portable changelog for moving the multi-asset allocation summary from the bottom `plan-detail-panel__historic-performance-row` into the allocation header (Figma Visitor-mode 1.0).
+Portable changelog for the multi-asset allocation summary in the plan-detail header (Figma Visitor-mode 1.0). **Current source of truth** for `xrexexchangeonboarding` and `xrexexchangedca`.
 
 ## Design reference
 
@@ -9,20 +9,24 @@ Portable changelog for moving the multi-asset allocation summary from the bottom
 | Figma file | `Visitor-mode-1.0` (`0QRDsD2sOU5Qsoq7F2mfZw`) |
 | Node | `13659:11419` (allocation section frame) |
 | Inner summary frame | `13659:16172` |
-| Reference repo | `xrexexchangedca` (same DOM/JS patterns) |
+| Reference repos | `xrexexchangeonboarding`, `xrexexchangedca` |
 
 ### Target layout (multi-asset, % mode, valid)
 
-1. **Row 1:** `Allocation (n)` + `Set equal` stacked left · green check + **`100%`** right (20px bold, `#5ac47d`)
-2. **Row 2 (invalid only):** error hint below, left-aligned
+1. **Left:** `Allocation (n)` with **Set equal** stacked under it
+2. **Right:** green check + **`100%`** (20px bold, `#5ac47d`)
 3. **Card:** asset list (`#151718`, 16px radius, `4px 16px 12px` padding)
 4. **Removed:** separate “Remaining allocation (of 100%)” label row below the list
 5. **Removed:** historic performance block from this summary area (multi-asset)
 
 ### Invalid % state
 
-- Row 1 right: remaining/over percentage in `#eb5347` (no check)
-- Row 2: error hint + `Set equal` (existing copy: “Add X% to continue”, etc.)
+- Right: remaining/over percentage in `#eb5347` (no check), **right-aligned**
+- Under the %: error hint, **right-aligned**
+  - under 100%: `Increase {pct} to continue`
+  - over 100%: `Decrease {pct} to continue`
+  - near 100% but invalid: `Allocation should add up to 100%`
+- Left still shows Set equal (not the error)
 
 ---
 
@@ -30,9 +34,11 @@ Portable changelog for moving the multi-asset allocation summary from the bottom
 
 | File | Change |
 |------|--------|
-| `public/index.html` | Restructure allocation header HTML; remove bottom historic-performance row |
-| `src/scss/_layout.scss` | New summary layout styles; drop historic-performance-row rules |
-| `public/js/main.js` | Update `updateAllocHeaderSubtitle`, visibility helpers, remove historic-row refs |
+| `public/index.html` | Restructure allocation header; remove bottom historic-performance row |
+| `src/scss/_layout.scss` | New summary layout; drop historic-performance-row rules; preserve `[hidden]` |
+| `public/js/main.js` | `updateAllocHeaderSubtitle`, `syncAllocSummaryChrome`, remove historic-row refs |
+| `public/js/i18n.js` | Template patterns for Increase/Decrease copy |
+| `public/i18n/zh.json` | New keys; drop Add/Reduce keys |
 | `public/css/main.css` | Recompile from SCSS |
 
 ---
@@ -41,53 +47,56 @@ Portable changelog for moving the multi-asset allocation summary from the bottom
 
 **Find:** allocation section inside plan detail panel (`plan-detail-panel__allocation-section`).
 
-**Replace header structure** — wrap summary in `plan-detail-panel__alloc-header-summary`:
+**Replace the header title group** with `plan-detail-panel__alloc-header-summary`. Keep the historic-inline block for single-asset tone plumbing (hidden in CSS for multi).
 
 ```html
 <div class="plan-detail-panel__alloc-header-main">
   <div class="plan-detail-panel__alloc-header-summary">
     <div class="plan-detail-panel__alloc-total" data-plan-detail-alloc-subtitle>
       <div class="plan-detail-panel__alloc-total-row">
-        <div class="plan-detail-panel__section-label">
-          Allocation (<span data-plan-detail-alloc-count>1</span>)
+        <div class="plan-detail-panel__alloc-total-leading">
+          <div class="plan-detail-panel__section-label">
+            Allocation (<span data-plan-detail-alloc-count>1</span>)
+          </div>
+          <div class="plan-detail-panel__alloc-total-hint-row"
+               data-plan-detail-alloc-total-hint hidden>
+            <button type="button" class="plan-detail-panel__alloc-reset"
+                    data-alloc-reset hidden>Set equal</button>
+          </div>
         </div>
-        <div class="plan-detail-panel__alloc-total-value"
-             data-plan-detail-alloc-total-value-wrap hidden aria-live="polite">
-          <img class="plan-detail-panel__alloc-total-check"
-               src="assets/icon_check_green.svg" alt="" width="16" height="16"
-               data-plan-detail-alloc-total-check hidden />
-          <span class="plan-detail-panel__alloc-total-current"
-                data-plan-detail-alloc-total-current>0%</span>
-          <span class="plan-detail-panel__alloc-total-target"
-                data-plan-detail-alloc-total-target hidden> / 100%</span>
+        <div class="plan-detail-panel__alloc-total-trailing">
+          <div class="plan-detail-panel__alloc-total-value"
+               data-plan-detail-alloc-total-value-wrap hidden aria-live="polite">
+            <img class="plan-detail-panel__alloc-total-check"
+                 src="assets/icon_check_green.svg" alt="" width="16" height="16"
+                 data-plan-detail-alloc-total-check hidden />
+            <span class="plan-detail-panel__alloc-total-current"
+                  data-plan-detail-alloc-total-current>0%</span>
+            <span class="plan-detail-panel__alloc-total-target"
+                  data-plan-detail-alloc-total-target hidden> / 100%</span>
+          </div>
+          <div class="plan-detail-panel__alloc-total-error"
+               data-plan-detail-alloc-total-error hidden></div>
         </div>
-      </div>
-      <div class="plan-detail-panel__alloc-total-hint-row"
-           data-plan-detail-alloc-total-hint hidden>
-        <button type="button" class="plan-detail-panel__alloc-reset"
-                data-alloc-reset hidden>Set equal</button>
-        <div class="plan-detail-panel__alloc-total-error"
-             data-plan-detail-alloc-total-error hidden></div>
       </div>
     </div>
-    <!-- historic-inline block stays for single-asset tone plumbing; hidden in CSS for multi -->
+    <!-- historic-inline stays for single-asset tone plumbing; hidden in CSS for multi -->
     ...
   </div>
 </div>
 ```
 
-**Remove entirely:**
+**Remove entirely** (between allocation list and add-assets wrap):
 
 ```html
 <div class="plan-detail-panel__historic-performance-row">…</div>
 ```
 
-(between allocation list and add-assets wrap)
-
 **Key DOM moves:**
 
-- `data-plan-detail-alloc-subtitle` moves **up** into header (was in historic-performance-row)
-- `data-alloc-reset` moves into `data-plan-detail-alloc-total-hint` (row 2)
+- `data-plan-detail-alloc-subtitle` moves **up** into the header (was in historic-performance-row). Do **not** leave `hidden` on it — `Allocation (n)` lives inside it.
+- `data-alloc-reset` lives in `data-plan-detail-alloc-total-hint` (left column, under the label)
+- `data-plan-detail-alloc-total-error` lives in `plan-detail-panel__alloc-total-trailing` (under the %)
 - Drop label text “Remaining allocation (of 100%)” (`plan-detail-panel__alloc-total-label`)
 
 ---
@@ -101,33 +110,59 @@ Portable changelog for moving the multi-asset allocation summary from the bottom
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  // display:flex beats UA [hidden]; keep manual/auto variants mutually exclusive
+  &[hidden] {
+    display: none !important;
+  }
 }
 
 .plan-detail-panel__alloc-header-summary {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   gap: 2px;
   width: 100%;
   padding-bottom: 12px;
 }
 
-.plan-detail-panel__alloc-total {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  width: 100%;
+.plan-detail-panel__alloc-total-row {
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
-.plan-detail-panel__alloc-total-row {
-  justify-content: space-between; // was flex-end
-  align-items: center;
+.plan-detail-panel__alloc-total-leading {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.plan-detail-panel__alloc-total-trailing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; // % + error stack on the right
+  gap: 2px;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.plan-detail-panel__alloc-total-value {
+  justify-content: flex-end;
+  align-self: flex-end; // do not use flex-start — error is wider than the %
+}
+
+.plan-detail-panel__alloc-total-error {
+  text-align: right;
 }
 
 .plan-detail-panel__alloc-total-label { display: none; }
 .plan-detail-panel__alloc-total-target { display: none; }
 
 .plan-detail-panel__allocation-list {
-  padding: 4px 16px 12px; // multi-asset card
+  padding: 4px 16px 12px;
 }
 
 .plan-detail-panel__allocation-section.is-multi-asset
@@ -135,24 +170,6 @@ Portable changelog for moving the multi-asset allocation summary from the bottom
   display: none !important; // no historic perf in multi summary
 }
 ```
-
-### Remove
-
-- `.plan-detail-panel__historic-performance-row` and related bottom-row rules
-- `.is-empty` / `.is-single-asset` selectors targeting historic-performance-row
-- Old `margin-bottom: 12px` on `.plan-detail-panel__alloc-total-hint-row`
-
-### Important: preserve `[hidden]` on allocation sections
-
-Adding `display: flex` to `.plan-detail-panel__allocation-section` overrides the browser’s `[hidden]` behaviour. Manual and auto sections would stack unless you add:
-
-```scss
-.plan-detail-panel__allocation-section[hidden] {
-  display: none !important;
-}
-```
-
-(`syncActiveAllocationVariant()` toggles `hidden` on the manual vs auto section — only one should show.)
 
 ### Empty / single-asset visibility
 
@@ -172,93 +189,77 @@ Recompile: `npm run compile:css`
 
 ## 3. JavaScript (`public/js/main.js`)
 
-### A. `updateAllocHeaderSubtitle()` (inside `initAllocSliders`)
-
-**% mode — valid total:**
-
-```diff
-- currentEl.textContent = "0%";
-+ currentEl.textContent = "100%";
-  checkEl.hidden = false;
-```
-
-**% mode — remove `/ 100%` suffix:**
-
-```diff
-- targetEl.textContent = " / 100%";
-+ targetEl.textContent = "";
-```
-
-**Show summary chrome when updating:**
+### Invalid copy (i18n keys = English source)
 
 ```js
-if (valueWrap) valueWrap.hidden = false; // pct mode
-if (hintRow) hintRow.hidden = false;
+if (remainingRaw > 0.45) {
+  const pct = formatAllocTotalPct(remainingRaw);
+  errEl.textContent = window.I18N?.t
+    ? window.I18N.t("Increase {pct} to continue", { pct })
+    : `Increase ${pct} to continue`;
+} else if (remainingRaw < -0.45) {
+  const pct = formatAllocTotalPct(sum - 100);
+  errEl.textContent = window.I18N?.t
+    ? window.I18N.t("Decrease {pct} to continue", { pct })
+    : `Decrease ${pct} to continue`;
+} else {
+  errEl.textContent = window.I18N?.t
+    ? window.I18N.t("Allocation should add up to 100%")
+    : "Allocation should add up to 100%";
+}
 ```
 
-### B. Replace `allocSubtitleEl.hidden = …` with `syncAllocSummaryChrome(count)`
-
-```js
-const syncAllocSummaryChrome = (assetCount) => {
-  const valueWrap = panel.querySelector("[data-plan-detail-alloc-total-value-wrap]");
-  const hintRow = panel.querySelector("[data-plan-detail-alloc-total-hint]");
-  const showSummaryExtras = assetCount >= 2;
-  if (valueWrap) valueWrap.hidden = !showSummaryExtras;
-  if (hintRow) hintRow.hidden = !showSummaryExtras;
-};
-```
-
-Call sites in `populatePanel`:
-
-- Empty new plan: `syncAllocSummaryChrome(0)`
-- Has assets: `syncAllocSummaryChrome(allocItems.length)`
-
-Do **not** hide `[data-plan-detail-alloc-subtitle]` entirely — the `Allocation (n)` label lives inside it.
-
-### C. Remove historic-performance-row references
-
-```diff
-- const historicRow = panel.querySelector(".plan-detail-panel__historic-performance-row");
-- const historicAllocSubtitle = historicRow?.querySelector("[data-plan-detail-alloc-subtitle]");
-- if (allocSection && historicRow && historicTone) {
-+ if (allocSection && historicTone) {
-```
-
-Historic tone placement for single-asset (in alloc item row) is unchanged.
+Replace any `Add … to continue` / `Reduce … to continue` strings.
 
 ---
 
-## 4. Porting checklist
+## 4. i18n
 
-Use this when applying the same change to another project (e.g. `xrexexchangedca`):
+### `public/js/i18n.js` — `toTemplatedSource()`
 
-- [ ] Update plan detail allocation HTML per section 1
-- [ ] Remove bottom `plan-detail-panel__historic-performance-row` block
-- [ ] Apply SCSS changes; delete obsolete historic-performance-row rules
-- [ ] Run `npm run compile:css` (or project equivalent)
-- [ ] Patch `updateAllocHeaderSubtitle`: valid → `100%`, no `/ 100%`
-- [ ] Add `syncAllocSummaryChrome`; remove `allocSubtitleEl.hidden` toggles
-- [ ] Remove JS queries for `.plan-detail-panel__historic-performance-row`
-- [ ] Manual QA:
-  - [ ] New plan empty: only “Allocation (0)” + empty card CTA
-  - [ ] Single asset: label only, historic % in asset row
-  - [ ] Multi-asset valid: check + `100%`, `Set equal` below
-  - [ ] Multi-asset invalid: red remainder/over %, error on row 2
-  - [ ] Amount mode: total per buy on row 1, no check
-  - [ ] Slider/input updates refresh header live
+```js
+s = s.replace(
+  /^Increase \d[\d,]*(?:\.\d+)?% to continue$/i,
+  'Increase {pct} to continue',
+);
+s = s.replace(
+  /^Decrease \d[\d,]*(?:\.\d+)?% to continue$/i,
+  'Decrease {pct} to continue',
+);
+```
+
+### `public/i18n/zh.json`
+
+```json
+"Increase {pct} to continue": "增加 {pct} 以繼續",
+"Decrease {pct} to continue": "減少 {pct} 以繼續"
+```
+
+Remove `"Add {pct} to continue"` / `"Reduce {pct} to continue"` if present.
 
 ---
 
 ## 5. Behaviour matrix
 
-| State | Row 1 left | Row 1 right | Row 2 |
-|-------|------------|-------------|-------|
+| State | Left | Right | Under % |
+|-------|------|-------|---------|
 | Empty | Allocation (0) | hidden | hidden |
 | Single asset | Allocation (1) | hidden | hidden |
-| Multi, % valid | Allocation (n) | ✓ 100% | Set equal |
-| Multi, % invalid | Allocation (n) | red remainder | Set equal + error |
-| Multi, amount | Allocation (n) | `{total} {cur}` | Set equal |
+| Multi, % valid | Allocation (n) + Set equal | ✓ 100% | hidden |
+| Multi, % under | Allocation (n) + Set equal | red remainder | Increase {pct} to continue |
+| Multi, % over | Allocation (n) + Set equal | red over | Decrease {pct} to continue |
+| Multi, amount | Allocation (n) + Set equal | `{total} {cur}` | hidden |
 
 ---
 
-*Generated for xrexexchangeonboarding — Aug 2026*
+## 6. Delta vs earlier onboarding manifesto
+
+If a repo already applied an older version of this doc (error left-aligned under Set equal; Add/Reduce copy), only these extras are needed:
+
+1. Wrap value + error in `plan-detail-panel__alloc-total-trailing`; keep Set equal in `…-leading`
+2. Trailing column `align-items: flex-end`; value `align-self: flex-end`; error `text-align: right`
+3. Rename copy Add → Increase, Reduce → Decrease (+ zh.json + i18n templates)
+
+---
+
+*Updated Aug 2026*

@@ -119,6 +119,14 @@
       'Allocation ({count})',
     );
     s = s.replace(
+      /^Increase \d[\d,]*(?:\.\d+)?% to continue$/i,
+      'Increase {pct} to continue',
+    );
+    s = s.replace(
+      /^Decrease \d[\d,]*(?:\.\d+)?% to continue$/i,
+      'Decrease {pct} to continue',
+    );
+    s = s.replace(
       /^\d[\d,]*(?:\.\d+)? ([A-Z]{3,5}) · (\d+) buys$/i,
       '{amount} {currency} · {count} buys',
     );

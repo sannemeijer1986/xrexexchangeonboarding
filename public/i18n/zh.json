@@ -573,8 +573,8 @@
   "Past {years}Y simulation based on your daily plan setup": "過去 {years} 年模擬（基於您的每日計畫設定）",
   "Past {years}Y simulation based on your plan setup": "過去 {years} 年模擬（基於您的計畫設定）",
   "Simulated value ({tickers})": "模擬價值（{tickers}）",
-  "Add {pct} to continue": "增加 {pct} 以繼續",
-  "Reduce {pct} to continue": "降低 {pct} 以繼續",
+  "Increase {pct} to continue": "增加 {pct} 以繼續",
+  "Decrease {pct} to continue": "減少 {pct} 以繼續",
   "{amount} {currency} will be set aside now and reserved for upcoming buys.": "現在會先預備 {amount} {currency} 供後續買入使用。", // changed: 預留 → 預備
   "When these reserved funds run out, we'll automatically pre-fund {amount} again to keep your plan running.": "這些資金用盡時，系統將自動再預儲 {amount}，以維持計畫運作。",
   "The pre-fund amount will be deducted from your balance and reserved for this plan. When reserved funds run out, future auto-refills will also be deducted from your balance.\n\nYou can change or turn off pre-funding any time.": "預儲金額將從您的餘額扣款並為此計畫預備。當您的預儲金額用盡時，未來的自動加值也將從您的餘額扣款。\n\n您隨時可以更改或停止預先資金設定。",

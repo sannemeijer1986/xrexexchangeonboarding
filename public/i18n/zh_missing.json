@@ -67,8 +67,8 @@
   "If you'd started {range} ago and invested in {tickers}": "",
   "Past {range} simulation based on {setup}": "",
   "Simulated value ({tickers})": "",
-  "Add {pct} to continue": "",
-  "Reduce {pct} to continue": "",
+  "Increase {pct} to continue": "",
+  "Decrease {pct} to continue": "",
   "{amount} {currency} will be set aside now and reserved for upcoming buys.": "",
   "When these reserved funds run out, we'll automatically pre-fund {amount} again to keep your plan running.": "",
 
