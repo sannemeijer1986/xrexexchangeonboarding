@@ -3644,6 +3644,133 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   display: none;
 }
 
+.auth-signup-email-page.is-hybrid-code-active .auth-signup-email-page__footer,
+.auth-signup-email-page.is-hybrid-mobile-code-active .auth-signup-email-page__footer {
+  display: none;
+}
+
+.auth-signup-email-page__flow--hybrid[hidden] {
+  display: none !important;
+}
+
+.auth-signup-email-page.is-merge-hybrid .auth-signup-email-page__flow--prog,
+.auth-signup-email-page.is-merge-hybrid [data-auth-signup-flow=prog-mobile] {
+  display: none !important;
+}
+
+.auth-signup-email-page.is-merge-prog .auth-signup-email-page__flow--hybrid,
+.auth-signup-email-page.is-merge-prog [data-auth-signup-flow=hybrid-mobile] {
+  display: none !important;
+}
+
+.auth-signup-email-page__panel--hybrid-verify {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 100%;
+}
+
+.auth-signup-email-page__hybrid-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.auth-signup-email-page__copy--hybrid {
+  gap: 4px;
+}
+
+.auth-signup-email-page__hybrid-step-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.auth-signup-email-page__hybrid-step-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+.auth-signup-email-page__hybrid-step-label[hidden] {
+  display: none !important;
+}
+
+.auth-signup-email-page__hybrid-step-badge {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1b1d1d;
+}
+
+.auth-signup-email-page__hybrid-step-number {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #58595a;
+}
+
+.auth-signup-email-page__hybrid-step-text {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #58595a;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.auth-signup-email-page__hybrid-step-text img {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.auth-signup-email-page__hybrid-step-label.is-active .auth-signup-email-page__hybrid-step-badge {
+  background: #2d2f2f;
+}
+.auth-signup-email-page__hybrid-step-label.is-active .auth-signup-email-page__hybrid-step-number {
+  color: #9b9c9c;
+}
+.auth-signup-email-page__hybrid-step-label.is-active .auth-signup-email-page__hybrid-step-text {
+  color: #fff;
+}
+
+.auth-signup-email-page__hybrid-code-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+.auth-signup-email-page__hybrid-code-block .auth-signup-email-page__code-grid {
+  margin-bottom: 0;
+}
+.auth-signup-email-page__hybrid-code-block.is-locked {
+  pointer-events: none;
+}
+.auth-signup-email-page__hybrid-code-block.is-locked .auth-signup-email-page__code-cursor {
+  display: none !important;
+}
+
+.auth-signup-email-page__code-grid--hybrid .auth-signup-email-page__code-cell {
+  background: #151718;
+  border-color: transparent;
+  cursor: default;
+  pointer-events: none;
+}
+
+.auth-signup-email-page__hybrid-code-block:not(.is-locked) .auth-signup-email-page__code-grid .auth-signup-email-page__code-cell {
+  background: #1b1d1d;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
 .auth-signup-email-page__copy {
   display: flex;
   flex-direction: column;
@@ -3686,6 +3813,7 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
   min-height: 52px;
   padding: 10px 12px;
   border-radius: 14px;
@@ -3706,6 +3834,23 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   height: 100%;
 }
 
+.auth-signup-email-page__field.is-focused:not(.is-filled):not(.is-submitted) .auth-signup-email-page__input-main .auth-signup-email-page__cursor {
+  order: 0;
+}
+.auth-signup-email-page__field.is-focused:not(.is-filled):not(.is-submitted) .auth-signup-email-page__input-main .auth-signup-email-page__field-placeholder {
+  order: 1;
+}
+.auth-signup-email-page__field.is-focused:not(.is-filled):not(.is-submitted) .auth-signup-email-page__input-main .auth-signup-email-page__input {
+  order: 2;
+}
+
+.auth-signup-email-page__field.is-filled .auth-signup-email-page__input-main .auth-signup-email-page__input {
+  order: 0;
+}
+.auth-signup-email-page__field.is-filled .auth-signup-email-page__input-main .auth-signup-email-page__cursor {
+  order: 1;
+}
+
 .auth-signup-email-page__input {
   flex: 1;
   min-width: 0;
@@ -3723,11 +3868,97 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   color: #9b9c9c;
 }
 
+.auth-signup-email-page__field-placeholder {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #9b9c9c;
+  white-space: nowrap;
+}
+
+.auth-signup-email-page__field.is-filled .auth-signup-email-page__field-placeholder,
+.auth-signup-email-page__field.is-submitted .auth-signup-email-page__field-placeholder {
+  display: none;
+}
+
+[data-auth-signup-hybrid-email-field]:not(.is-filled):not(.is-submitted) .auth-signup-email-page__input,
+[data-auth-signup-hybrid-mobile-field]:not(.is-filled):not(.is-submitted) .auth-signup-email-page__input {
+  flex: 0 0 0;
+  width: 0;
+  min-width: 0;
+}
+
 .auth-signup-email-page__field.is-filled .auth-signup-email-page__input {
   flex: 0 0 auto;
   width: auto;
   max-width: calc(100% - 10px);
   field-sizing: content;
+}
+
+.auth-signup-email-page__field.is-submitted .auth-signup-email-page__input-inner:not(.auth-signup-email-page__input-inner--submitted) {
+  display: none !important;
+}
+
+.auth-signup-email-page__input-inner[hidden] {
+  display: none !important;
+}
+
+.auth-signup-email-page__input-inner--submitted[hidden] {
+  display: none !important;
+}
+
+.auth-signup-email-page__input-inner--submitted {
+  cursor: pointer;
+  border: 1px solid transparent;
+  font: inherit;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+.auth-signup-email-page__input-inner--submitted:focus-visible {
+  outline: 2px solid #3f78ff;
+  outline-offset: 2px;
+}
+
+.auth-signup-email-page__field-submitted-check {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.auth-signup-email-page__field-submitted-value {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #8adca5;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-signup-email-page__field-submitted-value--mobile {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.auth-signup-email-page__field-submitted-flag {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.auth-signup-email-page__field-submitted-edit {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: block;
+  margin-left: auto;
 }
 
 .auth-signup-email-page__cursor {
@@ -3888,6 +4119,14 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   gap: 10px;
   width: 100%;
   margin-top: 0;
+}
+.auth-signup-email-page__code-meta[hidden] {
+  display: none !important;
+}
+
+.auth-signup-email-page__hybrid-code-heading[hidden],
+.auth-signup-email-page__code-prompt[hidden] {
+  display: none !important;
 }
 
 .auth-signup-email-page__code-resend {

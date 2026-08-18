@@ -113,6 +113,9 @@
   const SIGNUP_DUMMY_CODE = "123456";
   const SIGNUP_DUMMY_PASSWORD = "Passw0rd!";
   const SIGNUP_DUMMY_MOBILE = "0975561399";
+  const SIGNUP_MOBILE_COUNTRY_CODE = "+886";
+  const formatMobileDisplay = (localNumber) =>
+    `${SIGNUP_MOBILE_COUNTRY_CODE} ${(localNumber || SIGNUP_DUMMY_MOBILE).trim()}`;
   const SIGNUP_CODE_LENGTH = 6;
   const PASSWORD_RULE_KEYS = ["length", "special", "number", "case"];
   const SIGNUP_EMAIL_KEYBOARD_DELAY_MS = 350;
@@ -604,7 +607,7 @@
     if (mobilePanel) mobilePanel.hidden = true;
     if (mobileCodePanel) mobileCodePanel.hidden = false;
     if (mobileDisplay) {
-      mobileDisplay.textContent = mobileInput?.value.trim() || SIGNUP_DUMMY_MOBILE;
+      mobileDisplay.textContent = formatMobileDisplay(mobileInput?.value.trim());
     }
     syncStepperUi();
     syncKeyboardStickyUi();
