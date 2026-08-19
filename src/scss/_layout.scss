@@ -5209,6 +5209,11 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   pointer-events: none;
 }
 
+.auth-signup-complete-page[hidden] {
+  display: none !important;
+  transition: none !important;
+}
+
 .auth-signup-complete-page__header {
   flex-shrink: 0;
   display: flex;

@@ -740,13 +740,17 @@
     void completePage.offsetWidth;
     completePage.classList.add("is-dismiss-down");
 
+    let dismissFinished = false;
     const onEnd = () => {
-      completePage.classList.remove("is-positioned-for-down", "is-dismiss-down");
+      if (dismissFinished) return;
+      dismissFinished = true;
+      completePage.style.transition = "none";
       completePage.hidden = true;
-      completePage.removeEventListener("transitionend", onEnd);
+      completePage.classList.remove("is-positioned-for-down", "is-dismiss-down");
+      completePage.style.removeProperty("transition");
       finish();
     };
-    completePage.addEventListener("transitionend", onEnd);
+    completePage.addEventListener("transitionend", onEnd, { once: true });
     window.setTimeout(onEnd, SIGNUP_COMPLETE_TRANSITION_MS + 50);
   };
 

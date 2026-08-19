@@ -1087,6 +1087,26 @@
       window.setTimeout(onEnd, SIGNUP_COMPLETE_TRANSITION_MS + 50);
     };
 
+    const finalizeSignupCompletePageDismiss = () => {
+      if (!completePage) return;
+      completePage.style.transition = "none";
+      completePage.hidden = true;
+      completePage.classList.remove(
+        "is-open",
+        "is-positioned-for-down",
+        "is-dismiss-down",
+      );
+      completePage.style.removeProperty("transition");
+    };
+
+    const finalizeSignupWelcomePageDismiss = () => {
+      if (!page) return;
+      page.style.transition = "none";
+      page.hidden = true;
+      page.classList.remove("is-open", "is-exiting-down");
+      page.style.removeProperty("transition");
+    };
+
     const dismissSignupFlowDown = (onClosed) => {
       hideSignupEmailKeyboard();
       if (emailPage) {
@@ -1114,11 +1134,12 @@
         }
       });
 
+      let dismissFinished = false;
       const finish = () => {
-        page?.classList.remove("is-open", "is-exiting-down");
-        if (page) page.hidden = true;
-        completePage?.classList.remove("is-open", "is-positioned-for-down", "is-dismiss-down");
-        if (completePage) completePage.hidden = true;
+        if (dismissFinished) return;
+        dismissFinished = true;
+        finalizeSignupWelcomePageDismiss();
+        finalizeSignupCompletePageDismiss();
         resetSignupEmailPageState();
         onClosed?.();
       };
