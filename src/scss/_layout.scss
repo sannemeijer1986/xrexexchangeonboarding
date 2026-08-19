@@ -3037,6 +3037,18 @@ html[data-prototype-auth="2"] [data-home-auth-section="visitor"] {
   display: none !important;
 }
 
+html[data-prototype-auth="1"] [data-side-menu-auth-section="signed-up"] {
+  display: none !important;
+}
+
+html[data-prototype-auth="2"] [data-side-menu-auth-section="visitor"] {
+  display: none !important;
+}
+
+html[data-prototype-auth="2"] .limits-panel__footer {
+  display: none !important;
+}
+
 .home-visitor__hero {
   flex-shrink: 0;
 }
@@ -3137,6 +3149,11 @@ html[data-prototype-auth="2"] [data-home-auth-section="visitor"] {
 .auth-signup-page.is-open {
   transform: translateY(0);
   pointer-events: auto;
+}
+
+.auth-signup-page.is-open.is-exiting-down {
+  transform: translateY(100%);
+  pointer-events: none;
 }
 
 .auth-signup-page__scroll {
@@ -5122,6 +5139,16 @@ html[data-prototype-auth="2"] [data-home-auth-section="visitor"] {
 .auth-signup-complete-page.is-open {
   transform: translateX(0);
   pointer-events: auto;
+}
+
+// Explore exit — slide down (reverse of Welcome to XREX entrance)
+.auth-signup-complete-page.is-positioned-for-down {
+  transform: translateY(0);
+}
+
+.auth-signup-complete-page.is-dismiss-down {
+  transform: translateY(100%);
+  pointer-events: none;
 }
 
 .auth-signup-complete-page__header {

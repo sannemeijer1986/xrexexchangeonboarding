@@ -726,6 +726,7 @@
 
   const closeSignupCompletePage = () => {
     if (!completePage) return;
+    completePage.classList.remove("is-positioned-for-down", "is-dismiss-down");
     completePage.classList.remove("is-open");
     const onEnd = () => {
       if (!completePage.classList.contains("is-open")) completePage.hidden = true;
@@ -738,17 +739,35 @@
   const AUTH_STATE_STORAGE_KEY = "xrexexchange.authState.v1";
 
   const finishSignupAndExplore = () => {
-    try {
-      if (window.localStorage) {
-        window.localStorage.setItem(AUTH_STATE_STORAGE_KEY, "2");
+    const finish = () => {
+      try {
+        if (window.localStorage) {
+          window.localStorage.setItem(AUTH_STATE_STORAGE_KEY, "2");
+        }
+      } catch (_) {
+        // ignore storage errors
       }
-    } catch (_) {
-      // ignore storage errors
-    }
-    closeSignupCompletePage();
-    window.setTimeout(() => {
       window.location.href = next;
-    }, SIGNUP_COMPLETE_TRANSITION_MS + 50);
+    };
+
+    if (!completePage?.classList.contains("is-open")) {
+      finish();
+      return;
+    }
+
+    completePage.classList.remove("is-open");
+    completePage.classList.add("is-positioned-for-down");
+    void completePage.offsetWidth;
+    completePage.classList.add("is-dismiss-down");
+
+    const onEnd = () => {
+      completePage.classList.remove("is-positioned-for-down", "is-dismiss-down");
+      completePage.hidden = true;
+      completePage.removeEventListener("transitionend", onEnd);
+      finish();
+    };
+    completePage.addEventListener("transitionend", onEnd);
+    window.setTimeout(onEnd, SIGNUP_COMPLETE_TRANSITION_MS + 50);
   };
 
   const finishSignupFlow = () => {

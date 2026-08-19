@@ -63,6 +63,30 @@
     document.documentElement.dataset.prototypeAuth = String(states.auth ?? 1);
   };
 
+  let limitsVariantSync = null;
+  let openKycChecklistFn = null;
+
+  const isPrototypeSignedUp = () => (states.auth ?? 1) >= 2;
+
+  const openAuthGateOrKycChecklist = () => {
+    if (isPrototypeSignedUp()) {
+      openKycChecklistFn?.();
+      return true;
+    }
+    return false;
+  };
+
+  const syncLimitsForAuth = () => {
+    const version =
+      document.documentElement.dataset.prototypeVersion || "lite-mvp";
+    const variant = isPrototypeSignedUp()
+      ? "concept"
+      : version === "concepts"
+        ? "concept"
+        : "mvp";
+    limitsVariantSync?.(variant);
+  };
+
   const syncHomeAuthUi = () => {
     const authState = states.auth ?? 1;
     const isSignedUp = authState >= 2;
@@ -71,6 +95,14 @@
       .querySelectorAll("[data-home-auth-section]")
       .forEach((section) => {
         const kind = section.getAttribute("data-home-auth-section");
+        if (kind === "visitor") section.hidden = isSignedUp;
+        if (kind === "signed-up") section.hidden = !isSignedUp;
+      });
+
+    document
+      .querySelectorAll("[data-side-menu-auth-section]")
+      .forEach((section) => {
+        const kind = section.getAttribute("data-side-menu-auth-section");
         if (kind === "visitor") section.hidden = isSignedUp;
         if (kind === "signed-up") section.hidden = !isSignedUp;
       });
@@ -86,6 +118,11 @@
     document.querySelectorAll("[data-limits-panel-auth-cta]").forEach((btn) => {
       btn.textContent = isSignedUp ? "Get started" : "Sign up / Log in";
     });
+
+    const limitsFooter = document.querySelector(".limits-panel__footer");
+    if (limitsFooter) limitsFooter.hidden = isSignedUp;
+
+    syncLimitsForAuth();
   };
 
   /** Exposes funding state on `<html>` for prototype-only logic/styles. */
@@ -1009,6 +1046,7 @@
 
     const closeSignupCompletePage = () => {
       if (!completePage) return;
+      completePage.classList.remove("is-positioned-for-down", "is-dismiss-down");
       completePage.classList.remove("is-open");
       const onEnd = () => {
         if (!completePage.classList.contains("is-open")) completePage.hidden = true;
@@ -1018,10 +1056,53 @@
       window.setTimeout(onEnd, SIGNUP_COMPLETE_TRANSITION_MS + 50);
     };
 
+    const dismissSignupFlowDown = (onClosed) => {
+      hideSignupEmailKeyboard();
+      if (emailPage) {
+        emailPage.hidden = true;
+        emailPage.classList.remove("is-open");
+      }
+      if (page) {
+        page.hidden = false;
+        page.classList.add("is-open");
+        page.classList.remove("is-exiting-down");
+      }
+      if (completePage) {
+        completePage.hidden = false;
+        completePage.classList.remove("is-positioned-for-down", "is-dismiss-down");
+      }
+
+      requestAnimationFrame(() => {
+        page?.classList.add("is-exiting-down");
+        if (completePage) {
+          completePage.classList.remove("is-open");
+          completePage.classList.add("is-positioned-for-down");
+          void completePage.offsetWidth;
+          completePage.classList.add("is-dismiss-down");
+        }
+      });
+
+      const finish = () => {
+        page?.classList.remove("is-open", "is-exiting-down");
+        if (page) page.hidden = true;
+        completePage?.classList.remove("is-open", "is-positioned-for-down", "is-dismiss-down");
+        if (completePage) completePage.hidden = true;
+        resetSignupEmailPageState();
+        onClosed?.();
+      };
+
+      const animTarget = completePage || page;
+      if (animTarget) {
+        animTarget.addEventListener("transitionend", finish, { once: true });
+      }
+      window.setTimeout(finish, SIGNUP_COMPLETE_TRANSITION_MS + 50);
+    };
+
     const finishSignupAndExplore = () => {
-      closeSignupCompletePage();
-      setState("auth", 2, { force: true });
-      document.dispatchEvent(new CustomEvent("auth-signup-return-home"));
+      dismissSignupFlowDown(() => {
+        setState("auth", 2, { force: true });
+        document.dispatchEvent(new CustomEvent("auth-signup-return-home"));
+      });
     };
 
     const finishSignupFlow = () => {
@@ -1965,7 +2046,10 @@
         ?.addEventListener("click", finishSignupAndExplore);
 
       document.querySelectorAll("[data-home-setup-cta]").forEach((btn) => {
-        btn.addEventListener("click", showNotInPrototype);
+        btn.addEventListener("click", () => {
+          if (openAuthGateOrKycChecklist()) return;
+          showNotInPrototype();
+        });
       });
 
       syncNationalityUi();
@@ -2164,13 +2248,7 @@
       .querySelectorAll("[data-home-visitor-cta], [data-visitor-login-cta]")
       .forEach((cta) => {
         cta.addEventListener("click", () => {
-          if (
-            (states.auth ?? 1) >= 2 &&
-            cta.hasAttribute("data-limits-panel-auth-cta")
-          ) {
-            showNotInPrototype();
-            return;
-          }
+          if (openAuthGateOrKycChecklist()) return;
           if (cta.closest(".side-menu")) {
             openFromSideMenu();
             return;
@@ -2179,7 +2257,10 @@
         });
       });
 
-    document.addEventListener("auth-signup-open", () => open());
+    document.addEventListener("auth-signup-open", () => {
+      if (openAuthGateOrKycChecklist()) return;
+      open();
+    });
 
     page
       .querySelector("[data-auth-signup-close]")
@@ -6462,7 +6543,114 @@
     if (scroller) scroller.scrollTop = 0;
   };
 
-  let limitsVariantSync = null;
+  const initKycChecklistPanel = () => {
+    const panel = document.querySelector("[data-setup-checklist]");
+    const container = document.querySelector(".phone-container");
+    if (!panel) return;
+    const openButtons = document.querySelectorAll("[data-setup-open]");
+    const closeButtons = panel.querySelectorAll("[data-setup-close]");
+
+    let snackbarTimeout = null;
+    const showSnackbar = (message) => {
+      const snackbar = container?.querySelector("[data-snackbar]");
+      if (!snackbar) return;
+      const text = snackbar.querySelector("[data-snackbar-text]");
+      if (text) text.textContent = message;
+      if (snackbarTimeout) {
+        clearTimeout(snackbarTimeout);
+        snackbarTimeout = null;
+      }
+      snackbar.hidden = false;
+      snackbar.classList.remove("is-visible");
+      void snackbar.offsetWidth;
+      requestAnimationFrame(() => snackbar.classList.add("is-visible"));
+      snackbarTimeout = setTimeout(() => {
+        snackbar.classList.remove("is-visible");
+        snackbarTimeout = setTimeout(() => {
+          if (!snackbar.classList.contains("is-visible")) snackbar.hidden = true;
+        }, 320);
+      }, 2200);
+    };
+    const showNotInPrototype = () => showSnackbar("Not in prototype");
+
+    const setOpen = (nextOpen) => {
+      if (nextOpen) {
+        panel.hidden = false;
+        if (container) {
+          container.classList.remove("is-checklist-open");
+          container.classList.remove("is-checklist-fading");
+        }
+        const scrollBody = panel.querySelector(".setup-checklist__body");
+        if (scrollBody) scrollBody.scrollTop = 0;
+        requestAnimationFrame(() => {
+          panel.classList.add("is-open");
+        });
+        setTimeout(() => {
+          if (container && panel.classList.contains("is-open")) {
+            container.classList.add("is-checklist-fading");
+          }
+        }, 80);
+        setTimeout(() => {
+          if (container && panel.classList.contains("is-open")) {
+            container.classList.add("is-checklist-open");
+          }
+        }, 350);
+      } else {
+        panel.classList.remove("is-open");
+        if (container) {
+          container.classList.add("is-checklist-fading");
+          container.classList.remove("is-checklist-open");
+          requestAnimationFrame(() => {
+            container.classList.remove("is-checklist-fading");
+          });
+        }
+        const onEnd = () => {
+          if (!panel.classList.contains("is-open")) {
+            panel.hidden = true;
+          }
+          panel.removeEventListener("transitionend", onEnd);
+        };
+        panel.addEventListener("transitionend", onEnd);
+        setTimeout(onEnd, 400);
+      }
+    };
+
+    openKycChecklistFn = () => setOpen(true);
+
+    openButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        if (container && container.classList.contains("is-menu-open")) {
+          container.classList.remove("is-menu-open");
+          setTimeout(() => setOpen(true), 220);
+        } else {
+          setOpen(true);
+        }
+      });
+    });
+    closeButtons.forEach((button) => {
+      button.addEventListener("click", () => setOpen(false));
+    });
+
+    panel
+      .querySelectorAll(
+        "[data-checklist-not-in-prototype], [data-checklist-cta], [data-checklist-action]:not([disabled])",
+      )
+      .forEach((el) => {
+        el.addEventListener("click", (event) => {
+          event.preventDefault();
+          showNotInPrototype();
+        });
+      });
+
+    panel.querySelectorAll("[data-checklist-item-action]").forEach((item) => {
+      item.addEventListener("click", (event) => {
+        if (item.dataset.nonclickable === "true") return;
+        if (event.target.closest(".setup-checklist__item-action")) return;
+        const action = item.querySelector(".setup-checklist__item-action");
+        if (action && !action.disabled) action.click();
+      });
+    });
+  };
 
   const initLimitsPanel = () => {
     const panel = document.querySelector("[data-limits-panel]");
@@ -6662,6 +6850,8 @@
     closeButtons.forEach((button) => {
       button.addEventListener("click", () => setOpen(false));
     });
+
+    syncLimitsForAuth();
   };
 
   const initSettingsPage = () => {
@@ -7675,7 +7865,13 @@
       const select = document.querySelector("[data-prototype-version]");
       if (select && select.value !== version) select.value = version;
 
-      limitsVariantSync?.(version === "concepts" ? "concept" : "mvp");
+      limitsVariantSync?.(
+        (states.auth ?? 1) >= 2
+          ? "concept"
+          : version === "concepts"
+            ? "concept"
+            : "mvp",
+      );
       syncFinanceTabsForVersion(version);
     };
 
@@ -10178,6 +10374,7 @@
   // ─────────────────────────────────────────────────────────────────────────────
 
   initStates();
+  initKycChecklistPanel();
   initAuthSignup();
   initBadgeControls();
   const tabNavApi = initTabs();
