@@ -349,6 +349,10 @@
     const nationalityPlaceholder = emailPage?.querySelector("[data-auth-signup-nationality-placeholder]");
     const nationalityValueEl = emailPage?.querySelector("[data-auth-signup-nationality-value]");
     const nationalityConsentBtn = emailPage?.querySelector("[data-auth-signup-nationality-consent]");
+    const idNumberBtn = emailPage?.querySelector("[data-auth-signup-id-number]");
+    const idSurnameBtn = emailPage?.querySelector("[data-auth-signup-id-surname]");
+    const idGivenBtn = emailPage?.querySelector("[data-auth-signup-id-given]");
+    const idDobBtn = emailPage?.querySelector("[data-auth-signup-id-dob]");
     const signupCodeLoader = emailPage?.querySelector("[data-auth-signup-code-loader]");
     const stepperSteps = emailPage
       ? Array.from(emailPage.querySelectorAll(".auth-signup-email-page__step"))
@@ -386,11 +390,71 @@
     let mobileCodeActiveIndex = 0;
     let nationalitySelected = false;
     let nationalityConsentChecked = false;
+    let idNumberFilled = false;
+    let idSurnameFilled = false;
+    let idGivenFilled = false;
+    let idDobFilled = false;
 
     const isVerificationCodeStep = () =>
       signupEmailStep === "code" || signupEmailStep === "mobile-code";
 
     const isNationalityStepComplete = () => nationalitySelected && nationalityConsentChecked;
+
+    const isIdDetailsStepComplete = () =>
+      idNumberFilled && idSurnameFilled && idGivenFilled && idDobFilled;
+
+    const syncIdFieldUi = (btn, filled) => {
+      if (!btn) return;
+      btn.classList.toggle("is-filled", filled);
+      const placeholder = btn.querySelector(".auth-signup-email-page__id-input-placeholder");
+      const value = btn.querySelector(".auth-signup-email-page__id-input-value");
+      if (placeholder) placeholder.hidden = filled;
+      if (value) value.hidden = !filled;
+    };
+
+    const syncIdDetailsUi = () => {
+      syncIdFieldUi(idNumberBtn, idNumberFilled);
+      syncIdFieldUi(idSurnameBtn, idSurnameFilled);
+      syncIdFieldUi(idGivenBtn, idGivenFilled);
+      syncIdFieldUi(idDobBtn, idDobFilled);
+      if (signupEmailStep === "id-details" && emailContinueBtn) {
+        emailContinueBtn.hidden = false;
+        emailContinueBtn.textContent = "Continue";
+        emailContinueBtn.disabled = !isIdDetailsStepComplete();
+      }
+    };
+
+    const fillIdNumber = () => {
+      idNumberFilled = true;
+      syncIdDetailsUi();
+      syncActionButtons();
+    };
+
+    const fillIdSurname = () => {
+      idSurnameFilled = true;
+      syncIdDetailsUi();
+      syncActionButtons();
+    };
+
+    const fillIdGiven = () => {
+      idGivenFilled = true;
+      syncIdDetailsUi();
+      syncActionButtons();
+    };
+
+    const fillIdDob = () => {
+      idDobFilled = true;
+      syncIdDetailsUi();
+      syncActionButtons();
+    };
+
+    const resetIdDetailsFields = () => {
+      idNumberFilled = false;
+      idSurnameFilled = false;
+      idGivenFilled = false;
+      idDobFilled = false;
+      syncIdDetailsUi();
+    };
 
     const syncNationalityUi = () => {
       nationalitySelectBtn?.classList.toggle("is-filled", nationalitySelected);
@@ -696,6 +760,10 @@
         const enabled = isNationalityStepComplete();
         if (emailContinueBtn) emailContinueBtn.disabled = !enabled;
         if (keyboardContinueBtn) keyboardContinueBtn.disabled = !enabled;
+      } else if (signupEmailStep === "id-details") {
+        const enabled = isIdDetailsStepComplete();
+        if (emailContinueBtn) emailContinueBtn.disabled = !enabled;
+        if (keyboardContinueBtn) keyboardContinueBtn.disabled = !enabled;
       }
     };
 
@@ -711,10 +779,13 @@
       syncSignupKeyboardMode();
     };
 
-    const SIGNUP_FLOW_STEP_COUNT = 4;
+    const SIGNUP_FLOW_STEP_COUNT = 5;
 
     const getSignupFlowStepIndex = () => {
       if (emailPage?.classList.contains("is-password-step") || signupEmailStep === "password") {
+        return 5;
+      }
+      if (emailPage?.classList.contains("is-id-details-step") || signupEmailStep === "id-details") {
         return 4;
       }
       if (emailPage?.classList.contains("is-nationality-step") || signupEmailStep === "nationality") {
@@ -838,6 +909,7 @@
         "is-code-step",
         "is-password-step",
         "is-nationality-step",
+        "is-id-details-step",
         "is-mobile-step",
         "is-mobile-code-step",
       );
@@ -860,7 +932,7 @@
     const showCodeStepUi = ({ resetCode = true } = {}) => {
       signupEmailStep = "code";
       emailPage?.classList.add("is-code-step");
-      emailPage?.classList.remove("is-password-step", "is-mobile-step", "is-mobile-code-step", "is-nationality-step");
+      emailPage?.classList.remove("is-password-step", "is-mobile-step", "is-mobile-code-step", "is-nationality-step", "is-id-details-step");
       if (emailPanel) emailPanel.hidden = true;
       if (codePanel) codePanel.hidden = false;
       if (mobilePanel) mobilePanel.hidden = true;
@@ -890,6 +962,7 @@
         "is-mobile-step",
         "is-mobile-code-step",
         "is-password-step",
+        "is-id-details-step",
         "is-hybrid-code-active",
         "is-hybrid-mobile-code-active",
       );
@@ -901,6 +974,25 @@
       syncActionButtons();
     };
 
+    const showIdDetailsStepUi = () => {
+      signupEmailStep = "id-details";
+      emailPage?.classList.remove(
+        "is-code-step",
+        "is-mobile-step",
+        "is-mobile-code-step",
+        "is-password-step",
+        "is-nationality-step",
+        "is-hybrid-code-active",
+        "is-hybrid-mobile-code-active",
+      );
+      emailPage?.classList.add("is-id-details-step");
+      syncStepperUi();
+      syncKeyboardStickyUi();
+      hideSignupEmailKeyboard();
+      syncIdDetailsUi();
+      syncActionButtons();
+    };
+
     const showPasswordStepUi = () => {
       signupEmailStep = "password";
       emailPage?.classList.remove(
@@ -908,6 +1000,7 @@
         "is-mobile-step",
         "is-mobile-code-step",
         "is-nationality-step",
+        "is-id-details-step",
         "is-hybrid-code-active",
         "is-hybrid-mobile-code-active",
       );
@@ -931,7 +1024,7 @@
     const showMobileStepUi = ({ resetMobile = false } = {}) => {
       if (window.__hybridSignup?.isActive?.()) {
         signupEmailStep = "mobile";
-        emailPage?.classList.remove("is-code-step", "is-password-step", "is-mobile-code-step", "is-nationality-step");
+        emailPage?.classList.remove("is-code-step", "is-password-step", "is-mobile-code-step", "is-nationality-step", "is-id-details-step");
         emailPage?.classList.add("is-mobile-step");
         if (emailPanel) emailPanel.hidden = true;
         if (codePanel) codePanel.hidden = true;
@@ -943,7 +1036,7 @@
         return;
       }
       signupEmailStep = "mobile";
-      emailPage?.classList.remove("is-code-step", "is-password-step", "is-mobile-code-step", "is-nationality-step");
+      emailPage?.classList.remove("is-code-step", "is-password-step", "is-mobile-code-step", "is-nationality-step", "is-id-details-step");
       emailPage?.classList.add("is-mobile-step");
       if (emailPanel) emailPanel.hidden = true;
       if (codePanel) codePanel.hidden = true;
@@ -962,7 +1055,7 @@
 
     const showMobileCodeStepUi = ({ resetCode = true } = {}) => {
       signupEmailStep = "mobile-code";
-      emailPage?.classList.remove("is-password-step", "is-nationality-step");
+      emailPage?.classList.remove("is-password-step", "is-nationality-step", "is-id-details-step");
       emailPage?.classList.add("is-mobile-step", "is-mobile-code-step");
       if (emailPanel) emailPanel.hidden = true;
       if (codePanel) codePanel.hidden = true;
@@ -1022,16 +1115,22 @@
       showNationalityStepUi();
     };
 
-    const advanceToPasswordStep = () => {
+    const advanceToIdDetailsStep = () => {
       if (signupEmailStep !== "nationality") return;
       if (!isNationalityStepComplete()) return;
+      showIdDetailsStepUi();
+    };
+
+    const advanceToPasswordStep = () => {
+      if (signupEmailStep !== "id-details") return;
+      if (!isIdDetailsStepComplete()) return;
       showPasswordStepUi();
     };
 
     const returnFromNationalityStep = () => {
       hideSignupCodeLoader();
       signupEmailStep = "mobile-code";
-      emailPage?.classList.remove("is-nationality-step", "is-password-step");
+      emailPage?.classList.remove("is-nationality-step", "is-id-details-step", "is-password-step");
       emailPage?.classList.add("is-mobile-step", "is-mobile-code-step");
       if (window.__hybridSignup?.isActive?.()) {
         emailPage?.classList.add("is-hybrid-mobile-code-active");
@@ -1052,10 +1151,15 @@
       hideSignupEmailKeyboard();
     };
 
+    const returnFromIdDetailsStep = () => {
+      hideSignupCodeLoader();
+      showNationalityStepUi();
+    };
+
     const returnFromPasswordStep = () => {
       hideSignupCodeLoader();
       resetPasswordFields();
-      showNationalityStepUi();
+      showIdDetailsStepUi();
     };
 
     const resetSignupEmailPageState = () => {
@@ -1069,6 +1173,7 @@
       resetMobileField();
       resetMobileCodeField();
       resetNationalityFields();
+      resetIdDetailsFields();
     };
 
     const resetSignupFlowForMergeModeSwitch = () => {
@@ -1091,6 +1196,11 @@
       ) {
         slide = "password";
       } else if (
+        signupEmailStep === "id-details" ||
+        emailPage.classList.contains("is-id-details-step")
+      ) {
+        slide = "id-details";
+      } else if (
         signupEmailStep === "nationality" ||
         emailPage.classList.contains("is-nationality-step")
       ) {
@@ -1109,6 +1219,7 @@
       resetMobileField();
       resetMobileCodeField();
       resetNationalityFields();
+      resetIdDetailsFields();
       window.__hybridSignup?.resetHybridMobile?.();
       window.__hybridSignup?.resetHybridVerify?.();
 
@@ -1118,12 +1229,18 @@
         "is-hybrid-mobile-code-active",
         "is-mobile-code-step",
         "is-nationality-step",
+        "is-id-details-step",
         "is-password-step",
         "is-mobile-step",
       );
 
       if (slide === "password") {
         showPasswordStepUi();
+        return;
+      }
+
+      if (slide === "id-details") {
+        showIdDetailsStepUi();
         return;
       }
 
@@ -1478,11 +1595,6 @@
 
     const handleMobileCodePaste = () => {
       if (isMobileCodeComplete()) return;
-      if (!isMobileCodeFocused()) {
-        focusMobileCodeEntry();
-        showSignupEmailKeyboard();
-        return;
-      }
       submitSignupMobileCode();
     };
 
@@ -1529,6 +1641,11 @@
       }
       if (signupEmailStep === "nationality") {
         if (!isNationalityStepComplete()) return;
+        advanceToIdDetailsStep();
+        return;
+      }
+      if (signupEmailStep === "id-details") {
+        if (!isIdDetailsStepComplete()) return;
         advanceToPasswordStep();
         return;
       }
@@ -1550,6 +1667,10 @@
       }
       if (signupEmailStep === "password") {
         returnFromPasswordStep();
+        return;
+      }
+      if (signupEmailStep === "id-details") {
+        returnFromIdDetailsStep();
         return;
       }
       if (signupEmailStep === "nationality") {
@@ -1646,11 +1767,6 @@
 
     const handleCodePaste = () => {
       if (isCodeComplete()) return;
-      if (!isCodeFocused()) {
-        focusCodeEntry();
-        showSignupEmailKeyboard();
-        return;
-      }
       submitSignupCode();
     };
 
@@ -1680,6 +1796,10 @@
         if (e.target.closest("a")) return;
         toggleNationalityConsent();
       });
+      idNumberBtn?.addEventListener("click", fillIdNumber);
+      idSurnameBtn?.addEventListener("click", fillIdSurname);
+      idGivenBtn?.addEventListener("click", fillIdGiven);
+      idDobBtn?.addEventListener("click", fillIdDob);
 
       syncNationalityUi();
 
@@ -1863,6 +1983,9 @@
         if (e.target.closest("[data-auth-signup-password-visibility]")) return;
         if (e.target.closest("[data-auth-signup-code-grid]")) return;
         if (e.target.closest("[data-auth-signup-mobile-code-grid]")) return;
+        if (e.target.closest("[data-auth-signup-code-paste]")) return;
+        if (e.target.closest("[data-auth-signup-mobile-code-paste]")) return;
+        if (e.target.closest("[data-auth-signup-code-meta]")) return;
         if (e.target.closest("[data-auth-signup-email-edit]")) return;
         if (e.target.closest("[data-auth-signup-mobile-edit]")) return;
         if (e.target.closest("[data-auth-signup-email-back]")) return;

@@ -108,7 +108,8 @@
   const isHybridManagedStep = () =>
     isHybrid() &&
     !emailPage?.classList.contains("is-password-step") &&
-    !emailPage?.classList.contains("is-nationality-step");
+    !emailPage?.classList.contains("is-nationality-step") &&
+    !emailPage?.classList.contains("is-id-details-step");
 
   const syncFlowVisibility = () => {
     const hybridOn = isHybrid();
@@ -812,11 +813,9 @@
     });
   });
 
-  hybridCodePaste?.addEventListener("click", () => {
+  hybridCodePaste?.addEventListener("click", (event) => {
+    event.stopPropagation();
     if (!isHybrid() || phase !== "code") return;
-    if (!hybridCodeGrid?.classList.contains("is-focused")) {
-      focusHybridCodeEntry(0);
-    }
     submitHybridCode();
   });
 
@@ -870,11 +869,9 @@
     });
   });
 
-  hybridMobileCodePaste?.addEventListener("click", () => {
+  hybridMobileCodePaste?.addEventListener("click", (event) => {
+    event.stopPropagation();
     if (!isHybrid() || phase !== "mobile-code") return;
-    if (!hybridMobileCodeGrid?.classList.contains("is-focused")) {
-      focusHybridMobileCodeEntry(0);
-    }
     submitHybridMobileCode();
   });
 
@@ -1027,6 +1024,7 @@
         "is-mobile-code-step",
         "is-hybrid-mobile-code-active",
         "is-nationality-step",
+        "is-id-details-step",
         "is-password-step",
       );
       emailPage?.classList.add("is-hybrid-code-active", "is-code-step");
