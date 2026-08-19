@@ -102,8 +102,6 @@
   const nationalityValueEl = emailPage?.querySelector("[data-auth-signup-nationality-value]");
   const nationalityConsentBtn = emailPage?.querySelector("[data-auth-signup-nationality-consent]");
   const idNumberBtn = emailPage?.querySelector("[data-auth-signup-id-number]");
-  const idSurnameBtn = emailPage?.querySelector("[data-auth-signup-id-surname]");
-  const idGivenBtn = emailPage?.querySelector("[data-auth-signup-id-given]");
   const idDobRoot = emailPage?.querySelector("[data-auth-signup-id-dob]");
   const signupCodeLoader = emailPage?.querySelector("[data-auth-signup-code-loader]");
   const referralSheet = document.querySelector("[data-auth-referral-sheet]");
@@ -147,8 +145,6 @@
   let nationalitySelected = false;
   let nationalityConsentChecked = false;
   let idNumberFilled = false;
-  let idSurnameFilled = false;
-  let idGivenFilled = false;
 
   const idDobApi =
     typeof window.initAuthSignupIdDob === "function"
@@ -166,8 +162,7 @@
 
   const isNationalityStepComplete = () => nationalitySelected && nationalityConsentChecked;
 
-  const isIdDetailsStepComplete = () =>
-    idNumberFilled && idSurnameFilled && idGivenFilled && idDobApi.isValid();
+  const isIdDetailsStepComplete = () => idNumberFilled && idDobApi.isValid();
 
   const syncIdFieldUi = (btn, filled) => {
     if (!btn) return;
@@ -180,8 +175,6 @@
 
   const syncIdDetailsUi = () => {
     syncIdFieldUi(idNumberBtn, idNumberFilled);
-    syncIdFieldUi(idSurnameBtn, idSurnameFilled);
-    syncIdFieldUi(idGivenBtn, idGivenFilled);
     if (signupEmailStep === "id-details" && emailContinueBtn) {
       emailContinueBtn.hidden = false;
       emailContinueBtn.textContent = "Continue";
@@ -195,22 +188,8 @@
     syncActionButtons();
   };
 
-  const fillIdSurname = () => {
-    idSurnameFilled = true;
-    syncIdDetailsUi();
-    syncActionButtons();
-  };
-
-  const fillIdGiven = () => {
-    idGivenFilled = true;
-    syncIdDetailsUi();
-    syncActionButtons();
-  };
-
   const resetIdDetailsFields = () => {
     idNumberFilled = false;
-    idSurnameFilled = false;
-    idGivenFilled = false;
     idDobApi.reset();
     syncIdDetailsUi();
   };
@@ -1511,8 +1490,6 @@
       toggleNationalityConsent();
     });
     idNumberBtn?.addEventListener("click", fillIdNumber);
-    idSurnameBtn?.addEventListener("click", fillIdSurname);
-    idGivenBtn?.addEventListener("click", fillIdGiven);
 
     referralSheet
       ?.querySelector("[data-auth-referral-sheet-continue]")

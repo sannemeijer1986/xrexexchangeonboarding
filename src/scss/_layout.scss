@@ -3865,11 +3865,11 @@ html[data-prototype-auth="2"] .limits-panel__footer {
     outline: 2px solid #3f78ff;
     outline-offset: 0;
   }
-}
 
-.auth-signup-id-dob.is-error .auth-signup-id-dob__input {
-  outline: 1px solid #ff4d4f;
-  outline-offset: 0;
+  &.is-error {
+    outline: 1.5px solid #ff4d4f;
+    outline-offset: 0;
+  }
 }
 
 .auth-signup-id-dob__segment-label {
@@ -3879,45 +3879,80 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   color: #9b9c9c;
 }
 
-.auth-signup-id-dob__helper {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.auth-signup-id-dob__status-area {
   width: 100%;
-  min-height: 32px;
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-signup-id-dob__idle-helper {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: #9b9c9c;
+
+  &[hidden] {
+    display: none !important;
+  }
+}
+
+.auth-signup-id-dob__status-slot {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  min-height: 40px;
   padding: 8px 10px;
   border-radius: 8px;
-  background: #1b1d1d;
   box-sizing: border-box;
 
   &[hidden] {
     display: none !important;
   }
+
+  &.is-hint {
+    padding: 4px 0;
+    background: transparent;
+  }
+
+  &.is-hint .auth-signup-id-dob__status-text {
+    color: #3f78ff;
+    font-weight: 600;
+  }
+
+  &.is-confirmed {
+    background: rgba(39, 92, 253, 0.16);
+  }
+
+  &.is-confirmed .auth-signup-id-dob__status-text {
+    color: #ffffff;
+  }
+
+  &.is-error {
+    background: #3a1f1f;
+  }
+
+  &.is-error .auth-signup-id-dob__status-text {
+    color: #ff8a8a;
+  }
 }
 
-.auth-signup-id-dob__helper-icon {
+.auth-signup-id-dob__status-icon {
   flex-shrink: 0;
   width: 16px;
   height: 16px;
+  margin-top: 1px;
 }
 
-.auth-signup-id-dob__helper-text {
+.auth-signup-id-dob__status-text {
+  flex: 1;
+  min-width: 0;
   font-size: 12px;
   font-weight: 400;
   line-height: 16px;
-  color: #9b9c9c;
-}
-
-.auth-signup-id-dob__error {
-  margin: 0;
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 18px;
-  color: #ff4d4f;
-
-  &[hidden] {
-    display: none !important;
-  }
 }
 
 .auth-signup-email-page__nationality-form {
@@ -5351,6 +5386,28 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   flex-direction: column;
   gap: 0px;
   padding: 4px;
+  margin-top: 24px;
+}
+
+.wallet-page__body {
+  padding: 16px;
+}
+
+.wallet-page__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.wallet-page__row {
+  background: #1b1d1d;
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.wallet-page__row .market-row__mid {
+  text-align: right;
 }
 
 .asset-card__label {

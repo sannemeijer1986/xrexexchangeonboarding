@@ -65,8 +65,19 @@
 
   let limitsVariantSync = null;
   let openKycChecklistFn = null;
+  let setActiveTabFn = null;
 
   const isPrototypeSignedUp = () => (states.auth ?? 1) >= 2;
+
+  /** Signed up → visitor while on Wallet: leave tab and show signup welcome. */
+  const handleSignedUpToVisitorAuth = () => {
+    const activeTab = String(
+      document.documentElement.dataset.activeTab || "home",
+    ).toLowerCase();
+    if (activeTab !== "wallet") return;
+    setActiveTabFn?.("home");
+    document.dispatchEvent(new CustomEvent("auth-signup-open"));
+  };
 
   const openAuthGateOrKycChecklist = () => {
     if (isPrototypeSignedUp()) {
@@ -123,6 +134,43 @@
     if (limitsFooter) limitsFooter.hidden = isSignedUp;
 
     syncLimitsForAuth();
+    syncWalletUi();
+  };
+
+  const formatWalletFiat = (value, decimals = 2) => {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return "0.00";
+    return n.toLocaleString("en-US", {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+  };
+
+  const syncWalletUi = () => {
+    if (!isPrototypeSignedUp()) return;
+
+    const twd = Number(PROTOTYPE_BALANCES.TWD) || 0;
+    const usdt = Number(PROTOTYPE_BALANCES.USDT) || 0;
+    const btc = Number(PROTOTYPE_BALANCES.BTC) || 0;
+    const btcUsdRate = 65428.44;
+    const twdUsdRate = 32;
+    const netUsd = twd / twdUsdRate + usdt + btc * btcUsdRate;
+
+    document.querySelectorAll("[data-wallet-net-assets]").forEach((el) => {
+      el.textContent = `${formatWalletFiat(netUsd)} USD`;
+    });
+    document.querySelectorAll("[data-wallet-balance-twd]").forEach((el) => {
+      el.textContent = formatWalletFiat(twd);
+    });
+    document.querySelectorAll("[data-wallet-balance-usdt]").forEach((el) => {
+      el.textContent = formatWalletFiat(usdt);
+    });
+    document.querySelectorAll("[data-wallet-balance-btc]").forEach((el) => {
+      el.textContent = btc.toLocaleString("en-US", {
+        minimumFractionDigits: 6,
+        maximumFractionDigits: 6,
+      });
+    });
   };
 
   /** Exposes funding state on `<html>` for prototype-only logic/styles. */
@@ -213,6 +261,7 @@
     const clamped = clamp(parseInt(next, 10), config.min, config.max);
     if (!opts.force && states[group] === clamped) return clamped;
 
+    const prevAuth = group === "auth" ? (states.auth ?? 1) : null;
     states[group] = clamped;
     try {
       if (window.localStorage) {
@@ -260,6 +309,9 @@
     if (group === "auth") {
       syncPrototypeAuthToDocument();
       syncHomeAuthUi();
+      if (prevAuth >= 2 && clamped < 2) {
+        handleSignedUpToVisitorAuth();
+      }
     }
     return clamped;
   };
@@ -444,8 +496,6 @@
     const nationalityValueEl = emailPage?.querySelector("[data-auth-signup-nationality-value]");
     const nationalityConsentBtn = emailPage?.querySelector("[data-auth-signup-nationality-consent]");
     const idNumberBtn = emailPage?.querySelector("[data-auth-signup-id-number]");
-    const idSurnameBtn = emailPage?.querySelector("[data-auth-signup-id-surname]");
-    const idGivenBtn = emailPage?.querySelector("[data-auth-signup-id-given]");
     const idDobRoot = emailPage?.querySelector("[data-auth-signup-id-dob]");
     const signupCodeLoader = emailPage?.querySelector("[data-auth-signup-code-loader]");
     const referralSheet = document.querySelector("[data-auth-referral-sheet]");
@@ -489,8 +539,6 @@
     let nationalitySelected = false;
     let nationalityConsentChecked = false;
     let idNumberFilled = false;
-    let idSurnameFilled = false;
-    let idGivenFilled = false;
 
     const idDobApi =
       typeof window.initAuthSignupIdDob === "function"
@@ -508,8 +556,7 @@
 
     const isNationalityStepComplete = () => nationalitySelected && nationalityConsentChecked;
 
-    const isIdDetailsStepComplete = () =>
-      idNumberFilled && idSurnameFilled && idGivenFilled && idDobApi.isValid();
+    const isIdDetailsStepComplete = () => idNumberFilled && idDobApi.isValid();
 
     const syncIdFieldUi = (btn, filled) => {
       if (!btn) return;
@@ -522,8 +569,6 @@
 
     const syncIdDetailsUi = () => {
       syncIdFieldUi(idNumberBtn, idNumberFilled);
-      syncIdFieldUi(idSurnameBtn, idSurnameFilled);
-      syncIdFieldUi(idGivenBtn, idGivenFilled);
       if (signupEmailStep === "id-details" && emailContinueBtn) {
         emailContinueBtn.hidden = false;
         emailContinueBtn.textContent = "Continue";
@@ -537,22 +582,8 @@
       syncActionButtons();
     };
 
-    const fillIdSurname = () => {
-      idSurnameFilled = true;
-      syncIdDetailsUi();
-      syncActionButtons();
-    };
-
-    const fillIdGiven = () => {
-      idGivenFilled = true;
-      syncIdDetailsUi();
-      syncActionButtons();
-    };
-
     const resetIdDetailsFields = () => {
       idNumberFilled = false;
-      idSurnameFilled = false;
-      idGivenFilled = false;
       idDobApi.reset();
       syncIdDetailsUi();
     };
@@ -2025,8 +2056,6 @@
         toggleNationalityConsent();
       });
       idNumberBtn?.addEventListener("click", fillIdNumber);
-      idSurnameBtn?.addEventListener("click", fillIdSurname);
-      idGivenBtn?.addEventListener("click", fillIdGiven);
 
       referralSheet
         ?.querySelector("[data-auth-referral-sheet-continue]")
@@ -2658,7 +2687,11 @@
           return;
         }
         if (next === "wallet") {
-          document.dispatchEvent(new CustomEvent("auth-signup-open"));
+          if (!isPrototypeSignedUp()) {
+            document.dispatchEvent(new CustomEvent("auth-signup-open"));
+            return;
+          }
+          setActiveTab("wallet");
           return;
         }
         setActiveTab(next);
@@ -10378,6 +10411,7 @@
   initAuthSignup();
   initBadgeControls();
   const tabNavApi = initTabs();
+  setActiveTabFn = tabNavApi.setActiveTab;
   document.addEventListener("auth-signup-return-home", () => {
     tabNavApi.setActiveTab("home");
     const content = document.querySelector("[data-content]");
@@ -10411,6 +10445,16 @@
     )
       return;
     goTradePage(action);
+  });
+
+  document.querySelectorAll("[data-wallet-convert]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (!isPrototypeSignedUp()) {
+        document.dispatchEvent(new CustomEvent("auth-signup-open"));
+        return;
+      }
+      goTradePage("convert");
+    });
   });
 
   document.querySelectorAll("[data-open-trade-page]").forEach((el) => {

@@ -292,6 +292,18 @@
                     </div>
                 </section>
 
+                <section class="asset-card" aria-label="Net assets" data-home-auth-section="signed-up" hidden>
+                    <div class="asset-card__label">
+                        <span>Net assets ≈</span>
+                        <img src="assets/icon_eye.svg" alt="" class="asset-card__eye" />
+                    </div>
+                    <div class="asset-card__value" data-wallet-net-assets>14,580.00 USD</div>
+                    <div class="asset-card__actions">
+                        <button class="asset-btn asset-btn--primary" type="button" data-setup-open>Go deposit</button>
+                        <button class="asset-btn asset-btn--secondary" type="button" data-wallet-convert>Convert</button>
+                    </div>
+                </section>
+
                 <section class="explore">
                     <div class="section-title">
                         <span class="section-title__label">Explore</span>
@@ -1803,8 +1815,58 @@ Max 100K</span>
                 </div>
 
                 <div data-tab-view="wallet" hidden>
-                    <section class="finance">
-                        <div class="finance__body"></div>
+                    <section class="finance wallet-page">
+                        <div class="finance__body wallet-page__body">
+                            <section class="asset-card" aria-label="Net assets">
+                                <div class="asset-card__label">
+                                    <span>Net assets ≈</span>
+                                    <img src="assets/icon_eye.svg" alt="" class="asset-card__eye" />
+                                </div>
+                                <div class="asset-card__value" data-wallet-net-assets>14,580.00 USD</div>
+                                <div class="asset-card__actions">
+                                    <button class="asset-btn asset-btn--primary" type="button" data-setup-open>Go deposit</button>
+                                    <button class="asset-btn asset-btn--secondary" type="button" data-wallet-convert>Convert</button>
+                                </div>
+                            </section>
+                            <div class="wallet-page__list">
+                                <div class="market-row wallet-page__row">
+                                    <div class="market-row__left">
+                                        <img src="assets/icon_currency_TWD.svg" alt="TWD" />
+                                        <div>
+                                            <div class="market-row__symbol">TWD</div>
+                                            <div class="market-row__name">Taiwan dollar</div>
+                                        </div>
+                                    </div>
+                                    <div class="market-row__mid">
+                                        <div class="market-row__price" data-wallet-balance-twd>75,000.00</div>
+                                    </div>
+                                </div>
+                                <div class="market-row wallet-page__row">
+                                    <div class="market-row__left">
+                                        <img src="assets/icon_currency_usdt.svg" alt="USDT" />
+                                        <div>
+                                            <div class="market-row__symbol">USDT</div>
+                                            <div class="market-row__name">Tether</div>
+                                        </div>
+                                    </div>
+                                    <div class="market-row__mid">
+                                        <div class="market-row__price" data-wallet-balance-usdt>2,750.00</div>
+                                    </div>
+                                </div>
+                                <div class="market-row wallet-page__row">
+                                    <div class="market-row__left">
+                                        <img src="assets/icon_currency_btc.svg" alt="BTC" />
+                                        <div>
+                                            <div class="market-row__symbol">BTC</div>
+                                            <div class="market-row__name">Bitcoin</div>
+                                        </div>
+                                    </div>
+                                    <div class="market-row__mid">
+                                        <div class="market-row__price" data-wallet-balance-btc>0.000000</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </section>
                 </div>
             </div>
@@ -2176,28 +2238,12 @@ Max 100K</span>
                                                 <span class="auth-signup-email-page__id-input-value" hidden>A123456789</span>
                                             </button>
                                         </div>
-                                        <div class="auth-signup-email-page__id-field">
-                                            <div class="auth-signup-email-page__id-field-heading">
-                                                <span class="auth-signup-email-page__id-field-label">Chinese name</span>
-                                                <span class="auth-signup-email-page__id-field-hint">Surname first, as shown on your ID</span>
-                                            </div>
-                                            <div class="auth-signup-email-page__id-name-row">
-                                                <button type="button" class="auth-signup-email-page__id-input" data-auth-signup-id-surname aria-label="Chinese surname">
-                                                    <span class="auth-signup-email-page__id-input-placeholder">姓</span>
-                                                    <span class="auth-signup-email-page__id-input-value" hidden>王</span>
-                                                </button>
-                                                <button type="button" class="auth-signup-email-page__id-input" data-auth-signup-id-given aria-label="Chinese given name">
-                                                    <span class="auth-signup-email-page__id-input-placeholder">名</span>
-                                                    <span class="auth-signup-email-page__id-input-value" hidden>小明</span>
-                                                </button>
-                                            </div>
-                                        </div>
                                         <div class="auth-signup-email-page__id-field auth-signup-id-dob" data-auth-signup-id-dob>
                                             <div class="auth-signup-id-dob__header">
                                                 <span class="auth-signup-email-page__id-field-label auth-signup-id-dob__label" data-auth-signup-id-dob-prototype-fill>Date of birth</span>
-                                                <div class="auth-signup-id-dob__toggle" role="tablist" aria-label="Calendar system">
-                                                    <button type="button" class="auth-signup-id-dob__toggle-btn is-active" data-auth-signup-id-dob-calendar="western" role="tab" aria-selected="true">西元</button>
-                                                    <button type="button" class="auth-signup-id-dob__toggle-btn" data-auth-signup-id-dob-calendar="roc" role="tab" aria-selected="false">民國</button>
+                                                <div class="auth-signup-id-dob__toggle" role="radiogroup" aria-label="Calendar system">
+                                                    <button type="button" class="auth-signup-id-dob__toggle-btn" data-auth-signup-id-dob-calendar="roc" role="radio" aria-checked="false" aria-label="Minguo calendar">民國</button>
+                                                    <button type="button" class="auth-signup-id-dob__toggle-btn is-active" data-auth-signup-id-dob-calendar="gregorian" role="radio" aria-checked="true" aria-label="Gregorian calendar">西元</button>
                                                 </div>
                                             </div>
                                             <div class="auth-signup-id-dob__segments" data-auth-signup-id-dob-segments>
@@ -2241,11 +2287,13 @@ Max 100K</span>
                                                     <span class="auth-signup-id-dob__segment-label">Day</span>
                                                 </div>
                                             </div>
-                                            <div class="auth-signup-id-dob__helper" data-auth-signup-id-dob-helper hidden>
-                                                <img class="auth-signup-id-dob__helper-icon" data-auth-signup-id-dob-helper-icon src="assets/icon_info_circle_gray.svg" alt="" width="16" height="16" aria-hidden="true" />
-                                                <span class="auth-signup-id-dob__helper-text" data-auth-signup-id-dob-helper-text></span>
+                                            <div class="auth-signup-id-dob__status-area">
+                                                <p class="auth-signup-id-dob__idle-helper" data-auth-signup-id-dob-idle-helper>Type the year from your ID — 1 to 3 digits reads as 民國, 4 digits as 西元.</p>
+                                                <div class="auth-signup-id-dob__status-slot" data-auth-signup-id-dob-status-slot hidden>
+                                                    <img class="auth-signup-id-dob__status-icon" data-auth-signup-id-dob-status-icon src="assets/icon_info_circle_gray.svg" alt="" width="16" height="16" aria-hidden="true" />
+                                                    <span class="auth-signup-id-dob__status-text" data-auth-signup-id-dob-status-text></span>
+                                                </div>
                                             </div>
-                                            <p class="auth-signup-id-dob__error" data-auth-signup-id-dob-error hidden></p>
                                         </div>
                                     </div>
                                 </div>
