@@ -345,6 +345,10 @@
       ? Array.from(emailPage.querySelectorAll("[data-auth-signup-mobile-code-cell]"))
       : [];
     const mobileCodePasteBtn = emailPage?.querySelector("[data-auth-signup-mobile-code-paste]");
+    const nationalitySelectBtn = emailPage?.querySelector("[data-auth-signup-nationality-select]");
+    const nationalityPlaceholder = emailPage?.querySelector("[data-auth-signup-nationality-placeholder]");
+    const nationalityValueEl = emailPage?.querySelector("[data-auth-signup-nationality-value]");
+    const nationalityConsentBtn = emailPage?.querySelector("[data-auth-signup-nationality-consent]");
     const signupCodeLoader = emailPage?.querySelector("[data-auth-signup-code-loader]");
     const stepperSteps = emailPage
       ? Array.from(emailPage.querySelectorAll(".auth-signup-email-page__step"))
@@ -380,9 +384,48 @@
     let codeActiveIndex = 0;
     let mobileCodeDigits = Array.from({ length: SIGNUP_CODE_LENGTH }, () => "");
     let mobileCodeActiveIndex = 0;
+    let nationalitySelected = false;
+    let nationalityConsentChecked = false;
 
     const isVerificationCodeStep = () =>
       signupEmailStep === "code" || signupEmailStep === "mobile-code";
+
+    const isNationalityStepComplete = () => nationalitySelected && nationalityConsentChecked;
+
+    const syncNationalityUi = () => {
+      nationalitySelectBtn?.classList.toggle("is-filled", nationalitySelected);
+      if (nationalityPlaceholder) nationalityPlaceholder.hidden = nationalitySelected;
+      if (nationalityValueEl) nationalityValueEl.hidden = !nationalitySelected;
+      if (nationalityConsentBtn) {
+        nationalityConsentBtn.setAttribute(
+          "aria-pressed",
+          nationalityConsentChecked ? "true" : "false",
+        );
+      }
+      if (signupEmailStep === "nationality" && emailContinueBtn) {
+        emailContinueBtn.hidden = false;
+        emailContinueBtn.textContent = "Continue";
+        emailContinueBtn.disabled = !isNationalityStepComplete();
+      }
+    };
+
+    const fillNationality = () => {
+      nationalitySelected = true;
+      syncNationalityUi();
+      syncActionButtons();
+    };
+
+    const toggleNationalityConsent = () => {
+      nationalityConsentChecked = !nationalityConsentChecked;
+      syncNationalityUi();
+      syncActionButtons();
+    };
+
+    const resetNationalityFields = () => {
+      nationalitySelected = false;
+      nationalityConsentChecked = false;
+      syncNationalityUi();
+    };
 
     const syncSignupKeyboardMode = () => {
       signupEmailKeyboard?.classList.toggle("is-code-mode", isVerificationCodeStep());
@@ -649,6 +692,10 @@
         const enabled = mobileInput?.value.trim() === SIGNUP_DUMMY_MOBILE;
         if (emailContinueBtn) emailContinueBtn.disabled = !enabled;
         if (keyboardContinueBtn) keyboardContinueBtn.disabled = !enabled;
+      } else if (signupEmailStep === "nationality") {
+        const enabled = isNationalityStepComplete();
+        if (emailContinueBtn) emailContinueBtn.disabled = !enabled;
+        if (keyboardContinueBtn) keyboardContinueBtn.disabled = !enabled;
       }
     };
 
@@ -664,13 +711,46 @@
       syncSignupKeyboardMode();
     };
 
+    const SIGNUP_FLOW_STEP_COUNT = 4;
+
+    const getSignupFlowStepIndex = () => {
+      if (emailPage?.classList.contains("is-password-step") || signupEmailStep === "password") {
+        return 4;
+      }
+      if (emailPage?.classList.contains("is-nationality-step") || signupEmailStep === "nationality") {
+        return 3;
+      }
+      if (
+        emailPage?.classList.contains("is-mobile-step") ||
+        emailPage?.classList.contains("is-hybrid-mobile-code-active") ||
+        emailPage?.classList.contains("is-mobile-code-step") ||
+        signupEmailStep === "mobile" ||
+        signupEmailStep === "mobile-code"
+      ) {
+        return 2;
+      }
+      return 1;
+    };
+
     const syncStepperUi = () => {
+      const flowStep = getSignupFlowStepIndex();
+      const fillPercent = (flowStep / SIGNUP_FLOW_STEP_COUNT) * 100;
+
       stepperSteps.forEach((step, index) => {
         step.classList.toggle("is-active", index === 0);
         step.classList.remove("is-complete");
+
+        const fill = step.querySelector(".auth-signup-email-page__step-fill");
+        if (!fill) return;
+
+        if (index === 0) {
+          fill.hidden = false;
+          fill.style.width = `${fillPercent}%`;
+        } else {
+          fill.hidden = true;
+          fill.style.width = "";
+        }
       });
-      const firstFill = stepperSteps[0]?.querySelector(".auth-signup-email-page__step-fill");
-      if (firstFill) firstFill.hidden = false;
     };
 
     const syncEmailClearUi = () => {
@@ -757,6 +837,7 @@
       emailPage?.classList.remove(
         "is-code-step",
         "is-password-step",
+        "is-nationality-step",
         "is-mobile-step",
         "is-mobile-code-step",
       );
@@ -779,7 +860,7 @@
     const showCodeStepUi = ({ resetCode = true } = {}) => {
       signupEmailStep = "code";
       emailPage?.classList.add("is-code-step");
-      emailPage?.classList.remove("is-password-step", "is-mobile-step", "is-mobile-code-step");
+      emailPage?.classList.remove("is-password-step", "is-mobile-step", "is-mobile-code-step", "is-nationality-step");
       if (emailPanel) emailPanel.hidden = true;
       if (codePanel) codePanel.hidden = false;
       if (mobilePanel) mobilePanel.hidden = true;
@@ -802,12 +883,31 @@
       }
     };
 
+    const showNationalityStepUi = () => {
+      signupEmailStep = "nationality";
+      emailPage?.classList.remove(
+        "is-code-step",
+        "is-mobile-step",
+        "is-mobile-code-step",
+        "is-password-step",
+        "is-hybrid-code-active",
+        "is-hybrid-mobile-code-active",
+      );
+      emailPage?.classList.add("is-nationality-step");
+      syncStepperUi();
+      syncKeyboardStickyUi();
+      hideSignupEmailKeyboard();
+      syncNationalityUi();
+      syncActionButtons();
+    };
+
     const showPasswordStepUi = () => {
       signupEmailStep = "password";
       emailPage?.classList.remove(
         "is-code-step",
         "is-mobile-step",
         "is-mobile-code-step",
+        "is-nationality-step",
         "is-hybrid-code-active",
         "is-hybrid-mobile-code-active",
       );
@@ -831,7 +931,7 @@
     const showMobileStepUi = ({ resetMobile = false } = {}) => {
       if (window.__hybridSignup?.isActive?.()) {
         signupEmailStep = "mobile";
-        emailPage?.classList.remove("is-code-step", "is-password-step", "is-mobile-code-step");
+        emailPage?.classList.remove("is-code-step", "is-password-step", "is-mobile-code-step", "is-nationality-step");
         emailPage?.classList.add("is-mobile-step");
         if (emailPanel) emailPanel.hidden = true;
         if (codePanel) codePanel.hidden = true;
@@ -843,7 +943,7 @@
         return;
       }
       signupEmailStep = "mobile";
-      emailPage?.classList.remove("is-code-step", "is-password-step", "is-mobile-code-step");
+      emailPage?.classList.remove("is-code-step", "is-password-step", "is-mobile-code-step", "is-nationality-step");
       emailPage?.classList.add("is-mobile-step");
       if (emailPanel) emailPanel.hidden = true;
       if (codePanel) codePanel.hidden = true;
@@ -862,7 +962,7 @@
 
     const showMobileCodeStepUi = ({ resetCode = true } = {}) => {
       signupEmailStep = "mobile-code";
-      emailPage?.classList.remove("is-password-step");
+      emailPage?.classList.remove("is-password-step", "is-nationality-step");
       emailPage?.classList.add("is-mobile-step", "is-mobile-code-step");
       if (emailPanel) emailPanel.hidden = true;
       if (codePanel) codePanel.hidden = true;
@@ -917,19 +1017,45 @@
       syncSignupEmailKeyboardVisible();
     };
 
-    const advanceToPasswordStep = () => {
+    const advanceToNationalityStep = () => {
       if (signupEmailStep !== "mobile-code") return;
+      showNationalityStepUi();
+    };
+
+    const advanceToPasswordStep = () => {
+      if (signupEmailStep !== "nationality") return;
+      if (!isNationalityStepComplete()) return;
       showPasswordStepUi();
+    };
+
+    const returnFromNationalityStep = () => {
+      hideSignupCodeLoader();
+      signupEmailStep = "mobile-code";
+      emailPage?.classList.remove("is-nationality-step", "is-password-step");
+      emailPage?.classList.add("is-mobile-step", "is-mobile-code-step");
+      if (window.__hybridSignup?.isActive?.()) {
+        emailPage?.classList.add("is-hybrid-mobile-code-active");
+        window.__hybridSignup?.restoreMobileCodeStepAfterNationality?.();
+        syncStepperUi();
+        syncKeyboardStickyUi();
+        syncActionButtons();
+        hideSignupEmailKeyboard();
+        return;
+      }
+      if (emailPanel) emailPanel.hidden = true;
+      if (codePanel) codePanel.hidden = true;
+      if (mobilePanel) mobilePanel.hidden = true;
+      if (mobileCodePanel) mobileCodePanel.hidden = false;
+      syncStepperUi();
+      syncKeyboardStickyUi();
+      syncActionButtons();
+      hideSignupEmailKeyboard();
     };
 
     const returnFromPasswordStep = () => {
       hideSignupCodeLoader();
       resetPasswordFields();
-      if (mobileInput?.value.trim()) {
-        showMobileCodeStepUi({ resetCode: false });
-        return;
-      }
-      showMobileStepUi();
+      showNationalityStepUi();
     };
 
     const resetSignupEmailPageState = () => {
@@ -942,6 +1068,7 @@
       resetPasswordFields();
       resetMobileField();
       resetMobileCodeField();
+      resetNationalityFields();
     };
 
     const resetSignupFlowForMergeModeSwitch = () => {
@@ -964,6 +1091,11 @@
       ) {
         slide = "password";
       } else if (
+        signupEmailStep === "nationality" ||
+        emailPage.classList.contains("is-nationality-step")
+      ) {
+        slide = "nationality";
+      } else if (
         signupEmailStep === "mobile" ||
         signupEmailStep === "mobile-code" ||
         emailPage.classList.contains("is-mobile-step")
@@ -976,6 +1108,7 @@
       resetPasswordFields();
       resetMobileField();
       resetMobileCodeField();
+      resetNationalityFields();
       window.__hybridSignup?.resetHybridMobile?.();
       window.__hybridSignup?.resetHybridVerify?.();
 
@@ -984,12 +1117,18 @@
         "is-hybrid-code-active",
         "is-hybrid-mobile-code-active",
         "is-mobile-code-step",
+        "is-nationality-step",
         "is-password-step",
         "is-mobile-step",
       );
 
       if (slide === "password") {
         showPasswordStepUi();
+        return;
+      }
+
+      if (slide === "nationality") {
+        showNationalityStepUi();
         return;
       }
 
@@ -1308,7 +1447,7 @@
       if (signupCodeLoaderHideTimer || (signupCodeLoader && !signupCodeLoader.hidden)) return;
       fillSignupMobileCodeAndUnfocus();
       dismissSignupEmailKeyboardUi();
-      showSignupCodeLoader(advanceToPasswordStep);
+      showSignupCodeLoader(advanceToNationalityStep);
     };
 
     const deleteMobileCodeDigit = () => {
@@ -1388,6 +1527,11 @@
         showNotInPrototype();
         return;
       }
+      if (signupEmailStep === "nationality") {
+        if (!isNationalityStepComplete()) return;
+        advanceToPasswordStep();
+        return;
+      }
       if (signupEmailStep === "mobile") {
         if (mobileInput?.value.trim() !== SIGNUP_DUMMY_MOBILE) return;
         advanceToMobileCodeStep();
@@ -1406,6 +1550,10 @@
       }
       if (signupEmailStep === "password") {
         returnFromPasswordStep();
+        return;
+      }
+      if (signupEmailStep === "nationality") {
+        returnFromNationalityStep();
         return;
       }
       if (signupEmailStep === "code") {
@@ -1508,6 +1656,7 @@
 
     if (emailPage) {
       window.__hybridSignupAdvanceMobile = () => showMobileStepUi({ resetMobile: true });
+      window.__hybridSignupAdvanceNationality = () => showNationalityStepUi();
       window.__hybridSignupAdvancePassword = () => showPasswordStepUi();
       window.__hybridSignupShowNotInPrototype = () => showNotInPrototype();
       emailPage
@@ -1526,6 +1675,13 @@
       mobileCodePasteBtn?.addEventListener("click", handleMobileCodePaste);
       codeGrid?.addEventListener("click", handleCodeFieldInteraction);
       codePasteBtn?.addEventListener("click", handleCodePaste);
+      nationalitySelectBtn?.addEventListener("click", fillNationality);
+      nationalityConsentBtn?.addEventListener("click", (e) => {
+        if (e.target.closest("a")) return;
+        toggleNationalityConsent();
+      });
+
+      syncNationalityUi();
 
       emailPage.querySelectorAll("[data-auth-signup-password-field]").forEach((fieldEl) => {
         fieldEl.addEventListener("click", () => {

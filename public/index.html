@@ -1818,9 +1818,11 @@ Max 100K</span>
                     </div>
                     <div class="auth-signup-email-page__step">
                         <span class="auth-signup-email-page__step-track"></span>
+                        <span class="auth-signup-email-page__step-fill" hidden></span>
                     </div>
                     <div class="auth-signup-email-page__step">
                         <span class="auth-signup-email-page__step-track"></span>
+                        <span class="auth-signup-email-page__step-fill" hidden></span>
                     </div>
                 </div>
                 <button class="auth-signup-email-page__icon-btn" type="button" aria-label="Support">
@@ -1990,10 +1992,55 @@ Max 100K</span>
                 </div>
                         </div>
 
+                        <div class="auth-signup-email-page__slide" data-auth-signup-email-slide="nationality">
+                            <div class="auth-signup-email-page__panel auth-signup-email-page__panel--nationality">
+                                <div class="auth-signup-email-page__copy">
+                                    <p class="auth-signup-email-page__moustache">Sign up · Step 3</p>
+                                    <h2 class="auth-signup-email-page__title">Where you live and your nationality</h2>
+                                </div>
+                                <div class="auth-signup-email-page__nationality-form">
+                                    <div class="auth-signup-email-page__nationality-fields">
+                                        <div class="auth-signup-email-page__nationality-field">
+                                            <span class="auth-signup-email-page__nationality-label">Country/Region of residence</span>
+                                            <button type="button" class="auth-signup-email-page__selector is-filled" data-auth-signup-residence-select aria-label="Country/Region of residence Taiwan">
+                                                <img class="auth-signup-email-page__selector-flag" src="assets/icon_taiwan_flag.svg" alt="" width="32" height="32" />
+                                                <span class="auth-signup-email-page__selector-value">Taiwan</span>
+                                                <img class="auth-signup-email-page__selector-chevron" src="assets/icon_chevron_down_grey.svg" alt="" width="24" height="24" aria-hidden="true" />
+                                            </button>
+                                        </div>
+                                        <div class="auth-signup-email-page__nationality-field">
+                                            <span class="auth-signup-email-page__nationality-label">Nationality</span>
+                                            <button type="button" class="auth-signup-email-page__selector" data-auth-signup-nationality-select aria-label="Select your nationality">
+                                                <span class="auth-signup-email-page__selector-placeholder" data-auth-signup-nationality-placeholder>Select your nationality</span>
+                                                <span class="auth-signup-email-page__selector-value auth-signup-email-page__selector-value--with-flag" data-auth-signup-nationality-value hidden>
+                                                    <img class="auth-signup-email-page__selector-flag" src="assets/icon_taiwan_flag.svg" alt="" width="32" height="32" aria-hidden="true" />
+                                                    <span data-auth-signup-nationality-text>Taiwan</span>
+                                                </span>
+                                                <img class="auth-signup-email-page__selector-chevron" src="assets/icon_chevron_down_grey.svg" alt="" width="24" height="24" aria-hidden="true" />
+                                            </button>
+                                            <p class="auth-signup-email-page__nationality-note">Note to Scrum team: We could include some missing nationalities to reduce droppage, enquire Nia for more details.</p>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="auth-signup-email-page__nationality-consent" data-auth-signup-nationality-consent aria-pressed="false">
+                                        <span class="auth-signup-email-page__nationality-consent-checkbox" aria-hidden="true">
+                                            <img class="auth-signup-email-page__nationality-consent-icon auth-signup-email-page__nationality-consent-icon--off" src="assets/icon_checkbox_off.svg" alt="" width="24" height="24" />
+                                            <img class="auth-signup-email-page__nationality-consent-icon auth-signup-email-page__nationality-consent-icon--on" src="assets/icon_checkbox_on.svg" alt="" width="24" height="24" hidden />
+                                        </span>
+                                        <span class="auth-signup-email-page__nationality-consent-text">
+                                            I have read and agree to the
+                                            <a class="auth-signup-email-page__nationality-consent-link" href="https://info.xrex.io/xrex-general-terms-and-conditions" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+                                            and
+                                            <a class="auth-signup-email-page__nationality-consent-link" href="https://info.xrex.io/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="auth-signup-email-page__slide" data-auth-signup-email-slide="password">
                             <div class="auth-signup-email-page__panel" data-auth-signup-email-panel="password">
                                 <div class="auth-signup-email-page__copy">
-                                    <p class="auth-signup-email-page__moustache">Sign up · Step 3<span class="auth-signup-email-page__moustache-suffix">/3</span></p>
+                                    <p class="auth-signup-email-page__moustache">Sign up · Step 4</p>
                                     <h2 class="auth-signup-email-page__title">Set a password</h2>
                                 </div>
                                 <div class="auth-signup-email-page__password-form">

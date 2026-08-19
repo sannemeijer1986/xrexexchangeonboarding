@@ -106,7 +106,9 @@
 
   // Password step reuses prog UI + main.js keyboard handlers (not hybrid phases).
   const isHybridManagedStep = () =>
-    isHybrid() && !emailPage?.classList.contains("is-password-step");
+    isHybrid() &&
+    !emailPage?.classList.contains("is-password-step") &&
+    !emailPage?.classList.contains("is-nationality-step");
 
   const syncFlowVisibility = () => {
     const hybridOn = isHybrid();
@@ -681,7 +683,7 @@
     codeLoaderTimer = window.setTimeout(() => {
       codeLoaderTimer = null;
       if (signupCodeLoader) signupCodeLoader.hidden = true;
-      window.__hybridSignupAdvancePassword?.();
+      window.__hybridSignupAdvanceNationality?.();
     }, SIGNUP_CODE_LOADER_VISIBLE_MS);
   };
 
@@ -1024,6 +1026,7 @@
         "is-mobile-step",
         "is-mobile-code-step",
         "is-hybrid-mobile-code-active",
+        "is-nationality-step",
         "is-password-step",
       );
       emailPage?.classList.add("is-hybrid-code-active", "is-code-step");
@@ -1035,6 +1038,20 @@
       hybridCodeGrid?.classList.remove("is-focused");
       hybridCodeGrid?.classList.add("is-filled");
       syncHybridCodeUi();
+      syncSignupKeyboardMode();
+      syncHybridActionUi();
+      hideKeyboard();
+    },
+    restoreMobileCodeStepAfterNationality: () => {
+      phase = "mobile-code";
+      hybridMobileCodeBlock?.classList.remove("is-locked");
+      hybridMobileCodeGrid?.classList.remove("auth-signup-email-page__code-grid--hybrid");
+      syncHybridMobileCodeChrome();
+      mobileCodeDigits = SIGNUP_DUMMY_CODE.split("").slice(0, SIGNUP_CODE_LENGTH);
+      mobileCodeActiveIndex = SIGNUP_CODE_LENGTH;
+      hybridMobileCodeGrid?.classList.remove("is-focused");
+      hybridMobileCodeGrid?.classList.add("is-filled");
+      syncHybridMobileCodeUi();
       syncSignupKeyboardMode();
       syncHybridActionUi();
       hideKeyboard();
