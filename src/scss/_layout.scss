@@ -3780,7 +3780,10 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 
 // Figma — Date of birth segmented field (ID details step)
 .auth-signup-id-dob {
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
 }
 
 .auth-signup-id-dob__header {
@@ -3789,6 +3792,7 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   justify-content: space-between;
   gap: 12px;
   width: 100%;
+  margin-bottom: 4px;
 }
 
 .auth-signup-id-dob__label {
@@ -3847,44 +3851,54 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 
 .auth-signup-id-dob__input {
   width: 100%;
-  min-height: 48px;
+  min-height: 52px;
   padding: 10px 12px;
-  border: 0;
-  border-radius: 8px;
+  border: 1px solid #3c4248;
+  border-radius: 14px;
   background: #1b1d1d;
   color: #ffffff;
   font-family: inherit;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   line-height: normal;
   text-align: center;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+  appearance: none;
+
+  &::placeholder {
+    color: #58595a;
+    font-weight: 600;
+  }
 
   &:focus {
-    outline: 2px solid #3f78ff;
-    outline-offset: 0;
+    outline: none;
+    border-color: #3f78ff;
+    box-shadow: 0 0 0 1px #3f78ff;
   }
 
   &.is-error {
-    outline: 1.5px solid #ff4d4f;
-    outline-offset: 0;
+    outline: none;
+    border: 1.5px solid #ff4d4f;
+    box-shadow: none;
   }
 }
 
 .auth-signup-id-dob__segment-label {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
   line-height: normal;
   color: #9b9c9c;
+  text-align: center;
 }
 
 .auth-signup-id-dob__status-area {
   width: 100%;
-  min-height: 48px;
+  min-height: 40px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  gap: 4px;
 }
 
 .auth-signup-id-dob__idle-helper {
@@ -3914,29 +3928,38 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   }
 
   &.is-hint {
-    padding: 4px 0;
+    min-height: 0;
+    padding: 0;
     background: transparent;
   }
 
   &.is-hint .auth-signup-id-dob__status-text {
     color: #3f78ff;
+    font-size: 13px;
     font-weight: 600;
+    line-height: 18px;
   }
 
   &.is-confirmed {
-    background: rgba(39, 92, 253, 0.16);
+    background: #275cfd;
   }
 
   &.is-confirmed .auth-signup-id-dob__status-text {
     color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
   }
 
   &.is-error {
-    background: #3a1f1f;
+    background: #4a2020;
   }
 
   &.is-error .auth-signup-id-dob__status-text {
-    color: #ff8a8a;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 18px;
   }
 }
 
@@ -5165,24 +5188,24 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   background: #0d0e0f;
   display: flex;
   flex-direction: column;
-  transform: translateX(100%);
+  transform: translate3d(100%, 0, 0);
   pointer-events: none;
   transition: transform 0.35s ease;
   overflow: hidden;
 }
 
 .auth-signup-complete-page.is-open {
-  transform: translateX(0);
+  transform: translate3d(0, 0, 0);
   pointer-events: auto;
 }
 
 // Explore exit — slide down (reverse of Welcome to XREX entrance)
 .auth-signup-complete-page.is-positioned-for-down {
-  transform: translateY(0);
+  transform: translate3d(0, 0, 0);
 }
 
-.auth-signup-complete-page.is-dismiss-down {
-  transform: translateY(100%);
+.auth-signup-complete-page.is-positioned-for-down.is-dismiss-down {
+  transform: translate3d(0, 100%, 0);
   pointer-events: none;
 }
 
@@ -5386,11 +5409,14 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   flex-direction: column;
   gap: 0px;
   padding: 4px;
-  margin-top: 24px;
 }
 
 .wallet-page__body {
   padding: 16px;
+}
+
+.wallet-page__body .asset-card {
+  margin-bottom: 8px;
 }
 
 .wallet-page__list {

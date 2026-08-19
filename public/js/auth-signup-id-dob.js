@@ -262,10 +262,13 @@
     };
 
     const syncStatusSlot = () => {
-      const showSlot = state.status === "hint" || state.status === "confirmed" || state.status === "error";
+      const showSlot =
+        state.status === "hint" ||
+        state.status === "confirmed" ||
+        state.status === "error";
 
       if (idleHelper) {
-        idleHelper.hidden = showSlot;
+        idleHelper.hidden = state.status === "confirmed" || state.status === "error";
       }
 
       if (!statusSlot || !statusText) return;
@@ -284,21 +287,15 @@
       if (state.status === "hint") {
         statusSlot.classList.add("is-hint");
         statusSlot.setAttribute("aria-live", "polite");
-        if (statusIcon) {
-          statusIcon.src = `${assetBase}icon_info_circle_gray.svg`;
-          statusIcon.hidden = false;
-        }
-        statusText.textContent = state.hintMessage || "";
+        if (statusIcon) statusIcon.hidden = true;
+        statusText.textContent = state.hintMessage ? `✨ ${state.hintMessage}` : "";
         return;
       }
 
       if (state.status === "confirmed") {
         statusSlot.classList.add("is-confirmed");
         statusSlot.setAttribute("aria-live", "polite");
-        if (statusIcon) {
-          statusIcon.src = `${assetBase}icon_check_green_s.svg`;
-          statusIcon.hidden = false;
-        }
+        if (statusIcon) statusIcon.hidden = true;
         statusText.textContent = state.confirmMessage || "";
         return;
       }
@@ -415,7 +412,9 @@
 
       if (result.status === "confirmed") {
         state.status = "confirmed";
-        state.confirmMessage = result.message;
+        state.confirmMessage = result.message.startsWith("✓")
+          ? result.message
+          : `✓ ${result.message}`;
         state.gregorianYear = result.gregorianYear;
         state.errorCode = undefined;
         state.errorSegment = undefined;

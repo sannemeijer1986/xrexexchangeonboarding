@@ -1106,8 +1106,9 @@
       requestAnimationFrame(() => {
         page?.classList.add("is-exiting-down");
         if (completePage) {
-          completePage.classList.remove("is-open");
           completePage.classList.add("is-positioned-for-down");
+          void completePage.offsetWidth;
+          completePage.classList.remove("is-open");
           void completePage.offsetWidth;
           completePage.classList.add("is-dismiss-down");
         }
@@ -1130,8 +1131,8 @@
     };
 
     const finishSignupAndExplore = () => {
+      setState("auth", 2, { force: true });
       dismissSignupFlowDown(() => {
-        setState("auth", 2, { force: true });
         document.dispatchEvent(new CustomEvent("auth-signup-return-home"));
       });
     };

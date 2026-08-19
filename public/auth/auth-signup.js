@@ -734,8 +734,9 @@
       return;
     }
 
-    completePage.classList.remove("is-open");
     completePage.classList.add("is-positioned-for-down");
+    void completePage.offsetWidth;
+    completePage.classList.remove("is-open");
     void completePage.offsetWidth;
     completePage.classList.add("is-dismiss-down");
 
