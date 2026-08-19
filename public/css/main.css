@@ -3720,57 +3720,23 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 .auth-signup-id-dob {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   width: 100%;
 }
 
 .auth-signup-id-dob__header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
   width: 100%;
-  margin-bottom: 4px;
 }
 
 .auth-signup-id-dob__label {
   cursor: pointer;
 }
 
-.auth-signup-id-dob__toggle {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 0;
-  padding: 2px;
-  border: 1px solid #3c4248;
-  border-radius: 999px;
-  background: #1b1d1d;
-}
-
-.auth-signup-id-dob__toggle-btn {
-  min-width: 44px;
-  height: 28px;
-  padding: 0 10px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: #9b9c9c;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  line-height: normal;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-.auth-signup-id-dob__toggle-btn.is-active {
-  background: #275cfd;
-  color: #ffffff;
-}
-
 .auth-signup-id-dob__segments {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   width: 100%;
 }
 
@@ -3779,7 +3745,7 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 
 .auth-signup-id-dob__segment--year {
@@ -3790,7 +3756,7 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   width: 100%;
   min-height: 52px;
   padding: 10px 12px;
-  border: 1px solid #3c4248;
+  border: 0;
   border-radius: 14px;
   background: #1b1d1d;
   color: #ffffff;
@@ -3798,7 +3764,7 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   font-size: 14px;
   font-weight: 600;
   line-height: normal;
-  text-align: center;
+  text-align: left;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
   appearance: none;
@@ -3809,30 +3775,100 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 }
 .auth-signup-id-dob__input:focus {
   outline: none;
-  border-color: #3f78ff;
-  box-shadow: 0 0 0 1px #3f78ff;
 }
 .auth-signup-id-dob__input.is-error {
   outline: none;
-  border: 1.5px solid #ff4d4f;
-  box-shadow: none;
+  box-shadow: inset 0 0 0 1.5px #ff4d4f;
 }
 
 .auth-signup-id-dob__segment-label {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 400;
-  line-height: normal;
+  line-height: 20px;
   color: #9b9c9c;
-  text-align: center;
+  text-align: left;
+}
+
+.auth-signup-email-page__id-details-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.auth-signup-email-page__referral-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.auth-signup-email-page__referral-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #2d2f2f;
+}
+.auth-signup-email-page__referral-icon img {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.auth-signup-email-page__referral-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.auth-signup-email-page__referral-tag {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #5ac47d;
+}
+
+.auth-signup-email-page__referral-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #ffffff;
+}
+
+.auth-signup-email-page__referral-add {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  color: #3f78ff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.auth-signup-email-page__referral-add:focus-visible {
+  outline: 2px solid #3f78ff;
+  outline-offset: 2px;
+  border-radius: 8px;
 }
 
 .auth-signup-id-dob__status-area {
   width: 100%;
-  min-height: 40px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   gap: 4px;
+}
+.auth-signup-id-dob__status-area:empty {
+  display: none;
 }
 
 .auth-signup-id-dob__idle-helper {
@@ -3851,7 +3887,6 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   align-items: flex-start;
   gap: 8px;
   width: 100%;
-  min-height: 40px;
   padding: 8px 10px;
   border-radius: 8px;
   box-sizing: border-box;
@@ -3866,15 +3901,6 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 }
 .auth-signup-id-dob__status-slot.is-hint .auth-signup-id-dob__status-text {
   color: #3f78ff;
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 18px;
-}
-.auth-signup-id-dob__status-slot.is-confirmed {
-  background: #275cfd;
-}
-.auth-signup-id-dob__status-slot.is-confirmed .auth-signup-id-dob__status-text {
-  color: #ffffff;
   font-size: 13px;
   font-weight: 600;
   line-height: 18px;
@@ -5177,15 +5203,16 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 
 .auth-signup-complete-page__timeline-marker {
   position: relative;
+  align-self: stretch;
   flex-shrink: 0;
   width: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 8px;
 }
 .auth-signup-complete-page__timeline-marker::before {
   content: "";
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -5193,10 +5220,12 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 }
 .auth-signup-complete-page__timeline-marker::after {
   content: "";
+  position: absolute;
+  top: 24px;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 2px;
-  flex: 1;
-  min-height: 28px;
-  margin-top: 8px;
   background: #58595a;
 }
 

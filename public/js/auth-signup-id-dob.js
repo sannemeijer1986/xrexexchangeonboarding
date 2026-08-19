@@ -1,5 +1,5 @@
 /**
- * Date of birth field — ID details step (民國 / 西元 toggle, StatusSlot, Gregorian canonical).
+ * Date of birth field — ID details step (Gregorian YYYY MM DD, StatusSlot).
  */
 (function () {
   const ROC_EPOCH = 1911;
@@ -102,16 +102,11 @@
       return { status: "idle" };
     }
 
-    if (state.calendar === "gregorian" && state.calendarSource === "manual" && yearRaw.length <= 3) {
-      return {
-        status: "error",
-        errorCode: "roc_mismatch",
-        errorSegment: "year",
-        message: `西元 years have 4 digits — ${yearRaw} looks like a 民國 year.`,
-      };
+    if (state.calendar === "gregorian" && yearRaw.length !== 4) {
+      return { status: "idle" };
     }
 
-    const gregorianYear = resolveGregorianYear(yearRaw, state.calendar);
+    const gregorianYear = resolveGregorianYear(yearRaw, "gregorian");
     if (gregorianYear == null) {
       return { status: "idle" };
     }
@@ -149,12 +144,11 @@
     }
 
     if (computeAge(gregorianYear, month, day) < MIN_AGE) {
-      const rocYear = gregorianYear - ROC_EPOCH;
       return {
         status: "error",
         errorCode: "underage",
         errorSegment: "year",
-        message: `民國 ${rocYear} 年 = 西元 ${gregorianYear} — you must be 18 or older to open an account. Check the year on your ID.`,
+        message: "You must be 18 or older to open an account. Check the year on your ID.",
         gregorianYear,
         month,
         day,
@@ -162,13 +156,7 @@
     }
 
     const submitValue = `${gregorianYear}-${pad2(month)}-${pad2(day)}`;
-    let message;
-    if (state.calendar === "roc") {
-      const rocYear = gregorianYear - ROC_EPOCH;
-      message = `民國 ${rocYear} 年 = 西元 ${gregorianYear} · saved as ${formatDisplayDate(gregorianYear, month, day)}`;
-    } else {
-      message = `Saved as ${formatDisplayDate(gregorianYear, month, day)}`;
-    }
+    const message = `Saved as ${formatDisplayDate(gregorianYear, month, day)}`;
 
     return {
       status: "confirmed",
@@ -198,13 +186,9 @@
     const monthInput = root.querySelector('[data-auth-signup-id-dob-segment="month"]');
     const dayInput = root.querySelector('[data-auth-signup-id-dob-segment="day"]');
     const yearLabel = root.querySelector("[data-auth-signup-id-dob-year-label]");
-    const idleHelper = root.querySelector("[data-auth-signup-id-dob-idle-helper]");
     const statusSlot = root.querySelector("[data-auth-signup-id-dob-status-slot]");
     const statusText = root.querySelector("[data-auth-signup-id-dob-status-text]");
     const statusIcon = root.querySelector("[data-auth-signup-id-dob-status-icon]");
-    const toggleBtns = Array.from(
-      root.querySelectorAll("[data-auth-signup-id-dob-calendar]"),
-    );
     const segmentsWrap = root.querySelector("[data-auth-signup-id-dob-segments]");
     const prototypeFillLabel = root.querySelector("[data-auth-signup-id-dob-prototype-fill]");
 
@@ -213,7 +197,7 @@
       month: "",
       day: "",
       calendar: "gregorian",
-      calendarSource: "auto",
+      calendarSource: "manual",
       gregorianYear: null,
       status: "idle",
       errorCode: undefined,
@@ -227,26 +211,11 @@
     const segmentInputs = [yearInput, monthInput, dayInput].filter(Boolean);
 
     const syncToggleUi = () => {
-      toggleBtns.forEach((btn) => {
-        const cal = btn.getAttribute("data-auth-signup-id-dob-calendar");
-        const active = cal === state.calendar;
-        btn.classList.toggle("is-active", active);
-        btn.setAttribute("aria-checked", active ? "true" : "false");
-      });
       if (yearLabel) {
-        yearLabel.textContent = state.calendar === "roc" ? "民國年" : "Year";
+        yearLabel.textContent = "Year";
       }
       if (yearInput) {
-        yearInput.maxLength = state.calendar === "gregorian" ? 4 : 3;
-        const gy = state.gregorianYear;
-        if (gy != null && document.activeElement !== yearInput) {
-          yearInput.setAttribute(
-            "aria-description",
-            state.calendar === "roc"
-              ? `Minguo year, Gregorian ${gy}`
-              : `Gregorian year ${gy}`,
-          );
-        }
+        yearInput.maxLength = 4;
       }
     };
 
@@ -262,19 +231,12 @@
     };
 
     const syncStatusSlot = () => {
-      const showSlot =
-        state.status === "hint" ||
-        state.status === "confirmed" ||
-        state.status === "error";
-
-      if (idleHelper) {
-        idleHelper.hidden = state.status === "confirmed" || state.status === "error";
-      }
+      const showSlot = state.status === "hint" || state.status === "error";
 
       if (!statusSlot || !statusText) return;
 
       statusSlot.hidden = !showSlot;
-      statusSlot.classList.remove("is-hint", "is-confirmed", "is-error");
+      statusSlot.classList.remove("is-hint", "is-error");
       statusSlot.removeAttribute("role");
       statusSlot.removeAttribute("aria-live");
 
@@ -289,14 +251,6 @@
         statusSlot.setAttribute("aria-live", "polite");
         if (statusIcon) statusIcon.hidden = true;
         statusText.textContent = state.hintMessage ? `✨ ${state.hintMessage}` : "";
-        return;
-      }
-
-      if (state.status === "confirmed") {
-        statusSlot.classList.add("is-confirmed");
-        statusSlot.setAttribute("aria-live", "polite");
-        if (statusIcon) statusIcon.hidden = true;
-        statusText.textContent = state.confirmMessage || "";
         return;
       }
 
@@ -322,30 +276,38 @@
     const syncUi = () => {
       syncToggleUi();
       syncStatusSlot();
-      root.classList.toggle("is-confirmed", state.status === "confirmed");
       root.classList.toggle("is-error", state.status === "error");
       emitValidity();
     };
 
-    const updateHintWhileTyping = () => {
-      const digits = onlyDigits(state.yearRaw);
-      if (!yearFocused || !digits || digits.length > 3) {
-        if (state.status === "hint") {
-          state.status = "idle";
-          state.hintMessage = "";
-          syncUi();
-        }
+    const handleYearInput = () => {
+      state.yearRaw = onlyDigits(yearInput.value).slice(0, 4);
+      yearInput.value = state.yearRaw;
+
+      if (state.status === "error" || state.status === "confirmed") {
+        state.status = "idle";
+        state.errorMessage = "";
+        state.confirmMessage = "";
+        submitValue = "";
+        clearSegmentErrors();
+      }
+
+      if (state.yearRaw.length >= 4) {
+        commitYear({ advanceMonth: true });
         return;
       }
-      const roc = parseInt(digits, 10);
-      if (Number.isNaN(roc)) return;
-      const gy = roc + ROC_EPOCH;
-      state.status = "hint";
-      state.hintMessage = `Reading as 民國 ${roc} = 西元 ${gy}`;
-      state.errorCode = undefined;
-      state.errorSegment = undefined;
-      clearSegmentErrors();
-      syncUi();
+
+      emitValidity();
+    };
+
+    const handleYearBlur = () => {
+      yearFocused = false;
+      const digits = onlyDigits(state.yearRaw);
+      if (digits) {
+        commitYear();
+      } else {
+        runFullValidation();
+      }
     };
 
     const commitYear = (optsCommit = {}) => {
@@ -361,32 +323,8 @@
         return;
       }
 
-      if (state.calendarSource === "auto") {
-        const detected = detectCalendarFromYearRaw(digits);
-        state.calendar = detected.calendar;
-        state.gregorianYear = detected.gregorianYear;
-      } else {
-        state.gregorianYear = resolveGregorianYear(digits, state.calendar);
-      }
-
-      if (digits.length === 4 && state.calendarSource === "manual") {
-        state.calendarSource = "auto";
-        state.calendar = "gregorian";
-        state.gregorianYear = parseInt(digits, 10);
-      }
-
-      syncToggleUi();
-
-      if (state.calendar === "gregorian" && state.calendarSource === "manual" && digits.length <= 3) {
-        state.status = "error";
-        state.errorCode = "roc_mismatch";
-        state.errorSegment = "year";
-        state.errorMessage = `西元 years have 4 digits — ${digits} looks like a 民國 year.`;
-        applySegmentError("year");
-        submitValue = "";
-        syncUi();
-        return;
-      }
+      state.calendar = "gregorian";
+      state.gregorianYear = digits.length === 4 ? parseInt(digits, 10) : null;
 
       if (optsCommit.advanceMonth && monthInput) {
         focusSegment(monthInput);
@@ -466,42 +404,6 @@
       return month >= 2 && month <= 9;
     };
 
-    const handleYearInput = () => {
-      state.calendarSource = "auto";
-      state.yearRaw = onlyDigits(yearInput.value);
-      yearInput.value = state.yearRaw;
-
-      if (state.status === "error" || state.status === "confirmed") {
-        state.status = "idle";
-        state.errorMessage = "";
-        state.confirmMessage = "";
-        submitValue = "";
-        clearSegmentErrors();
-      }
-
-      updateHintWhileTyping();
-
-      if (state.yearRaw.length >= 4) {
-        commitYear({ advanceMonth: true });
-        return;
-      }
-
-      emitValidity();
-    };
-
-    const handleYearBlur = () => {
-      yearFocused = false;
-      const digits = onlyDigits(state.yearRaw);
-      if (digits && digits.length <= 3) {
-        commitYear({ advanceMonth: true });
-      } else if (digits) {
-        commitYear();
-      } else {
-        updateHintWhileTyping();
-        runFullValidation();
-      }
-    };
-
     const handleMonthInput = () => {
       state.month = onlyDigits(monthInput.value).slice(0, 2);
       monthInput.value = state.month;
@@ -546,27 +448,6 @@
       runFullValidation();
     };
 
-    const handleCalendarToggle = (nextCalendar) => {
-      if (!nextCalendar || nextCalendar === state.calendar) return;
-      state.calendar = nextCalendar;
-      state.calendarSource = "manual";
-      state.gregorianYear = resolveGregorianYear(state.yearRaw, state.calendar);
-
-      if (state.calendar === "gregorian" && onlyDigits(state.yearRaw).length <= 3 && onlyDigits(state.yearRaw)) {
-        state.status = "error";
-        state.errorCode = "roc_mismatch";
-        state.errorSegment = "year";
-        state.errorMessage = `西元 years have 4 digits — ${onlyDigits(state.yearRaw)} looks like a 民國 year.`;
-        submitValue = "";
-        applySegmentError("year");
-        syncUi();
-        return;
-      }
-
-      syncToggleUi();
-      runFullValidation();
-    };
-
     const handlePaste = (event) => {
       const parsed = parsePastedDate(event.clipboardData?.getData("text") || "");
       if (!parsed) return;
@@ -575,9 +456,9 @@
       state.yearRaw = parsed.yearRaw;
       state.month = parsed.month;
       state.day = parsed.day;
-      state.calendar = parsed.calendar;
-      state.calendarSource = "auto";
-      state.gregorianYear = resolveGregorianYear(state.yearRaw, state.calendar);
+      state.calendar = "gregorian";
+      state.calendarSource = "manual";
+      state.gregorianYear = resolveGregorianYear(state.yearRaw, "gregorian");
       if (yearInput) yearInput.value = state.yearRaw;
       if (monthInput) monthInput.value = state.month;
       if (dayInput) dayInput.value = state.day;
@@ -600,16 +481,9 @@
       runFullValidation();
     };
 
-    toggleBtns.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        handleCalendarToggle(btn.getAttribute("data-auth-signup-id-dob-calendar"));
-      });
-    });
-
     if (yearInput) {
       yearInput.addEventListener("focus", () => {
         yearFocused = true;
-        updateHintWhileTyping();
       });
       yearInput.addEventListener("input", handleYearInput);
       yearInput.addEventListener("blur", handleYearBlur);
@@ -636,11 +510,11 @@
     }
 
     const fillDummy = () => {
-      state.yearRaw = "75";
+      state.yearRaw = "1986";
       state.month = "02";
       state.day = "21";
-      state.calendar = "roc";
-      state.calendarSource = "auto";
+      state.calendar = "gregorian";
+      state.calendarSource = "manual";
       state.gregorianYear = 1986;
       if (yearInput) yearInput.value = state.yearRaw;
       if (monthInput) monthInput.value = state.month;
@@ -658,7 +532,7 @@
       state.month = "";
       state.day = "";
       state.calendar = "gregorian";
-      state.calendarSource = "auto";
+      state.calendarSource = "manual";
       state.gregorianYear = null;
       state.status = "idle";
       state.errorCode = undefined;

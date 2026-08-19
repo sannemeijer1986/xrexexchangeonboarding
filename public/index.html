@@ -2218,7 +2218,7 @@ Max 100K</span>
                             <div class="auth-signup-email-page__panel auth-signup-email-page__panel--id-details">
                                 <div class="auth-signup-email-page__copy">
                                     <p class="auth-signup-email-page__moustache">Sign up · Step 4</p>
-                                    <h2 class="auth-signup-email-page__title">Details from your ID</h2>
+                                    <h2 class="auth-signup-email-page__title">Additional details</h2>
                                     <p class="auth-signup-email-page__desc">Enter these exactly as they appear on your document.</p>
                                 </div>
                                 <div class="auth-signup-email-page__id-details-form">
@@ -2230,32 +2230,13 @@ Max 100K</span>
                                                 <span class="auth-signup-email-page__id-input-value" hidden>A123456789</span>
                                             </button>
                                         </div>
-                                        <div class="auth-signup-email-page__id-field">
-                                            <div class="auth-signup-email-page__id-field-heading">
-                                                <span class="auth-signup-email-page__id-field-label">Chinese name</span>
-                                                <span class="auth-signup-email-page__id-field-hint">Surname first, as shown on your ID</span>
-                                            </div>
-                                            <div class="auth-signup-email-page__id-name-row">
-                                                <button type="button" class="auth-signup-email-page__id-input" data-auth-signup-id-surname aria-label="Chinese surname">
-                                                    <span class="auth-signup-email-page__id-input-placeholder">姓</span>
-                                                    <span class="auth-signup-email-page__id-input-value" hidden>王</span>
-                                                </button>
-                                                <button type="button" class="auth-signup-email-page__id-input" data-auth-signup-id-given aria-label="Chinese given name">
-                                                    <span class="auth-signup-email-page__id-input-placeholder">名</span>
-                                                    <span class="auth-signup-email-page__id-input-value" hidden>小明</span>
-                                                </button>
-                                            </div>
-                                        </div>
                                         <div class="auth-signup-email-page__id-field auth-signup-id-dob" data-auth-signup-id-dob>
                                             <div class="auth-signup-id-dob__header">
                                                 <span class="auth-signup-email-page__id-field-label auth-signup-id-dob__label" data-auth-signup-id-dob-prototype-fill>Date of birth</span>
-                                                <div class="auth-signup-id-dob__toggle" role="radiogroup" aria-label="Calendar system">
-                                                    <button type="button" class="auth-signup-id-dob__toggle-btn" data-auth-signup-id-dob-calendar="roc" role="radio" aria-checked="false" aria-label="Minguo calendar">民國</button>
-                                                    <button type="button" class="auth-signup-id-dob__toggle-btn is-active" data-auth-signup-id-dob-calendar="gregorian" role="radio" aria-checked="true" aria-label="Gregorian calendar">西元</button>
-                                                </div>
                                             </div>
                                             <div class="auth-signup-id-dob__segments" data-auth-signup-id-dob-segments>
                                                 <div class="auth-signup-id-dob__segment auth-signup-id-dob__segment--year">
+                                                    <span class="auth-signup-id-dob__segment-label" data-auth-signup-id-dob-year-label>Year</span>
                                                     <input
                                                         type="text"
                                                         class="auth-signup-id-dob__input"
@@ -2264,11 +2245,12 @@ Max 100K</span>
                                                         autocomplete="bday-year"
                                                         maxlength="4"
                                                         aria-label="Year"
+                                                        placeholder="YYYY"
                                                         data-auth-signup-id-dob-segment="year"
                                                     />
-                                                    <span class="auth-signup-id-dob__segment-label" data-auth-signup-id-dob-year-label>Year</span>
                                                 </div>
                                                 <div class="auth-signup-id-dob__segment">
+                                                    <span class="auth-signup-id-dob__segment-label">Month</span>
                                                     <input
                                                         type="text"
                                                         class="auth-signup-id-dob__input"
@@ -2280,9 +2262,9 @@ Max 100K</span>
                                                         placeholder="MM"
                                                         data-auth-signup-id-dob-segment="month"
                                                     />
-                                                    <span class="auth-signup-id-dob__segment-label">Month</span>
                                                 </div>
                                                 <div class="auth-signup-id-dob__segment">
+                                                    <span class="auth-signup-id-dob__segment-label">Day</span>
                                                     <input
                                                         type="text"
                                                         class="auth-signup-id-dob__input"
@@ -2294,16 +2276,25 @@ Max 100K</span>
                                                         placeholder="DD"
                                                         data-auth-signup-id-dob-segment="day"
                                                     />
-                                                    <span class="auth-signup-id-dob__segment-label">Day</span>
                                                 </div>
                                             </div>
                                             <div class="auth-signup-id-dob__status-area">
-                                                <p class="auth-signup-id-dob__idle-helper" data-auth-signup-id-dob-idle-helper>Type the year from your ID — 1 to 3 digits reads as 民國, 4 digits as 西元.</p>
                                                 <div class="auth-signup-id-dob__status-slot" data-auth-signup-id-dob-status-slot hidden>
                                                     <img class="auth-signup-id-dob__status-icon" data-auth-signup-id-dob-status-icon src="assets/icon_info_circle_gray.svg" alt="" width="16" height="16" aria-hidden="true" />
                                                     <span class="auth-signup-id-dob__status-text" data-auth-signup-id-dob-status-text></span>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="auth-signup-email-page__id-details-divider" aria-hidden="true"></div>
+                                        <div class="auth-signup-email-page__referral-row">
+                                            <div class="auth-signup-email-page__referral-icon" aria-hidden="true">
+                                                <img src="assets/icon_gift_white.svg" alt="" width="24" height="24" />
+                                            </div>
+                                            <div class="auth-signup-email-page__referral-copy">
+                                                <span class="auth-signup-email-page__referral-tag">Optional</span>
+                                                <span class="auth-signup-email-page__referral-title">Have a referral code?</span>
+                                            </div>
+                                            <button type="button" class="auth-signup-email-page__referral-add" data-auth-signup-referral-add>Add</button>
                                         </div>
                                     </div>
                                 </div>
