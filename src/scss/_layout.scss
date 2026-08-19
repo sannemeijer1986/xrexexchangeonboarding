@@ -4002,11 +4002,26 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   width: 100%;
 }
 
+.auth-signup-email-page__nationality-label-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
 .auth-signup-email-page__nationality-label {
   font-size: 16px;
   font-weight: 600;
   line-height: normal;
   color: #ffffff;
+}
+
+.auth-signup-email-page__nationality-sublabel {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #9b9c9c;
 }
 
 .auth-signup-email-page__selector {
@@ -4743,13 +4758,20 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 
 .auth-signup-email-page__email-display {
   font-size: 16px;
-  font-weight: 600;
   line-height: normal;
   color: #9B9C9C;
   text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.auth-signup-email-page__email-display-prefix {
+  font-weight: 400;
+}
+
+.auth-signup-email-page__email-display-value {
+  font-weight: 600;
 }
 
 .auth-signup-email-page__email-edit-icon {
