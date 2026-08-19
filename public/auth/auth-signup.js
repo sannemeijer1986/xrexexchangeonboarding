@@ -104,7 +104,7 @@
   const idNumberBtn = emailPage?.querySelector("[data-auth-signup-id-number]");
   const idSurnameBtn = emailPage?.querySelector("[data-auth-signup-id-surname]");
   const idGivenBtn = emailPage?.querySelector("[data-auth-signup-id-given]");
-  const idDobBtn = emailPage?.querySelector("[data-auth-signup-id-dob]");
+  const idDobRoot = emailPage?.querySelector("[data-auth-signup-id-dob]");
   const signupCodeLoader = emailPage?.querySelector("[data-auth-signup-code-loader]");
   const referralSheet = document.querySelector("[data-auth-referral-sheet]");
   const referralSheetPanel = referralSheet?.querySelector(".currency-sheet__panel");
@@ -149,7 +149,17 @@
   let idNumberFilled = false;
   let idSurnameFilled = false;
   let idGivenFilled = false;
-  let idDobFilled = false;
+
+  const idDobApi =
+    typeof window.initAuthSignupIdDob === "function"
+      ? window.initAuthSignupIdDob(idDobRoot, {
+          assetBase: "../assets/",
+          onValidityChange: () => {
+            syncIdDetailsUi();
+            syncActionButtons();
+          },
+        })
+      : { isValid: () => false, reset: () => {}, fillDummy: () => {}, getSubmitValue: () => "" };
 
   const isVerificationCodeStep = () =>
     signupEmailStep === "code" || signupEmailStep === "mobile-code";
@@ -157,7 +167,7 @@
   const isNationalityStepComplete = () => nationalitySelected && nationalityConsentChecked;
 
   const isIdDetailsStepComplete = () =>
-    idNumberFilled && idSurnameFilled && idGivenFilled && idDobFilled;
+    idNumberFilled && idSurnameFilled && idGivenFilled && idDobApi.isValid();
 
   const syncIdFieldUi = (btn, filled) => {
     if (!btn) return;
@@ -172,7 +182,6 @@
     syncIdFieldUi(idNumberBtn, idNumberFilled);
     syncIdFieldUi(idSurnameBtn, idSurnameFilled);
     syncIdFieldUi(idGivenBtn, idGivenFilled);
-    syncIdFieldUi(idDobBtn, idDobFilled);
     if (signupEmailStep === "id-details" && emailContinueBtn) {
       emailContinueBtn.hidden = false;
       emailContinueBtn.textContent = "Continue";
@@ -198,17 +207,11 @@
     syncActionButtons();
   };
 
-  const fillIdDob = () => {
-    idDobFilled = true;
-    syncIdDetailsUi();
-    syncActionButtons();
-  };
-
   const resetIdDetailsFields = () => {
     idNumberFilled = false;
     idSurnameFilled = false;
     idGivenFilled = false;
-    idDobFilled = false;
+    idDobApi.reset();
     syncIdDetailsUi();
   };
 
@@ -730,6 +733,22 @@
     };
     completePage.addEventListener("transitionend", onEnd);
     window.setTimeout(onEnd, SIGNUP_COMPLETE_TRANSITION_MS + 50);
+  };
+
+  const AUTH_STATE_STORAGE_KEY = "xrexexchange.authState.v1";
+
+  const finishSignupAndExplore = () => {
+    try {
+      if (window.localStorage) {
+        window.localStorage.setItem(AUTH_STATE_STORAGE_KEY, "2");
+      }
+    } catch (_) {
+      // ignore storage errors
+    }
+    closeSignupCompletePage();
+    window.setTimeout(() => {
+      window.location.href = next;
+    }, SIGNUP_COMPLETE_TRANSITION_MS + 50);
   };
 
   const finishSignupFlow = () => {
@@ -1475,7 +1494,6 @@
     idNumberBtn?.addEventListener("click", fillIdNumber);
     idSurnameBtn?.addEventListener("click", fillIdSurname);
     idGivenBtn?.addEventListener("click", fillIdGiven);
-    idDobBtn?.addEventListener("click", fillIdDob);
 
     referralSheet
       ?.querySelector("[data-auth-referral-sheet-continue]")
@@ -1492,7 +1510,7 @@
       ?.addEventListener("click", showNotInPrototype);
     completePage
       ?.querySelector("[data-auth-signup-complete-explore]")
-      ?.addEventListener("click", showNotInPrototype);
+      ?.addEventListener("click", finishSignupAndExplore);
 
     syncNationalityUi();
 

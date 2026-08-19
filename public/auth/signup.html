@@ -295,15 +295,60 @@
                                                 </button>
                                             </div>
                                         </div>
-                                        <div class="auth-signup-email-page__id-field">
-                                            <div class="auth-signup-email-page__id-field-heading">
-                                                <span class="auth-signup-email-page__id-field-label">Date of birth</span>
-                                                <span class="auth-signup-email-page__id-field-hint">Use the Western calendar year, not ROC</span>
+                                        <div class="auth-signup-email-page__id-field auth-signup-id-dob" data-auth-signup-id-dob>
+                                            <div class="auth-signup-id-dob__header">
+                                                <span class="auth-signup-email-page__id-field-label auth-signup-id-dob__label" data-auth-signup-id-dob-prototype-fill>Date of birth</span>
+                                                <div class="auth-signup-id-dob__toggle" role="tablist" aria-label="Calendar system">
+                                                    <button type="button" class="auth-signup-id-dob__toggle-btn is-active" data-auth-signup-id-dob-calendar="western" role="tab" aria-selected="true">西元</button>
+                                                    <button type="button" class="auth-signup-id-dob__toggle-btn" data-auth-signup-id-dob-calendar="roc" role="tab" aria-selected="false">民國</button>
+                                                </div>
                                             </div>
-                                            <button type="button" class="auth-signup-email-page__id-input" data-auth-signup-id-dob aria-label="Date of birth">
-                                                <span class="auth-signup-email-page__id-input-placeholder">YYYY / MM / DD</span>
-                                                <span class="auth-signup-email-page__id-input-value" hidden>1990 / 01 / 01</span>
-                                            </button>
+                                            <div class="auth-signup-id-dob__segments" data-auth-signup-id-dob-segments>
+                                                <div class="auth-signup-id-dob__segment auth-signup-id-dob__segment--year">
+                                                    <input
+                                                        type="text"
+                                                        class="auth-signup-id-dob__input"
+                                                        inputmode="numeric"
+                                                        pattern="[0-9]*"
+                                                        autocomplete="bday-year"
+                                                        maxlength="4"
+                                                        aria-label="Year"
+                                                        data-auth-signup-id-dob-segment="year"
+                                                    />
+                                                    <span class="auth-signup-id-dob__segment-label" data-auth-signup-id-dob-year-label>Year</span>
+                                                </div>
+                                                <div class="auth-signup-id-dob__segment">
+                                                    <input
+                                                        type="text"
+                                                        class="auth-signup-id-dob__input"
+                                                        inputmode="numeric"
+                                                        pattern="[0-9]*"
+                                                        autocomplete="bday-month"
+                                                        maxlength="2"
+                                                        aria-label="Month"
+                                                        data-auth-signup-id-dob-segment="month"
+                                                    />
+                                                    <span class="auth-signup-id-dob__segment-label">Month</span>
+                                                </div>
+                                                <div class="auth-signup-id-dob__segment">
+                                                    <input
+                                                        type="text"
+                                                        class="auth-signup-id-dob__input"
+                                                        inputmode="numeric"
+                                                        pattern="[0-9]*"
+                                                        autocomplete="bday-day"
+                                                        maxlength="2"
+                                                        aria-label="Day"
+                                                        data-auth-signup-id-dob-segment="day"
+                                                    />
+                                                    <span class="auth-signup-id-dob__segment-label">Day</span>
+                                                </div>
+                                            </div>
+                                            <div class="auth-signup-id-dob__helper" data-auth-signup-id-dob-helper hidden>
+                                                <img class="auth-signup-id-dob__helper-icon" data-auth-signup-id-dob-helper-icon src="../assets/icon_info_circle_gray.svg" alt="" width="16" height="16" aria-hidden="true" />
+                                                <span class="auth-signup-id-dob__helper-text" data-auth-signup-id-dob-helper-text></span>
+                                            </div>
+                                            <p class="auth-signup-id-dob__error" data-auth-signup-id-dob-error hidden></p>
                                         </div>
                                     </div>
                                 </div>
@@ -738,8 +783,9 @@
         </div>
     </div>
 
-    <script src="../js/auth-signup-resend-countdown.js"></script>
-    <script src="auth-signup.js"></script>
+    <script defer src="../js/auth-signup-resend-countdown.js"></script>
+    <script defer src="../js/auth-signup-id-dob.js"></script>
+    <script defer src="auth-signup.js"></script>
 </body>
 
 </html>

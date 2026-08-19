@@ -1,5 +1,15 @@
 (() => {
   const STATE_CONFIGS = {
+    auth: {
+      storageKey: "xrexexchange.authState.v1",
+      min: 1,
+      max: 2,
+      initial: 1,
+      labels: {
+        1: "Visitor",
+        2: "Signed up",
+      },
+    },
     flow: {
       storageKey: "xrexexchange.dcaFlowState.v1",
       min: 1,
@@ -46,6 +56,36 @@
   /** Exposes flow progress on `<html>` so prototype-only SCSS can key off it. */
   const syncPrototypeFlowToDocument = () => {
     document.documentElement.dataset.prototypeFlow = String(states.flow ?? 1);
+  };
+
+  /** Exposes auth state on `<html>` for prototype-only logic/styles. */
+  const syncPrototypeAuthToDocument = () => {
+    document.documentElement.dataset.prototypeAuth = String(states.auth ?? 1);
+  };
+
+  const syncHomeAuthUi = () => {
+    const authState = states.auth ?? 1;
+    const isSignedUp = authState >= 2;
+
+    document
+      .querySelectorAll("[data-home-auth-section]")
+      .forEach((section) => {
+        const kind = section.getAttribute("data-home-auth-section");
+        if (kind === "visitor") section.hidden = isSignedUp;
+        if (kind === "signed-up") section.hidden = !isSignedUp;
+      });
+
+    const avatarImg = document.querySelector(".app-header__avatar img");
+    if (avatarImg) {
+      avatarImg.src = isSignedUp
+        ? "assets/avatar_club.png"
+        : "assets/icon_guest.svg";
+      avatarImg.alt = isSignedUp ? "Profile" : "Guest profile";
+    }
+
+    document.querySelectorAll("[data-limits-panel-auth-cta]").forEach((btn) => {
+      btn.textContent = isSignedUp ? "Get started" : "Sign up / Log in";
+    });
   };
 
   /** Exposes funding state on `<html>` for prototype-only logic/styles. */
@@ -180,6 +220,10 @@
       syncMyPlansFlowUi();
       applyFinanceSummaryMeta();
     }
+    if (group === "auth") {
+      syncPrototypeAuthToDocument();
+      syncHomeAuthUi();
+    }
     return clamped;
   };
 
@@ -189,9 +233,20 @@
   const initStates = () => {
     Object.keys(STATE_CONFIGS).forEach((group) => {
       const config = STATE_CONFIGS[group];
-      const rawInitial =
+      let initial =
         typeof config.initial === "number" ? config.initial : config.min;
-      const clamped = clamp(rawInitial, config.min, config.max);
+      try {
+        if (window.localStorage) {
+          const saved = window.localStorage.getItem(config.storageKey);
+          if (saved !== null) {
+            const parsed = parseInt(saved, 10);
+            if (!Number.isNaN(parsed)) initial = parsed;
+          }
+        }
+      } catch (_) {
+        // ignore storage errors
+      }
+      const clamped = clamp(initial, config.min, config.max);
       states[group] = clamped;
       try {
         if (window.localStorage) {
@@ -203,9 +258,11 @@
       updateGroupUI(group);
     });
     syncPrototypeFlowToDocument();
+    syncPrototypeAuthToDocument();
     syncPrototypeFundingToDocument();
     syncFinanceSummaryVisibility();
     syncFinanceIntroState();
+    syncHomeAuthUi();
   };
 
   const initAuthSignup = () => {
@@ -352,7 +409,7 @@
     const idNumberBtn = emailPage?.querySelector("[data-auth-signup-id-number]");
     const idSurnameBtn = emailPage?.querySelector("[data-auth-signup-id-surname]");
     const idGivenBtn = emailPage?.querySelector("[data-auth-signup-id-given]");
-    const idDobBtn = emailPage?.querySelector("[data-auth-signup-id-dob]");
+    const idDobRoot = emailPage?.querySelector("[data-auth-signup-id-dob]");
     const signupCodeLoader = emailPage?.querySelector("[data-auth-signup-code-loader]");
     const referralSheet = document.querySelector("[data-auth-referral-sheet]");
     const referralSheetPanel = referralSheet?.querySelector(".currency-sheet__panel");
@@ -397,7 +454,17 @@
     let idNumberFilled = false;
     let idSurnameFilled = false;
     let idGivenFilled = false;
-    let idDobFilled = false;
+
+    const idDobApi =
+      typeof window.initAuthSignupIdDob === "function"
+        ? window.initAuthSignupIdDob(idDobRoot, {
+            assetBase: "assets/",
+            onValidityChange: () => {
+              syncIdDetailsUi();
+              syncActionButtons();
+            },
+          })
+        : { isValid: () => false, reset: () => {}, fillDummy: () => {}, getSubmitValue: () => "" };
 
     const isVerificationCodeStep = () =>
       signupEmailStep === "code" || signupEmailStep === "mobile-code";
@@ -405,7 +472,7 @@
     const isNationalityStepComplete = () => nationalitySelected && nationalityConsentChecked;
 
     const isIdDetailsStepComplete = () =>
-      idNumberFilled && idSurnameFilled && idGivenFilled && idDobFilled;
+      idNumberFilled && idSurnameFilled && idGivenFilled && idDobApi.isValid();
 
     const syncIdFieldUi = (btn, filled) => {
       if (!btn) return;
@@ -420,7 +487,6 @@
       syncIdFieldUi(idNumberBtn, idNumberFilled);
       syncIdFieldUi(idSurnameBtn, idSurnameFilled);
       syncIdFieldUi(idGivenBtn, idGivenFilled);
-      syncIdFieldUi(idDobBtn, idDobFilled);
       if (signupEmailStep === "id-details" && emailContinueBtn) {
         emailContinueBtn.hidden = false;
         emailContinueBtn.textContent = "Continue";
@@ -446,17 +512,11 @@
       syncActionButtons();
     };
 
-    const fillIdDob = () => {
-      idDobFilled = true;
-      syncIdDetailsUi();
-      syncActionButtons();
-    };
-
     const resetIdDetailsFields = () => {
       idNumberFilled = false;
       idSurnameFilled = false;
       idGivenFilled = false;
-      idDobFilled = false;
+      idDobApi.reset();
       syncIdDetailsUi();
     };
 
@@ -956,6 +1016,12 @@
       };
       completePage.addEventListener("transitionend", onEnd);
       window.setTimeout(onEnd, SIGNUP_COMPLETE_TRANSITION_MS + 50);
+    };
+
+    const finishSignupAndExplore = () => {
+      closeSignupCompletePage();
+      setState("auth", 2, { force: true });
+      document.dispatchEvent(new CustomEvent("auth-signup-return-home"));
     };
 
     const finishSignupFlow = () => {
@@ -1880,7 +1946,6 @@
       idNumberBtn?.addEventListener("click", fillIdNumber);
       idSurnameBtn?.addEventListener("click", fillIdSurname);
       idGivenBtn?.addEventListener("click", fillIdGiven);
-      idDobBtn?.addEventListener("click", fillIdDob);
 
       referralSheet
         ?.querySelector("[data-auth-referral-sheet-continue]")
@@ -1897,7 +1962,11 @@
         ?.addEventListener("click", showNotInPrototype);
       completePage
         ?.querySelector("[data-auth-signup-complete-explore]")
-        ?.addEventListener("click", showNotInPrototype);
+        ?.addEventListener("click", finishSignupAndExplore);
+
+      document.querySelectorAll("[data-home-setup-cta]").forEach((btn) => {
+        btn.addEventListener("click", showNotInPrototype);
+      });
 
       syncNationalityUi();
 
@@ -2095,6 +2164,13 @@
       .querySelectorAll("[data-home-visitor-cta], [data-visitor-login-cta]")
       .forEach((cta) => {
         cta.addEventListener("click", () => {
+          if (
+            (states.auth ?? 1) >= 2 &&
+            cta.hasAttribute("data-limits-panel-auth-cta")
+          ) {
+            showNotInPrototype();
+            return;
+          }
           if (cta.closest(".side-menu")) {
             openFromSideMenu();
             return;
@@ -10105,6 +10181,11 @@
   initAuthSignup();
   initBadgeControls();
   const tabNavApi = initTabs();
+  document.addEventListener("auth-signup-return-home", () => {
+    tabNavApi.setActiveTab("home");
+    const content = document.querySelector("[data-content]");
+    if (content) content.scrollTop = 0;
+  });
   const financeHeaderApi = initFinanceHeaderTabs();
   const tradeHeaderApi = initTradeHeaderTabs();
   const marketsPageApi = initMarketsPage();

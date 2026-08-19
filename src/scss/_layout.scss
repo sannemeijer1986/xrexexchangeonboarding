@@ -3023,6 +3023,20 @@ html[data-active-tab="wallet"] {
   padding: 0;
 }
 
+// `display:flex` beats UA `[hidden]`; keep visitor / signed-up sections mutually exclusive.
+.home-visitor[hidden],
+.home-setup[hidden] {
+  display: none !important;
+}
+
+html[data-prototype-auth="1"] [data-home-auth-section="signed-up"] {
+  display: none !important;
+}
+
+html[data-prototype-auth="2"] [data-home-auth-section="visitor"] {
+  display: none !important;
+}
+
 .home-visitor__hero {
   flex-shrink: 0;
 }
@@ -3061,6 +3075,48 @@ html[data-active-tab="wallet"] {
   line-height: normal;
   cursor: pointer;
   flex-shrink: 0;
+}
+
+// Figma 15258:28241 — signed up, KYC pending home onboarding section
+.home-setup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 24px;
+  padding: 0;
+}
+
+.home-setup__hero {
+  flex-shrink: 0;
+}
+
+.home-setup__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  width: 100%;
+}
+
+.home-setup__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.home-setup .setup-first__title {
+  width: 100%;
+  padding: 0 12px;
+  margin: 0;
+}
+
+.home-setup .setup-first__progress {
+  width: 100%;
+  max-width: 280px;
+  margin: 0;
 }
 
 // Figma 13256:20205 — visitor sign-up page (in-app overlay)
@@ -3699,6 +3755,148 @@ html[data-active-tab="wallet"] {
   font-weight: 600;
   line-height: normal;
   color: #ffffff;
+
+  &[hidden] {
+    display: none !important;
+  }
+}
+
+// Figma — Date of birth segmented field (ID details step)
+.auth-signup-id-dob {
+  gap: 12px;
+}
+
+.auth-signup-id-dob__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.auth-signup-id-dob__label {
+  cursor: pointer;
+}
+
+.auth-signup-id-dob__toggle {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  padding: 2px;
+  border: 1px solid #3c4248;
+  border-radius: 999px;
+  background: #1b1d1d;
+}
+
+.auth-signup-id-dob__toggle-btn {
+  min-width: 44px;
+  height: 28px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #9b9c9c;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: normal;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  &.is-active {
+    background: #275cfd;
+    color: #ffffff;
+  }
+}
+
+.auth-signup-id-dob__segments {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.auth-signup-id-dob__segment {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.auth-signup-id-dob__segment--year {
+  flex: 1.4 1 0;
+}
+
+.auth-signup-id-dob__input {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #1b1d1d;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: normal;
+  text-align: center;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus {
+    outline: 2px solid #3f78ff;
+    outline-offset: 0;
+  }
+}
+
+.auth-signup-id-dob.is-error .auth-signup-id-dob__input {
+  outline: 1px solid #ff4d4f;
+  outline-offset: 0;
+}
+
+.auth-signup-id-dob__segment-label {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: normal;
+  color: #9b9c9c;
+}
+
+.auth-signup-id-dob__helper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 32px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #1b1d1d;
+  box-sizing: border-box;
+
+  &[hidden] {
+    display: none !important;
+  }
+}
+
+.auth-signup-id-dob__helper-icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.auth-signup-id-dob__helper-text {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: #9b9c9c;
+}
+
+.auth-signup-id-dob__error {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+  color: #ff4d4f;
 
   &[hidden] {
     display: none !important;
