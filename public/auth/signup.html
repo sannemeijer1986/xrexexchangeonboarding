@@ -576,11 +576,74 @@
 
             <div class="plan-submit-loader" data-auth-signup-code-loader hidden>
                 <div class="plan-submit-loader__backdrop" aria-hidden="true"></div>
-                <div class="plan-submit-loader__card" role="status" aria-live="polite" aria-label="Verifying">
+                <div class="plan-submit-loader__card" role="status" aria-live="polite" aria-label="Loading">
                     <img class="plan-submit-loader__icon" src="../assets/icon-loading.svg" alt="" width="40" height="40" aria-hidden="true" />
                 </div>
             </div>
         </section>
+
+        <section class="auth-signup-complete-page" data-auth-signup-complete-page hidden aria-label="Sign up complete">
+            <header class="auth-signup-complete-page__header">
+                <button class="auth-signup-complete-page__icon-btn" type="button" data-auth-signup-complete-close aria-label="Close">
+                    <img src="../assets/icon_close.svg" alt="" />
+                </button>
+            </header>
+            <div class="auth-signup-complete-page__body">
+                <div class="auth-signup-complete-page__hero">
+                    <img class="auth-signup-complete-page__icon" src="../assets/icon_success_screen.svg" alt="" width="60" height="60" />
+                    <h2 class="auth-signup-complete-page__title">Your account is ready</h2>
+                    <p class="auth-signup-complete-page__desc">Next, we'll verify your identity — required for all Taiwan-regulated exchanges.</p>
+                </div>
+                <ol class="auth-signup-complete-page__timeline" aria-label="Onboarding progress">
+                    <li class="auth-signup-complete-page__timeline-item is-complete">
+                        <span class="auth-signup-complete-page__timeline-marker" aria-hidden="true"></span>
+                        <div class="auth-signup-complete-page__timeline-copy">
+                            <span class="auth-signup-complete-page__timeline-title">Sign up</span>
+                            <span class="auth-signup-complete-page__timeline-status">Completed</span>
+                        </div>
+                    </li>
+                    <li class="auth-signup-complete-page__timeline-item is-active">
+                        <span class="auth-signup-complete-page__timeline-marker" aria-hidden="true"></span>
+                        <div class="auth-signup-complete-page__timeline-copy">
+                            <span class="auth-signup-complete-page__timeline-title">Verify your identity</span>
+                            <span class="auth-signup-complete-page__timeline-hint">Takes a few minutes</span>
+                        </div>
+                    </li>
+                    <li class="auth-signup-complete-page__timeline-item is-upcoming">
+                        <span class="auth-signup-complete-page__timeline-marker" aria-hidden="true"></span>
+                        <div class="auth-signup-complete-page__timeline-copy">
+                            <span class="auth-signup-complete-page__timeline-title">Link bank account</span>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+            <footer class="auth-signup-complete-page__footer">
+                <button class="auth-signup-complete-page__btn auth-signup-complete-page__btn--primary" type="button" data-auth-signup-complete-verify>
+                    Verify now
+                </button>
+                <button class="auth-signup-complete-page__btn auth-signup-complete-page__btn--secondary" type="button" data-auth-signup-complete-explore>
+                    Look around first
+                </button>
+            </footer>
+        </section>
+
+        <div class="currency-sheet auth-referral-sheet auth-referral-sheet--tbd" data-auth-referral-sheet hidden aria-modal="true" role="dialog" aria-label="Referral code">
+            <button class="currency-sheet__backdrop" type="button" tabindex="-1" aria-hidden="true"></button>
+            <div class="currency-sheet__panel">
+                <div class="currency-sheet__handle-wrap">
+                    <div class="currency-sheet__handle"></div>
+                </div>
+                <div class="auth-referral-sheet__body">
+                    <div class="auth-referral-sheet__hero">
+                        <h2 class="auth-referral-sheet__title">Referral code TBD</h2>
+                    </div>
+                </div>
+                <div class="currency-sheet__footer currency-sheet__footer--split auth-referral-sheet__footer">
+                    <button class="currency-sheet__cancel auth-referral-sheet__skip" type="button" data-auth-referral-sheet-skip>Skip</button>
+                    <button class="currency-sheet__cancel auth-referral-sheet__next" type="button" data-auth-referral-sheet-continue>Continue</button>
+                </div>
+            </div>
+        </div>
 
         <div class="fake-keyboard fake-keyboard--signup-email" data-fake-keyboard="signup-email" aria-hidden="true" hidden>
             <div class="fake-keyboard__panel" role="presentation">

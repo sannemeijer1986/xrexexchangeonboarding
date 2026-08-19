@@ -354,6 +354,9 @@
     const idGivenBtn = emailPage?.querySelector("[data-auth-signup-id-given]");
     const idDobBtn = emailPage?.querySelector("[data-auth-signup-id-dob]");
     const signupCodeLoader = emailPage?.querySelector("[data-auth-signup-code-loader]");
+    const referralSheet = document.querySelector("[data-auth-referral-sheet]");
+    const referralSheetPanel = referralSheet?.querySelector(".currency-sheet__panel");
+    const completePage = document.querySelector("[data-auth-signup-complete-page]");
     const stepperSteps = emailPage
       ? Array.from(emailPage.querySelectorAll(".auth-signup-email-page__step"))
       : [];
@@ -377,6 +380,7 @@
     const SIGNUP_EMAIL_KEYBOARD_DELAY_MS = 350;
     const SIGNUP_EMAIL_CHAR_DELAY_MS = 20;
     const SIGNUP_CODE_LOADER_VISIBLE_MS = 1500;
+    const SIGNUP_COMPLETE_TRANSITION_MS = 350;
     let signupEmailStep = "email";
     let signupEmailTypingTimers = [];
     let signupMobileTypingTimers = [];
@@ -893,6 +897,83 @@
         hideSignupCodeLoader();
         onComplete();
       }, SIGNUP_CODE_LOADER_VISIBLE_MS);
+    };
+
+    const openReferralSheet = () => {
+      if (!referralSheet) {
+        openSignupCompletePage(dismissSignupEmailPageUnderComplete);
+        return;
+      }
+      referralSheet.hidden = false;
+      requestAnimationFrame(() => referralSheet.classList.add("is-open"));
+    };
+
+    const closeReferralSheet = (onClosed) => {
+      if (!referralSheet?.classList.contains("is-open")) {
+        onClosed?.();
+        return;
+      }
+      referralSheet.classList.remove("is-open");
+      const finish = () => {
+        if (!referralSheet.classList.contains("is-open")) referralSheet.hidden = true;
+        onClosed?.();
+      };
+      referralSheetPanel?.addEventListener("transitionend", finish, { once: true });
+      window.setTimeout(finish, 290);
+    };
+
+    const dismissSignupEmailPageUnderComplete = () => {
+      if (!emailPage) return;
+      hideSignupEmailKeyboard();
+      emailPage.hidden = true;
+      emailPage.classList.add("is-dismiss-instant");
+      emailPage.classList.remove("is-open");
+      emailPage.classList.remove("is-dismiss-instant");
+      resetSignupEmailPageState();
+    };
+
+    const openSignupCompletePage = (onEntered) => {
+      if (!completePage) {
+        onEntered?.();
+        return;
+      }
+      hideSignupEmailKeyboard();
+      completePage.hidden = false;
+      requestAnimationFrame(() => {
+        completePage.classList.add("is-open");
+        const finish = () => onEntered?.();
+        completePage.addEventListener("transitionend", finish, { once: true });
+        window.setTimeout(finish, SIGNUP_COMPLETE_TRANSITION_MS + 50);
+      });
+    };
+
+    const closeSignupCompletePage = () => {
+      if (!completePage) return;
+      completePage.classList.remove("is-open");
+      const onEnd = () => {
+        if (!completePage.classList.contains("is-open")) completePage.hidden = true;
+        completePage.removeEventListener("transitionend", onEnd);
+      };
+      completePage.addEventListener("transitionend", onEnd);
+      window.setTimeout(onEnd, SIGNUP_COMPLETE_TRANSITION_MS + 50);
+    };
+
+    const finishSignupFlow = () => {
+      closeReferralSheet(() => {
+        openSignupCompletePage(() => {
+          dismissSignupEmailPageUnderComplete();
+          close({ instant: true });
+        });
+      });
+    };
+
+    const submitSignupPassword = () => {
+      if (signupEmailStep !== "password") return;
+      if (!isPasswordStepComplete()) return;
+      if (signupCodeLoaderHideTimer || (signupCodeLoader && !signupCodeLoader.hidden)) return;
+      unfocusAllPasswordFields();
+      dismissSignupEmailKeyboardUi();
+      showSignupCodeLoader(openReferralSheet);
     };
 
     const submitSignupCode = () => {
@@ -1636,7 +1717,7 @@
       }
       if (signupEmailStep === "password") {
         if (!isPasswordStepComplete()) return;
-        showNotInPrototype();
+        submitSignupPassword();
         return;
       }
       if (signupEmailStep === "nationality") {
@@ -1800,6 +1881,23 @@
       idSurnameBtn?.addEventListener("click", fillIdSurname);
       idGivenBtn?.addEventListener("click", fillIdGiven);
       idDobBtn?.addEventListener("click", fillIdDob);
+
+      referralSheet
+        ?.querySelector("[data-auth-referral-sheet-continue]")
+        ?.addEventListener("click", finishSignupFlow);
+      referralSheet
+        ?.querySelector("[data-auth-referral-sheet-skip]")
+        ?.addEventListener("click", finishSignupFlow);
+
+      completePage
+        ?.querySelector("[data-auth-signup-complete-close]")
+        ?.addEventListener("click", closeSignupCompletePage);
+      completePage
+        ?.querySelector("[data-auth-signup-complete-verify]")
+        ?.addEventListener("click", showNotInPrototype);
+      completePage
+        ?.querySelector("[data-auth-signup-complete-explore]")
+        ?.addEventListener("click", showNotInPrototype);
 
       syncNationalityUi();
 
