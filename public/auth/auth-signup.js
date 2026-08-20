@@ -1302,7 +1302,7 @@
 
   let signupEmailKeyboardDismissTimer = null;
   let signupFooterCtaRevealTimer = null;
-  const SIGNUP_FOOTER_CTA_REVEAL_DELAY_MS = 200;
+  const SIGNUP_FOOTER_CTA_REVEAL_DELAY_MS = 290;
 
   const shouldHideSignupFooterCtaForKeyboard = () =>
     signupEmailMq.matches && isSignupKeyboardHugeCtaSticky();

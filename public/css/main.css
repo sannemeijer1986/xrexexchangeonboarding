@@ -5232,11 +5232,15 @@ html[data-prototype-auth="2"] .limits-panel__footer {
     z-index: 2300;
   }
   .auth-signup-email-page__footer {
-    transition: opacity 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+    transition: opacity 0.1s ease-out;
   }
-  .phone-container.is-fake-keyboard-signup-email-visible:not(.is-fake-keyboard-signup-email-dismissing):has(.fake-keyboard--signup-email.is-send-code-sticky.is-visible) .auth-signup-email-page__footer {
+  .auth-signup-email-page.is-signup-footer-cta-hidden .auth-signup-email-page__footer {
     opacity: 0;
     pointer-events: none;
+  }
+  .auth-signup-email-page.is-signup-footer-cta-revealing .auth-signup-email-page__footer {
+    transition: opacity 0.12s ease-out;
+    opacity: 1;
   }
 }
 .auth-referral-sheet .currency-sheet__panel {

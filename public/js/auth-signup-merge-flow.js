@@ -217,7 +217,7 @@
     syncChromeLabels();
   };
 
-  const FOOTER_CTA_REVEAL_DELAY_MS = 200;
+  const FOOTER_CTA_REVEAL_DELAY_MS = 290;
 
   const isStickyFooterKeyboard = () =>
     signupEmailMq.matches && signupEmailKeyboard?.classList.contains("is-send-code-sticky");
