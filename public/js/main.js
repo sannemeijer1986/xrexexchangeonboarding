@@ -533,9 +533,8 @@
     const idNumberClearBtn = emailPage?.querySelector("[data-auth-signup-id-number-clear]");
     const idDobRoot = emailPage?.querySelector("[data-auth-signup-id-dob]");
     const idDobYearInput = idDobRoot?.querySelector('[data-auth-signup-id-dob-segment="year"]');
-    const idDetailsScrollEl = emailPage?.querySelector(
-      ".auth-signup-email-page__panel--id-details",
-    );
+    const idDetailsScrollEl = emailPage?.querySelector("[data-auth-signup-id-details-scroll]");
+    const idDetailsReferralRow = emailPage?.querySelector("[data-auth-signup-referral-add]");
     const signupCodeLoader = emailPage?.querySelector("[data-auth-signup-code-loader]");
     const referralSheet = document.querySelector("[data-auth-referral-sheet]");
     const referralSheetPanel = referralSheet?.querySelector(".currency-sheet__panel");
@@ -591,24 +590,97 @@
     let idNumberPartialValue = "";
     let signupIdNumberTypingTimers = [];
 
+    const getSignupEmailKeyboardInset = () => {
+      if (!signupEmailMq.matches || !signupEmailKeyboard) return 0;
+      return signupEmailKeyboard.offsetHeight || 0;
+    };
+
+    const isIdDetailsFieldFocusedForScroll = () =>
+      idNumberWrap?.classList.contains("is-focused") || Boolean(idDobApi.isFocused?.());
+
+    const syncIdDetailsScrollInset = () => {
+      if (!idDetailsScrollEl) return;
+      const inset =
+        signupEmailStep === "id-details" &&
+        isIdDetailsFieldFocusedForScroll() &&
+        signupEmailMq.matches
+          ? getSignupEmailKeyboardInset()
+          : 0;
+      idDetailsScrollEl.style.paddingBottom = inset > 0 ? `${inset}px` : "";
+    };
+
+    const runIdDetailsScrollPasses = (run) => {
+      requestAnimationFrame(run);
+      window.setTimeout(run, SIGNUP_EMAIL_KEYBOARD_DELAY_MS);
+      window.setTimeout(run, SIGNUP_EMAIL_KEYBOARD_DELAY_MS + 80);
+    };
+
+    const scrollIdDetailsFieldIntoView = (targetEl, { alignTop = false, alignBottom = false } = {}) => {
+      if (!idDetailsScrollEl || !targetEl || signupEmailStep !== "id-details") return;
+
+      const run = () => {
+        syncIdDetailsScrollInset();
+        if (alignTop === "start") {
+          idDetailsScrollEl.scrollTo({ top: 0, behavior: "smooth" });
+          return;
+        }
+
+        const panelRect = idDetailsScrollEl.getBoundingClientRect();
+        const targetRect = targetEl.getBoundingClientRect();
+        const paddingTop = 16;
+        const paddingBottom = 16;
+        const keyboardInset = getSignupEmailKeyboardInset();
+        const visibleBottom = panelRect.bottom - keyboardInset;
+        const maxScroll = Math.max(0, idDetailsScrollEl.scrollHeight - idDetailsScrollEl.clientHeight);
+
+        if (alignBottom) {
+          const targetScrollTop =
+            idDetailsScrollEl.scrollTop + (targetRect.bottom - visibleBottom + paddingBottom);
+          idDetailsScrollEl.scrollTo({
+            top: Math.min(maxScroll, Math.max(0, targetScrollTop)),
+            behavior: "smooth",
+          });
+          return;
+        }
+
+        if (alignTop) {
+          const nextScrollTop =
+            idDetailsScrollEl.scrollTop + (targetRect.top - panelRect.top - paddingTop);
+          idDetailsScrollEl.scrollTo({
+            top: Math.max(0, nextScrollTop),
+            behavior: "smooth",
+          });
+          return;
+        }
+
+        if (targetRect.bottom > visibleBottom - paddingBottom) {
+          const delta = targetRect.bottom - (visibleBottom - paddingBottom);
+          idDetailsScrollEl.scrollTo({
+            top: Math.min(maxScroll, idDetailsScrollEl.scrollTop + delta),
+            behavior: "smooth",
+          });
+          return;
+        }
+
+        if (targetRect.top < panelRect.top + paddingTop) {
+          const nextScrollTop =
+            idDetailsScrollEl.scrollTop + (targetRect.top - panelRect.top - paddingTop);
+          idDetailsScrollEl.scrollTo({
+            top: Math.max(0, nextScrollTop),
+            behavior: "smooth",
+          });
+        }
+      };
+
+      runIdDetailsScrollPasses(run);
+    };
+
     const scrollIdDetailsToTop = () => {
-      if (!idDetailsScrollEl || signupEmailStep !== "id-details") return;
-      idDetailsScrollEl.scrollTo({ top: 0, behavior: "smooth" });
+      scrollIdDetailsFieldIntoView(idNumberWrap, { alignTop: "start" });
     };
 
     const scrollIdDetailsForDob = () => {
-      if (!idDetailsScrollEl || !idDobRoot || signupEmailStep !== "id-details") return;
-      requestAnimationFrame(() => {
-        const panelRect = idDetailsScrollEl.getBoundingClientRect();
-        const dobRect = idDobRoot.getBoundingClientRect();
-        const paddingTop = 24;
-        const nextScrollTop =
-          idDetailsScrollEl.scrollTop + (dobRect.top - panelRect.top - paddingTop);
-        idDetailsScrollEl.scrollTo({
-          top: Math.max(0, nextScrollTop),
-          behavior: "smooth",
-        });
-      });
+      scrollIdDetailsFieldIntoView(idDetailsReferralRow || idDobRoot, { alignBottom: true });
     };
 
     const idDobApi =
@@ -622,8 +694,8 @@
             },
             onFocus: () => {
               unfocusIdNumber();
-              scrollIdDetailsForDob();
               syncIdDetailsKeyboard();
+              scrollIdDetailsForDob();
             },
             onBlur: () => {
               syncIdDetailsKeyboard();
@@ -717,8 +789,8 @@
 
     const focusIdNumber = () => {
       idNumberWrap?.classList.add("is-focused");
-      scrollIdDetailsToTop();
       syncIdDetailsKeyboard();
+      scrollIdDetailsToTop();
     };
 
     const unfocusIdNumber = () => {
@@ -834,6 +906,7 @@
       } else {
         hideSignupEmailKeyboard();
       }
+      syncIdDetailsScrollInset();
     };
 
     const getPasswordFieldEl = (name) =>
@@ -1382,13 +1455,7 @@
 
       requestAnimationFrame(() => {
         page?.classList.add("is-exiting-down");
-        if (completePage) {
-          completePage.classList.add("is-positioned-for-down");
-          void completePage.offsetWidth;
-          completePage.classList.remove("is-open");
-          void completePage.offsetWidth;
-          completePage.classList.add("is-dismiss-down");
-        }
+        playSignupCompletePageDismissDown();
       });
 
       let dismissFinished = false;
@@ -1527,7 +1594,10 @@
         "is-hybrid-mobile-code-active",
       );
       emailPage?.classList.add("is-id-details-step");
-      if (idDetailsScrollEl) idDetailsScrollEl.scrollTop = 0;
+      if (idDetailsScrollEl) {
+        idDetailsScrollEl.scrollTop = 0;
+        idDetailsScrollEl.style.paddingBottom = "";
+      }
       syncStepperUi();
       syncKeyboardStickyUi();
       hideSignupEmailKeyboard();
