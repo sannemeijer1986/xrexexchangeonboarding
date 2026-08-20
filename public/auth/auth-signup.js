@@ -102,7 +102,10 @@
   const nationalityValueEl = emailPage?.querySelector("[data-auth-signup-nationality-value]");
   const nationalityConsentBtn = emailPage?.querySelector("[data-auth-signup-nationality-consent]");
   const idNumberBtn = emailPage?.querySelector("[data-auth-signup-id-number]");
+  const idNumberWrap = emailPage?.querySelector("[data-auth-signup-id-number-field]");
+  const idNumberClearBtn = emailPage?.querySelector("[data-auth-signup-id-number-clear]");
   const idDobRoot = emailPage?.querySelector("[data-auth-signup-id-dob]");
+  const idDobYearInput = idDobRoot?.querySelector('[data-auth-signup-id-dob-segment="year"]');
   const signupCodeLoader = emailPage?.querySelector("[data-auth-signup-code-loader]");
   const referralSheet = document.querySelector("[data-auth-referral-sheet]");
   const referralSheetPanel = referralSheet?.querySelector(".currency-sheet__panel");
@@ -167,7 +170,10 @@
             syncIdDetailsUi();
             syncActionButtons();
           },
-          onFocus: () => unfocusIdNumber(),
+          onFocus: () => {
+            unfocusIdNumber();
+            syncIdDetailsKeyboard();
+          },
         })
       : { isValid: () => false, reset: () => {}, fillDummy: () => {}, getSubmitValue: () => "", unfocus: () => {}, isFocused: () => false, hasValue: () => false, clearAllAndFocusYear: () => {} };
 
@@ -177,8 +183,11 @@
   const isSendCodeKeyboardSticky = () =>
     signupEmailStep === "email" || signupEmailStep === "mobile";
 
+  const isSignupKeyboardHugeCtaSticky = () =>
+    isSendCodeKeyboardSticky() || signupEmailStep === "id-details";
+
   const setKeyboardContinueDisabled = (enabled) => {
-    if (isSendCodeKeyboardSticky()) {
+    if (isSignupKeyboardHugeCtaSticky()) {
       if (keyboardSendCodeBtn) keyboardSendCodeBtn.disabled = !enabled;
       return;
     }
@@ -194,6 +203,7 @@
     const displayValue = idNumberFilled ? SIGNUP_DUMMY_ID_NUMBER : idNumberPartialValue;
     const hasDisplay = displayValue.length > 0;
     idNumberBtn.classList.toggle("is-filled", hasDisplay);
+    if (idNumberClearBtn) idNumberClearBtn.hidden = !hasDisplay;
     const placeholder = idNumberBtn.querySelector(".auth-signup-email-page__id-input-placeholder");
     const value = idNumberBtn.querySelector(".auth-signup-email-page__id-input-value");
     if (placeholder) placeholder.hidden = hasDisplay;
@@ -247,14 +257,15 @@
     });
   };
 
-  const isIdNumberFocused = () => idNumberBtn?.classList.contains("is-focused");
+  const isIdNumberFocused = () => idNumberWrap?.classList.contains("is-focused");
 
   const focusIdNumber = () => {
-    idNumberBtn?.classList.add("is-focused");
+    idNumberWrap?.classList.add("is-focused");
+    syncIdDetailsKeyboard();
   };
 
   const unfocusIdNumber = () => {
-    idNumberBtn?.classList.remove("is-focused");
+    idNumberWrap?.classList.remove("is-focused");
   };
 
   const handleIdNumberInteraction = () => {
@@ -297,6 +308,7 @@
     if (signupEmailStep !== "id-details") return;
     unfocusIdNumber();
     idDobApi.unfocus?.();
+    hideSignupEmailKeyboard();
   };
 
   const resetIdDetailsFields = () => {
@@ -345,10 +357,10 @@
 
   const syncSignupKeyboardMode = () => {
     signupEmailKeyboard?.classList.toggle("is-code-mode", isVerificationCodeStep());
-    signupEmailKeyboard?.classList.toggle(
-      "is-mobile-numeric-mode",
-      signupEmailStep === "mobile",
-    );
+    const numericMode =
+      signupEmailStep === "mobile" ||
+      (signupEmailStep === "id-details" && idDobApi.isFocused?.() && !isIdNumberFocused());
+    signupEmailKeyboard?.classList.toggle("is-mobile-numeric-mode", numericMode);
   };
 
   const getPasswordFieldEl = (name) =>
@@ -653,7 +665,7 @@
   };
 
   const syncKeyboardStickyUi = () => {
-    const sendCodeSticky = isSendCodeKeyboardSticky();
+    const sendCodeSticky = isSignupKeyboardHugeCtaSticky();
     const hideContinue = isVerificationCodeStep();
 
     if (keyboardSendCodeBar) keyboardSendCodeBar.hidden = !sendCodeSticky;
@@ -1189,6 +1201,13 @@
     syncSignupEmailKeyboardVisible();
   };
 
+  const syncIdDetailsKeyboard = () => {
+    if (signupEmailStep !== "id-details") return;
+    syncKeyboardStickyUi();
+    syncSignupKeyboardMode();
+    showSignupEmailKeyboard();
+  };
+
   const resetEmailField = () => {
     cancelSignupEmailTyping();
     if (emailInput) emailInput.value = "";
@@ -1652,6 +1671,14 @@
       toggleNationalityConsent();
     });
     idNumberBtn?.addEventListener("click", handleIdNumberInteraction);
+    idNumberClearBtn?.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+    });
+    idNumberClearBtn?.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      clearIdNumber();
+    });
     emailPage
       ?.querySelector("[data-auth-signup-referral-add]")
       ?.addEventListener("click", openReferralSheet);
@@ -1758,6 +1785,18 @@
               fillSignupMobile();
             }
             showSignupEmailKeyboard();
+            return;
+          }
+          if (signupEmailStep === "id-details") {
+            if (!isIdNumberFocused()) {
+              idDobApi.unfocus?.();
+              focusIdNumber();
+              return;
+            }
+            if (!idNumberFilled) {
+              fillIdNumber();
+            }
+            showSignupEmailKeyboard();
           }
         });
       });
@@ -1794,6 +1833,18 @@
             }
             if (mobileInput?.value !== SIGNUP_DUMMY_MOBILE) {
               fillSignupMobile();
+            }
+            showSignupEmailKeyboard();
+            return;
+          }
+          if (signupEmailStep === "id-details") {
+            if (!idDobApi.isFocused?.()) {
+              idDobApi.focus?.(idDobYearInput);
+              syncIdDetailsKeyboard();
+              return;
+            }
+            if (!idDobApi.isValid?.()) {
+              idDobApi.fillDummy?.();
             }
             showSignupEmailKeyboard();
           }
@@ -1855,8 +1906,9 @@
       if (!(e.target instanceof Element)) return;
 
       if (signupEmailStep === "id-details") {
-        if (e.target.closest("[data-auth-signup-id-number]")) return;
+        if (e.target.closest("[data-auth-signup-id-number-field]")) return;
         if (e.target.closest("[data-auth-signup-id-dob]")) return;
+        if (signupEmailKeyboard?.contains(e.target)) return;
         dismissIdDetailsFocus();
       }
 
@@ -1876,7 +1928,7 @@
         if (e.target.closest("[data-auth-signup-email-edit]")) return;
         if (e.target.closest("[data-auth-signup-mobile-edit]")) return;
         if (e.target.closest("[data-auth-signup-email-back]")) return;
-        if (e.target.closest("[data-auth-signup-id-number]")) return;
+        if (e.target.closest("[data-auth-signup-id-number-field]")) return;
         if (e.target.closest("[data-auth-signup-id-dob]")) return;
       }
       dismissSignupEmailKeyboardFromOutside();

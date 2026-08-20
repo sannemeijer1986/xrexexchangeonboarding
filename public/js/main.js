@@ -496,6 +496,8 @@
     const nationalityValueEl = emailPage?.querySelector("[data-auth-signup-nationality-value]");
     const nationalityConsentBtn = emailPage?.querySelector("[data-auth-signup-nationality-consent]");
     const idNumberBtn = emailPage?.querySelector("[data-auth-signup-id-number]");
+    const idNumberWrap = emailPage?.querySelector("[data-auth-signup-id-number-field]");
+    const idNumberClearBtn = emailPage?.querySelector("[data-auth-signup-id-number-clear]");
     const idDobRoot = emailPage?.querySelector("[data-auth-signup-id-dob]");
     const idDobYearInput = idDobRoot?.querySelector('[data-auth-signup-id-dob-segment="year"]');
     const signupCodeLoader = emailPage?.querySelector("[data-auth-signup-code-loader]");
@@ -595,6 +597,7 @@
       const displayValue = idNumberFilled ? SIGNUP_DUMMY_ID_NUMBER : idNumberPartialValue;
       const hasDisplay = displayValue.length > 0;
       idNumberBtn.classList.toggle("is-filled", hasDisplay);
+      if (idNumberClearBtn) idNumberClearBtn.hidden = !hasDisplay;
       const placeholder = idNumberBtn.querySelector(".auth-signup-email-page__id-input-placeholder");
       const value = idNumberBtn.querySelector(".auth-signup-email-page__id-input-value");
       if (placeholder) placeholder.hidden = hasDisplay;
@@ -648,15 +651,15 @@
       });
     };
 
-    const isIdNumberFocused = () => idNumberBtn?.classList.contains("is-focused");
+    const isIdNumberFocused = () => idNumberWrap?.classList.contains("is-focused");
 
     const focusIdNumber = () => {
-      idNumberBtn?.classList.add("is-focused");
+      idNumberWrap?.classList.add("is-focused");
       syncIdDetailsKeyboard();
     };
 
     const unfocusIdNumber = () => {
-      idNumberBtn?.classList.remove("is-focused");
+      idNumberWrap?.classList.remove("is-focused");
     };
 
     const handleIdNumberInteraction = () => {
@@ -2262,6 +2265,14 @@
         toggleNationalityConsent();
       });
       idNumberBtn?.addEventListener("click", handleIdNumberInteraction);
+      idNumberClearBtn?.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+      });
+      idNumberClearBtn?.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        clearIdNumber();
+      });
       emailPage
         ?.querySelector("[data-auth-signup-referral-add]")
         ?.addEventListener("click", openReferralSheet);
@@ -2501,7 +2512,7 @@
         }
 
         if (signupEmailStep === "id-details") {
-          if (e.target.closest("[data-auth-signup-id-number]")) return;
+          if (e.target.closest("[data-auth-signup-id-number-field]")) return;
           if (e.target.closest("[data-auth-signup-id-dob]")) return;
           if (signupEmailKeyboard?.contains(e.target)) return;
           dismissIdDetailsFocus();
@@ -2522,7 +2533,7 @@
         if (e.target.closest("[data-auth-signup-email-edit]")) return;
         if (e.target.closest("[data-auth-signup-mobile-edit]")) return;
         if (e.target.closest("[data-auth-signup-email-back]")) return;
-        if (e.target.closest("[data-auth-signup-id-number]")) return;
+        if (e.target.closest("[data-auth-signup-id-number-field]")) return;
         if (e.target.closest("[data-auth-signup-id-dob]")) return;
         dismissSignupEmailKeyboardFromOutside();
       });

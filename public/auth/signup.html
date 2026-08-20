@@ -290,10 +290,21 @@
                                                 <span class="auth-signup-email-page__id-field-label">ID number</span>
                                                 <span class="auth-signup-email-page__id-field-subtitle" hidden>Must match your ID document</span>
                                             </div>
-                                            <button type="button" class="auth-signup-email-page__id-input" data-auth-signup-id-number aria-label="ID number">
-                                                <span class="auth-signup-email-page__id-input-placeholder">Must match your ID document</span>
-                                                <span class="auth-signup-email-page__id-input-value" hidden>A123456789</span>
-                                            </button>
+                                            <div class="auth-signup-email-page__id-input-wrap" data-auth-signup-id-number-field>
+                                                <button type="button" class="auth-signup-email-page__id-input" data-auth-signup-id-number aria-label="ID number">
+                                                    <span class="auth-signup-email-page__id-input-placeholder">Must match your ID document</span>
+                                                    <span class="auth-signup-email-page__id-input-value" hidden>A123456789</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    class="auth-signup-email-page__clear"
+                                                    data-auth-signup-id-number-clear
+                                                    aria-label="Clear ID number"
+                                                    hidden
+                                                >
+                                                    <img src="../assets/icon_clearinput.svg" alt="" width="24" height="24" />
+                                                </button>
+                                            </div>
                                         </div>
                                         <div class="auth-signup-email-page__id-field auth-signup-id-dob" data-auth-signup-id-dob>
                                             <div class="auth-signup-id-dob__header">

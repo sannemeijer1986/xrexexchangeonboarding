@@ -3841,15 +3841,34 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   width: 100%;
 }
 
-.auth-signup-email-page__id-input {
+.auth-signup-email-page__id-input-wrap {
   display: flex;
   align-items: center;
+  gap: 8px;
   width: 100%;
   min-height: 52px;
   padding: 10px 12px;
   border: 1px solid transparent;
   border-radius: 14px;
   background: #1b1d1d;
+  box-sizing: border-box;
+
+  &.is-focused {
+    border-color: #fff;
+  }
+}
+
+.auth-signup-email-page__id-input {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   font-family: inherit;
   text-align: left;
   cursor: text;
@@ -3857,12 +3876,7 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   -webkit-tap-highlight-color: transparent;
 
   &:focus-visible {
-    outline: 2px solid #3f78ff;
-    outline-offset: 2px;
-  }
-
-  &.is-focused {
-    border-color: #fff;
+    outline: none;
   }
 
   &.is-filled .auth-signup-email-page__id-input-placeholder {
