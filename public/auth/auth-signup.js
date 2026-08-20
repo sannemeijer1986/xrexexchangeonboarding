@@ -1856,8 +1856,26 @@
       ?.addEventListener("click", handleEmailBack);
     emailField?.addEventListener("click", handleEmailFieldInteraction);
     emailContinueBtn?.addEventListener("click", handleSignupPrimaryAction);
-    keyboardSendCodeBtn?.addEventListener("click", handleSignupPrimaryAction);
-    keyboardContinueBtn?.addEventListener("click", handleSignupPrimaryAction);
+    const bindKeyboardPrimaryButton = (btn) => {
+      if (!btn) return;
+      btn.addEventListener("mousedown", (e) => {
+        if (e.button !== 0) return;
+        if (signupEmailStep !== "id-details") return;
+        if (btn.disabled) return;
+        // Prevent DOB blur from hiding the keyboard (pointer-events: none) before click fires.
+        e.preventDefault();
+        handleSignupPrimaryAction();
+      });
+      btn.addEventListener("click", (e) => {
+        if (signupEmailStep === "id-details") {
+          e.preventDefault();
+          return;
+        }
+        handleSignupPrimaryAction();
+      });
+    };
+    bindKeyboardPrimaryButton(keyboardSendCodeBtn);
+    bindKeyboardPrimaryButton(keyboardContinueBtn);
     emailEditBtn?.addEventListener("click", returnToEmailStep);
     mobileField?.addEventListener("click", handleMobileFieldInteraction);
     mobileEditBtn?.addEventListener("click", returnToMobileStep);

@@ -2503,8 +2503,26 @@
         if (window.__hybridSignup?.handleKeyboardPrimary?.()) return;
         handleSignupPrimaryAction();
       };
-      keyboardSendCodeBtn?.addEventListener("click", handleKeyboardPrimaryAction);
-      keyboardContinueBtn?.addEventListener("click", handleKeyboardPrimaryAction);
+      const bindKeyboardPrimaryButton = (btn) => {
+        if (!btn) return;
+        btn.addEventListener("mousedown", (e) => {
+          if (e.button !== 0) return;
+          if (signupEmailStep !== "id-details") return;
+          if (btn.disabled) return;
+          // Prevent DOB blur from hiding the keyboard (pointer-events: none) before click fires.
+          e.preventDefault();
+          handleKeyboardPrimaryAction();
+        });
+        btn.addEventListener("click", (e) => {
+          if (signupEmailStep === "id-details") {
+            e.preventDefault();
+            return;
+          }
+          handleKeyboardPrimaryAction();
+        });
+      };
+      bindKeyboardPrimaryButton(keyboardSendCodeBtn);
+      bindKeyboardPrimaryButton(keyboardContinueBtn);
       emailEditBtn?.addEventListener("click", returnToEmailStep);
       mobileField?.addEventListener("click", handleMobileFieldInteraction);
       mobileEditBtn?.addEventListener("click", returnToMobileStep);

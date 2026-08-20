@@ -1263,6 +1263,8 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
 }
 
 .setup-checklist__header {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1317,6 +1319,23 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
 .setup-checklist__body::-webkit-scrollbar {
   width: 0;
   height: 0;
+}
+
+.setup-checklist__production-label {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 16px;
+  pointer-events: none;
+  font-size: 24px !important;
+  font-weight: 600;
+  line-height: normal;
+  color: #F6B656 !important;
+  text-align: center;
 }
 
 .setup-checklist__content {
@@ -5125,7 +5144,7 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   width: 32px;
   height: 32px;
   border-radius: 40px;
-  background: #1b1d1d;
+  background: #2D2F2F;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5391,7 +5410,7 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   z-index: 0;
   width: 360px;
   height: 360px;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, calc(-50% - 20px));
   pointer-events: none;
   overflow: visible;
 }
@@ -5542,8 +5561,8 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 .auth-signup-complete-page__timeline-marker::after {
   content: "";
   position: absolute;
-  top: 18px;
-  bottom: -6px;
+  top: 22px;
+  bottom: -2px;
   left: 50%;
   transform: translateX(-50%);
   width: 2px;
