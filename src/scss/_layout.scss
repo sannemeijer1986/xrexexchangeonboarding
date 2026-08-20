@@ -4892,18 +4892,21 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 
 .auth-signup-email-page__copy--code {
   gap: 4px;
+  align-items: flex-start;
 }
 
 .auth-signup-email-page__email-edit {
   display: inline-flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 3px;
+  width: max-content;
+  max-width: 100%;
   padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  max-width: 100%;
+  min-width: 0;
 
   &:focus-visible {
     outline: 2px solid #3f78ff;
@@ -4920,15 +4923,13 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 }
 
 .auth-signup-email-page__email-sent-value {
-  flex: 1;
+  flex: 0 1 auto;
   min-width: 0;
   font-size: 16px;
   font-weight: 600;
   line-height: normal;
   color: #9b9c9c;
   text-align: left;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -4952,8 +4953,8 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 
 .auth-signup-email-page__email-edit-icon {
   flex-shrink: 0;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   display: block;
 }
 

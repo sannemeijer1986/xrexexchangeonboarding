@@ -1251,7 +1251,10 @@
       if (mobilePanel) mobilePanel.hidden = true;
       if (mobileCodePanel) mobileCodePanel.hidden = true;
       if (emailDisplay) {
-        emailDisplay.textContent = emailInput?.value.trim() || SIGNUP_DUMMY_EMAIL;
+        window.__authSignupEmailDisplay?.syncSentEmailDisplay(
+          emailDisplay,
+          emailInput?.value.trim() || SIGNUP_DUMMY_EMAIL,
+        );
       }
       syncStepperUi();
       syncKeyboardStickyUi();

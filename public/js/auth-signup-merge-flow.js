@@ -368,7 +368,9 @@
   const submitHybridEmail = () => {
     if (!hybridEmailField) return;
     const value = hybridEmailInput?.value.trim() || SIGNUP_DUMMY_EMAIL;
-    if (hybridEmailDisplay) hybridEmailDisplay.textContent = value;
+    if (hybridEmailDisplay) {
+      window.__authSignupEmailDisplay?.syncSentEmailDisplay(hybridEmailDisplay, value);
+    }
     hybridEmailField.classList.remove("is-focused", "is-filled");
     hybridEmailField.classList.add("is-submitted");
     hybridEmailCursor?.setAttribute("hidden", "");
