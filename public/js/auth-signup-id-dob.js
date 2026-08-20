@@ -207,6 +207,7 @@
     let submitValue = "";
     let isValid = false;
     let yearFocused = false;
+    let dobFocused = false;
 
     const segmentInputs = [yearInput, monthInput, dayInput].filter(Boolean);
 
@@ -385,9 +386,32 @@
       }
     };
 
+    const syncSegmentFocusUi = (activeInput = null) => {
+      segmentInputs.forEach((input) => {
+        input.classList.toggle("is-focused", dobFocused && input === activeInput);
+      });
+      segmentsWrap?.classList.toggle("is-focused", dobFocused);
+    };
+
+    const setDobFocused = (input) => {
+      dobFocused = true;
+      syncSegmentFocusUi(input);
+    };
+
+    const clearDobFocus = () => {
+      dobFocused = false;
+      segmentInputs.forEach((input) => {
+        if (document.activeElement === input) {
+          input.blur();
+        }
+      });
+      syncSegmentFocusUi();
+    };
+
     const focusSegment = (input) => {
       if (!input) return;
-      input.focus();
+      setDobFocused(input);
+      input.focus({ preventScroll: true });
       const len = input.value.length;
       input.setSelectionRange(len, len);
     };
@@ -478,6 +502,7 @@
     const handleBlurLeave = (event) => {
       const next = event.relatedTarget;
       if (next && root.contains(next)) return;
+      clearDobFocus();
       runFullValidation();
     };
 
@@ -523,8 +548,12 @@
       runFullValidation();
     };
 
-    const handleSegmentClick = () => {
+    const handleSegmentClick = (input) => {
       if (isValid) return;
+      if (!dobFocused) {
+        focusSegment(input);
+        return;
+      }
       fillDummy();
     };
 
@@ -533,7 +562,7 @@
     }
 
     segmentInputs.forEach((input) => {
-      input.addEventListener("click", handleSegmentClick);
+      input.addEventListener("click", () => handleSegmentClick(input));
     });
 
     const reset = () => {
@@ -552,6 +581,7 @@
       submitValue = "";
       isValid = false;
       yearFocused = false;
+      clearDobFocus();
       segmentInputs.forEach((input) => {
         input.value = "";
         input.classList.remove("is-error");
@@ -564,6 +594,9 @@
 
     return {
       isValid: () => isValid,
+      isFocused: () => dobFocused,
+      focus: focusSegment,
+      unfocus: clearDobFocus,
       reset,
       fillDummy,
       getSubmitValue: () => submitValue,

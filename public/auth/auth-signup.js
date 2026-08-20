@@ -992,16 +992,18 @@
     hideSignupCodeLoader();
     resetMobileField();
     resetMobileCodeField();
-    showCodeStepUi({ resetCode: false });
+    resetCodeField();
+    unfocusCodeEntry();
+    showEmailStepUi();
+    openSignupEmailEntryKeyboard();
   };
 
   const returnToMobileStep = () => {
     window.__authSignupCta?.clearLoading?.();
     hideSignupCodeLoader();
     unfocusMobileCodeEntry();
+    resetMobileCodeField();
     showMobileStepUi();
-    focusSignupMobile();
-    syncSignupEmailKeyboardVisible();
   };
 
   const advanceToNationalityStep = () => {
@@ -1023,17 +1025,9 @@
 
   const returnFromNationalityStep = () => {
     hideSignupCodeLoader();
-    signupEmailStep = "mobile-code";
-    emailPage?.classList.remove("is-nationality-step", "is-id-details-step", "is-password-step");
-    emailPage?.classList.add("is-mobile-step", "is-mobile-code-step");
-    if (emailPanel) emailPanel.hidden = true;
-    if (codePanel) codePanel.hidden = true;
-    if (mobilePanel) mobilePanel.hidden = true;
-    if (mobileCodePanel) mobileCodePanel.hidden = false;
-    syncStepperUi();
-    syncKeyboardStickyUi();
-    syncActionButtons();
-    hideSignupEmailKeyboard();
+    resetMobileCodeField();
+    unfocusMobileCodeEntry();
+    showMobileStepUi();
   };
 
   const returnFromIdDetailsStep = () => {
@@ -1045,6 +1039,20 @@
     hideSignupCodeLoader();
     resetPasswordFields();
     showIdDetailsStepUi();
+  };
+
+  const openSignupEmailEntryKeyboard = () => {
+    window.setTimeout(() => {
+      focusSignupEmail();
+      showSignupEmailKeyboard();
+    }, SIGNUP_EMAIL_KEYBOARD_DELAY_MS);
+  };
+
+  const openSignupMobileEntryKeyboard = () => {
+    window.setTimeout(() => {
+      focusSignupMobile();
+      showSignupEmailKeyboard();
+    }, SIGNUP_EMAIL_KEYBOARD_DELAY_MS);
   };
 
   let signupEmailKeyboardDismissTimer = null;
@@ -1183,9 +1191,9 @@
     window.__authSignupCta?.clearLoading?.();
     hideSignupCodeLoader();
     unfocusCodeEntry();
+    resetCodeField();
     showEmailStepUi();
-    focusSignupEmail();
-    syncSignupEmailKeyboardVisible();
+    openSignupEmailEntryKeyboard();
   };
 
   const clearSignupEmail = () => {

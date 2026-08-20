@@ -558,7 +558,7 @@
               syncActionButtons();
             },
           })
-        : { isValid: () => false, reset: () => {}, fillDummy: () => {}, getSubmitValue: () => "" };
+        : { isValid: () => false, reset: () => {}, fillDummy: () => {}, getSubmitValue: () => "", unfocus: () => {}, isFocused: () => false };
 
     const isVerificationCodeStep = () =>
       signupEmailStep === "code" || signupEmailStep === "mobile-code";
@@ -602,8 +602,35 @@
       syncActionButtons();
     };
 
+    const isIdNumberFocused = () => idNumberBtn?.classList.contains("is-focused");
+
+    const focusIdNumber = () => {
+      idNumberBtn?.classList.add("is-focused");
+    };
+
+    const unfocusIdNumber = () => {
+      idNumberBtn?.classList.remove("is-focused");
+    };
+
+    const handleIdNumberInteraction = () => {
+      if (!isIdNumberFocused()) {
+        focusIdNumber();
+        return;
+      }
+      if (!idNumberFilled) {
+        fillIdNumber();
+      }
+    };
+
+    const dismissIdDetailsFocus = () => {
+      if (signupEmailStep !== "id-details") return;
+      unfocusIdNumber();
+      idDobApi.unfocus?.();
+    };
+
     const resetIdDetailsFields = () => {
       idNumberFilled = false;
+      unfocusIdNumber();
       idDobApi.reset();
       syncIdDetailsUi();
     };
@@ -1432,20 +1459,25 @@
       resetMobileField();
       resetMobileCodeField();
       if (window.__hybridSignup?.isActive?.()) {
-        signupEmailStep = "code";
+        signupEmailStep = "email";
         window.__hybridSignup.handleBackFromMobile?.();
+        syncStepperUi();
+        syncKeyboardStickyUi();
+        syncActionButtons();
         return;
       }
-      showCodeStepUi({ resetCode: false });
+      resetCodeField();
+      unfocusCodeEntry();
+      showEmailStepUi();
+      openSignupEmailEntryKeyboard();
     };
 
     const returnToMobileStep = () => {
       window.__authSignupCta?.clearLoading?.();
       hideSignupCodeLoader();
       unfocusMobileCodeEntry();
+      resetMobileCodeField();
       showMobileStepUi();
-      focusSignupMobile();
-      syncSignupEmailKeyboardVisible();
     };
 
     const advanceToNationalityStep = () => {
@@ -1467,26 +1499,17 @@
 
     const returnFromNationalityStep = () => {
       hideSignupCodeLoader();
-      signupEmailStep = "mobile-code";
-      emailPage?.classList.remove("is-nationality-step", "is-id-details-step", "is-password-step");
-      emailPage?.classList.add("is-mobile-step", "is-mobile-code-step");
       if (window.__hybridSignup?.isActive?.()) {
-        emailPage?.classList.add("is-hybrid-mobile-code-active");
-        window.__hybridSignup?.restoreMobileCodeStepAfterNationality?.();
+        signupEmailStep = "mobile";
+        window.__hybridSignup.handleBackFromNationality?.();
         syncStepperUi();
         syncKeyboardStickyUi();
         syncActionButtons();
-        hideSignupEmailKeyboard();
         return;
       }
-      if (emailPanel) emailPanel.hidden = true;
-      if (codePanel) codePanel.hidden = true;
-      if (mobilePanel) mobilePanel.hidden = true;
-      if (mobileCodePanel) mobileCodePanel.hidden = false;
-      syncStepperUi();
-      syncKeyboardStickyUi();
-      syncActionButtons();
-      hideSignupEmailKeyboard();
+      resetMobileCodeField();
+      unfocusMobileCodeEntry();
+      showMobileStepUi();
     };
 
     const returnFromIdDetailsStep = () => {
@@ -1629,6 +1652,20 @@
       }, 360);
     };
 
+    const openSignupEmailEntryKeyboard = () => {
+      window.setTimeout(() => {
+        focusSignupEmail();
+        showSignupEmailKeyboard();
+      }, SIGNUP_EMAIL_KEYBOARD_DELAY_MS);
+    };
+
+    const openSignupMobileEntryKeyboard = () => {
+      window.setTimeout(() => {
+        focusSignupMobile();
+        showSignupEmailKeyboard();
+      }, SIGNUP_EMAIL_KEYBOARD_DELAY_MS);
+    };
+
     const syncSignupEmailKeyboardVisible = () => {
       if (!signupEmailMq.matches || !signupEmailKeyboard) return;
       if (signupEmailKeyboardDismissTimer) {
@@ -1733,9 +1770,9 @@
       window.__authSignupCta?.clearLoading?.();
       hideSignupCodeLoader();
       unfocusCodeEntry();
+      resetCodeField();
       showEmailStepUi();
-      focusSignupEmail();
-      syncSignupEmailKeyboardVisible();
+      openSignupEmailEntryKeyboard();
     };
 
     const clearSignupEmail = () => {

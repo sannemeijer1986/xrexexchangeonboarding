@@ -1051,7 +1051,8 @@
     },
     handleBackFromMobile: () => {
       resetHybridMobile();
-      phase = "code";
+      lockHybridCode();
+      phase = "email";
       emailPage?.classList.remove(
         "is-mobile-step",
         "is-mobile-code-step",
@@ -1059,33 +1060,47 @@
         "is-nationality-step",
         "is-id-details-step",
         "is-password-step",
+        "is-hybrid-code-active",
+        "is-code-step",
       );
-      emailPage?.classList.add("is-hybrid-code-active", "is-code-step");
-      hybridCodeBlock?.classList.remove("is-locked");
-      hybridCodeGrid?.classList.remove("auth-signup-email-page__code-grid--hybrid");
-      syncHybridCodeChrome();
-      codeDigits = SIGNUP_DUMMY_CODE.split("").slice(0, SIGNUP_CODE_LENGTH);
-      codeActiveIndex = SIGNUP_CODE_LENGTH;
-      hybridCodeGrid?.classList.remove("is-focused");
-      hybridCodeGrid?.classList.add("is-filled");
-      syncHybridCodeUi();
+      hybridEmailField?.classList.remove("is-submitted");
+      syncHybridEmailPresentation();
+      if (hybridEmailInput?.value.trim()) {
+        hybridEmailField?.classList.add("is-filled");
+        syncHybridEmailClear();
+      } else {
+        hybridEmailField?.classList.remove("is-filled");
+      }
       syncSignupKeyboardMode();
       syncHybridActionUi();
-      hideKeyboard();
+      window.setTimeout(() => {
+        focusHybridEmail();
+      }, SIGNUP_EMAIL_KEYBOARD_DELAY_MS);
     },
-    restoreMobileCodeStepAfterNationality: () => {
-      phase = "mobile-code";
-      hybridMobileCodeBlock?.classList.remove("is-locked");
-      hybridMobileCodeGrid?.classList.remove("auth-signup-email-page__code-grid--hybrid");
-      syncHybridMobileCodeChrome();
-      mobileCodeDigits = SIGNUP_DUMMY_CODE.split("").slice(0, SIGNUP_CODE_LENGTH);
-      mobileCodeActiveIndex = SIGNUP_CODE_LENGTH;
-      hybridMobileCodeGrid?.classList.remove("is-focused");
-      hybridMobileCodeGrid?.classList.add("is-filled");
-      syncHybridMobileCodeUi();
+    handleBackFromNationality: () => {
+      lockHybridMobileCode();
+      phase = "mobile";
+      emailPage?.classList.remove(
+        "is-nationality-step",
+        "is-id-details-step",
+        "is-password-step",
+        "is-hybrid-mobile-code-active",
+        "is-mobile-code-step",
+      );
+      emailPage?.classList.add("is-mobile-step");
+      hybridMobileField?.classList.remove("is-submitted");
+      syncHybridMobilePresentation();
+      if (hybridMobileInput?.value.trim()) {
+        hybridMobileField?.classList.add("is-filled");
+        syncHybridMobileClear();
+      } else {
+        hybridMobileField?.classList.remove("is-filled");
+      }
       syncSignupKeyboardMode();
       syncHybridActionUi();
-      hideKeyboard();
+      window.setTimeout(() => {
+        focusHybridMobile();
+      }, SIGNUP_EMAIL_KEYBOARD_DELAY_MS);
     },
   };
 
