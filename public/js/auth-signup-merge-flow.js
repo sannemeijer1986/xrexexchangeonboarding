@@ -108,6 +108,7 @@
   let mobileTypingTimers = [];
   let codeLoaderTimer = null;
   let keyboardDismissTimer = null;
+  let footerCtaRevealTimer = null;
   let footerDismissedAfterContinue = false;
 
   const isKeyboardVisible = () =>
@@ -216,17 +217,68 @@
     syncChromeLabels();
   };
 
+  const FOOTER_CTA_REVEAL_DELAY_MS = 200;
+
+  const isStickyFooterKeyboard = () =>
+    signupEmailMq.matches && signupEmailKeyboard?.classList.contains("is-send-code-sticky");
+
+  const clearFooterCtaTimers = () => {
+    if (footerCtaRevealTimer) {
+      clearTimeout(footerCtaRevealTimer);
+      footerCtaRevealTimer = null;
+    }
+  };
+
+  const resetFooterCta = () => {
+    clearFooterCtaTimers();
+    emailPage?.classList.remove("is-signup-footer-cta-hidden", "is-signup-footer-cta-revealing");
+  };
+
+  const hideFooterCtaForKeyboard = () => {
+    if (!emailPage) return;
+    if (!isStickyFooterKeyboard()) {
+      resetFooterCta();
+      return;
+    }
+    clearFooterCtaTimers();
+    emailPage.classList.remove("is-signup-footer-cta-revealing");
+    emailPage.classList.add("is-signup-footer-cta-hidden");
+  };
+
+  const scheduleFooterCtaReveal = () => {
+    if (!emailPage || !isStickyFooterKeyboard()) {
+      resetFooterCta();
+      return;
+    }
+    clearFooterCtaTimers();
+    emailPage.classList.remove("is-signup-footer-cta-revealing");
+    footerCtaRevealTimer = window.setTimeout(() => {
+      emailPage.classList.remove("is-signup-footer-cta-hidden");
+      emailPage.classList.add("is-signup-footer-cta-revealing");
+      footerCtaRevealTimer = null;
+    }, FOOTER_CTA_REVEAL_DELAY_MS);
+  };
+
   const hideKeyboard = () => {
     if (!signupEmailKeyboard) return;
+    const wasVisible = signupEmailKeyboard.classList.contains("is-visible");
+    const shouldRevealFooterCta = wasVisible && isStickyFooterKeyboard();
     signupEmailKeyboard.classList.remove("is-visible");
     signupEmailKeyboard.setAttribute("aria-hidden", "true");
+    if (!wasVisible) return;
     phoneContainer?.classList.add("is-fake-keyboard-signup-email-dismissing");
+    if (shouldRevealFooterCta) {
+      scheduleFooterCtaReveal();
+    } else {
+      resetFooterCta();
+    }
     if (keyboardDismissTimer) clearTimeout(keyboardDismissTimer);
     keyboardDismissTimer = window.setTimeout(() => {
       phoneContainer?.classList.remove(
         "is-fake-keyboard-signup-email-visible",
         "is-fake-keyboard-signup-email-dismissing",
       );
+      resetFooterCta();
       keyboardDismissTimer = null;
     }, 360);
   };
@@ -237,6 +289,8 @@
       clearTimeout(keyboardDismissTimer);
       keyboardDismissTimer = null;
     }
+    clearFooterCtaTimers();
+    emailPage?.classList.remove("is-signup-footer-cta-revealing");
     phoneContainer?.classList.remove("is-fake-keyboard-signup-email-dismissing");
     signupEmailKeyboard.hidden = false;
     signupEmailKeyboard.classList.add("is-visible");
@@ -244,6 +298,7 @@
     phoneContainer?.classList.add("is-fake-keyboard-signup-email-visible");
     syncSignupKeyboardMode();
     syncHybridActionUi();
+    hideFooterCtaForKeyboard();
   };
 
   const cancelEmailTyping = () => {

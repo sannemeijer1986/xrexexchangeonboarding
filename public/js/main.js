@@ -603,12 +603,39 @@
     };
 
     const clearIdDetailsScrollInset = () => {
-      if (!idDetailsScrollEl) return;
+      if (!idDetailsScrollEl || idDetailsScrollTransitionLock) return;
       idDetailsScrollEl.style.paddingBottom = "";
     };
 
-    const syncIdDetailsScrollInset = () => {
+    let idDetailsScrollResetTimer = null;
+    let idDetailsScrollTransitionLock = false;
+
+    const cancelIdDetailsScrollReset = () => {
+      if (idDetailsScrollResetTimer) {
+        clearTimeout(idDetailsScrollResetTimer);
+        idDetailsScrollResetTimer = null;
+      }
+      idDetailsScrollTransitionLock = false;
+    };
+
+    const resetIdDetailsScrollState = () => {
       if (!idDetailsScrollEl) return;
+      idDetailsScrollEl.scrollTop = 0;
+      idDetailsScrollEl.style.paddingBottom = "";
+    };
+
+    const deferIdDetailsScrollResetUntilTrackTransition = () => {
+      cancelIdDetailsScrollReset();
+      idDetailsScrollTransitionLock = true;
+      idDetailsScrollResetTimer = window.setTimeout(() => {
+        idDetailsScrollTransitionLock = false;
+        resetIdDetailsScrollState();
+        idDetailsScrollResetTimer = null;
+      }, SIGNUP_EMAIL_KEYBOARD_DELAY_MS);
+    };
+
+    const syncIdDetailsScrollInset = () => {
+      if (!idDetailsScrollEl || idDetailsScrollTransitionLock) return;
       if (signupEmailStep !== "id-details" || !signupEmailMq.matches) {
         clearIdDetailsScrollInset();
         return;
@@ -1602,6 +1629,7 @@
         "is-hybrid-mobile-code-active",
       );
       emailPage?.classList.add("is-id-details-step");
+      cancelIdDetailsScrollReset();
       if (idDetailsScrollEl) idDetailsScrollEl.scrollTop = 0;
       syncIdDetailsScrollInset();
       syncStepperUi();
@@ -1613,7 +1641,6 @@
 
     const showPasswordStepUi = () => {
       signupEmailStep = "password";
-      clearIdDetailsScrollInset();
       emailPage?.classList.remove(
         "is-code-step",
         "is-mobile-step",
@@ -1634,6 +1661,7 @@
       if (emailContinueBtn) emailContinueBtn.hidden = false;
       syncActionButtons();
       hideSignupEmailKeyboard();
+      deferIdDetailsScrollResetUntilTrackTransition();
       window.setTimeout(() => {
         focusSignupPassword("primary");
         showSignupEmailKeyboard();
@@ -1891,10 +1919,53 @@
     window.__syncProgSignupActionLabels = syncSignupActionLabels;
 
     let signupEmailKeyboardDismissTimer = null;
+    let signupFooterCtaRevealTimer = null;
+    const SIGNUP_FOOTER_CTA_REVEAL_DELAY_MS = 200;
+
+    const shouldHideSignupFooterCtaForKeyboard = () =>
+      signupEmailMq.matches && isSignupKeyboardHugeCtaSticky();
+
+    const clearSignupFooterCtaTimers = () => {
+      if (signupFooterCtaRevealTimer) {
+        clearTimeout(signupFooterCtaRevealTimer);
+        signupFooterCtaRevealTimer = null;
+      }
+    };
+
+    const resetSignupFooterCta = () => {
+      clearSignupFooterCtaTimers();
+      emailPage?.classList.remove("is-signup-footer-cta-hidden", "is-signup-footer-cta-revealing");
+    };
+
+    const hideSignupFooterCtaForKeyboard = () => {
+      if (!emailPage) return;
+      if (!shouldHideSignupFooterCtaForKeyboard()) {
+        resetSignupFooterCta();
+        return;
+      }
+      clearSignupFooterCtaTimers();
+      emailPage.classList.remove("is-signup-footer-cta-revealing");
+      emailPage.classList.add("is-signup-footer-cta-hidden");
+    };
+
+    const scheduleSignupFooterCtaReveal = () => {
+      if (!emailPage || !shouldHideSignupFooterCtaForKeyboard()) {
+        resetSignupFooterCta();
+        return;
+      }
+      clearSignupFooterCtaTimers();
+      emailPage.classList.remove("is-signup-footer-cta-revealing");
+      signupFooterCtaRevealTimer = window.setTimeout(() => {
+        emailPage.classList.remove("is-signup-footer-cta-hidden");
+        emailPage.classList.add("is-signup-footer-cta-revealing");
+        signupFooterCtaRevealTimer = null;
+      }, SIGNUP_FOOTER_CTA_REVEAL_DELAY_MS);
+    };
 
     const hideSignupEmailKeyboard = () => {
       if (!signupEmailKeyboard) return;
       const wasVisible = signupEmailKeyboard.classList.contains("is-visible");
+      const shouldRevealFooterCta = wasVisible && shouldHideSignupFooterCtaForKeyboard();
       signupEmailKeyboard.classList.remove("is-visible");
       signupEmailKeyboard.setAttribute("aria-hidden", "true");
       if (!wasVisible) return;
@@ -1903,11 +1974,17 @@
         signupEmailKeyboardDismissTimer = null;
       }
       phoneContainer?.classList.add("is-fake-keyboard-signup-email-dismissing");
+      if (shouldRevealFooterCta) {
+        scheduleSignupFooterCtaReveal();
+      } else {
+        resetSignupFooterCta();
+      }
       signupEmailKeyboardDismissTimer = window.setTimeout(() => {
         phoneContainer?.classList.remove(
           "is-fake-keyboard-signup-email-visible",
           "is-fake-keyboard-signup-email-dismissing",
         );
+        resetSignupFooterCta();
         signupEmailKeyboardDismissTimer = null;
       }, 360);
     };
@@ -1932,6 +2009,8 @@
         clearTimeout(signupEmailKeyboardDismissTimer);
         signupEmailKeyboardDismissTimer = null;
       }
+      clearSignupFooterCtaTimers();
+      emailPage?.classList.remove("is-signup-footer-cta-revealing");
       phoneContainer?.classList.remove("is-fake-keyboard-signup-email-dismissing");
       signupEmailKeyboard.hidden = false;
       signupEmailKeyboard.classList.add("is-visible");
@@ -1943,7 +2022,9 @@
       if (!signupEmailMq.matches || !signupEmailKeyboard) return;
       document.dispatchEvent(new CustomEvent("fake-keyboard-hide"));
       document.dispatchEvent(new CustomEvent("fake-keyboard-alloc-hide"));
+      syncKeyboardStickyUi();
       syncSignupEmailKeyboardVisible();
+      hideSignupFooterCtaForKeyboard();
     };
 
     const resetEmailField = () => {

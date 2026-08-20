@@ -3284,7 +3284,7 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(13, 14, 15, 0) 42%, rgba(13, 14, 15, 0.72) 78%, #0d0e0f 100%), radial-gradient(ellipse 120% 95% at 50% 38%, rgba(13, 14, 15, 0.1) 0%, rgba(13, 14, 15, 0.92) 58%, #0d0e0f 100%);
+  background: linear-gradient(180deg, #0d0e0f 0%, rgba(13, 14, 15, 0) 14%, rgba(13, 14, 15, 0) 42%, rgba(13, 14, 15, 0.72) 78%, #0d0e0f 100%), radial-gradient(ellipse 120% 95% at 50% 38%, rgba(13, 14, 15, 0.1) 0%, rgba(13, 14, 15, 0.92) 58%, #0d0e0f 100%);
 }
 
 @keyframes auth-signup-coin-scroll {
@@ -4405,8 +4405,9 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   display: none !important;
 }
 
-.auth-signup-email-page__panel[data-auth-signup-email-panel=code] {
-  gap: 32px;
+.auth-signup-email-page__panel[data-auth-signup-email-panel=code],
+.auth-signup-email-page__panel[data-auth-signup-email-panel=mobile-code] {
+  gap: 32px !important;
 }
 
 .auth-signup-email-page.is-code-step .auth-signup-email-page__footer {
@@ -5230,7 +5231,10 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   .phone-container.is-fake-keyboard-signup-email-visible .fake-keyboard--signup-email {
     z-index: 2300;
   }
-  .phone-container.is-fake-keyboard-signup-email-visible:not(.is-fake-keyboard-signup-email-dismissing) .auth-signup-email-page__footer {
+  .auth-signup-email-page__footer {
+    transition: opacity 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .phone-container.is-fake-keyboard-signup-email-visible:not(.is-fake-keyboard-signup-email-dismissing):has(.fake-keyboard--signup-email.is-send-code-sticky.is-visible) .auth-signup-email-page__footer {
     opacity: 0;
     pointer-events: none;
   }
@@ -5534,8 +5538,8 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 .auth-signup-complete-page__timeline-marker::after {
   content: "";
   position: absolute;
-  top: 16px;
-  bottom: -12px;
+  top: 18px;
+  bottom: -6px;
   left: 50%;
   transform: translateX(-50%);
   width: 2px;
@@ -5551,7 +5555,7 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 }
 
 .auth-signup-complete-page__timeline-item.is-active .auth-signup-complete-page__timeline-marker::before {
-  background: #275cfd;
+  background: #8fb8ff;
 }
 
 .auth-signup-complete-page__timeline-copy {
