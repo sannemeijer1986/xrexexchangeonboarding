@@ -3306,7 +3306,7 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 .auth-signup__footer-block {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
   width: 100%;
 }
 
@@ -3385,9 +3385,11 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 .auth-signup__regulation {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   gap: 3px;
-  width: 100%;
+  width: fit-content;
+  max-width: 100%;
+  align-self: flex-end;
+  height: fit-content;
   padding-right: 12px;
   box-sizing: border-box;
 }
@@ -3396,9 +3398,9 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   margin: 0;
   font-size: 12px;
   font-weight: 600;
-  line-height: normal;
+  line-height: 16px;
   color: #9b9c9c;
-  white-space: pre;
+  white-space: nowrap;
 }
 
 .auth-signup__regulation-fsc {
