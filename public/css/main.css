@@ -1301,6 +1301,7 @@ html[data-active-tab=wallet] .app-header__tabs:not([hidden]) {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  opacity: 0.5;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -3736,6 +3737,10 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.auth-signup-email-page__id-details-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 .auth-signup-email-page__id-details-form {

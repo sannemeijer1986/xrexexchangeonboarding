@@ -168,17 +168,25 @@
     return signupEmailKeyboard.offsetHeight || 0;
   };
 
-  const isIdDetailsFieldFocusedForScroll = () =>
-    idNumberWrap?.classList.contains("is-focused") || Boolean(idDobApi.isFocused?.());
+  const getIdDetailsKeyboardOverlap = () => {
+    if (!signupEmailMq.matches || !signupEmailKeyboard?.classList.contains("is-visible")) {
+      return 0;
+    }
+    return getSignupEmailKeyboardInset();
+  };
+
+  const clearIdDetailsScrollInset = () => {
+    if (!idDetailsScrollEl) return;
+    idDetailsScrollEl.style.paddingBottom = "";
+  };
 
   const syncIdDetailsScrollInset = () => {
     if (!idDetailsScrollEl) return;
-    const inset =
-      signupEmailStep === "id-details" &&
-      isIdDetailsFieldFocusedForScroll() &&
-      signupEmailMq.matches
-        ? getSignupEmailKeyboardInset()
-        : 0;
+    if (signupEmailStep !== "id-details" || !signupEmailMq.matches) {
+      clearIdDetailsScrollInset();
+      return;
+    }
+    const inset = getSignupEmailKeyboardInset();
     idDetailsScrollEl.style.paddingBottom = inset > 0 ? `${inset}px` : "";
   };
 
@@ -192,7 +200,6 @@
     if (!idDetailsScrollEl || !targetEl || signupEmailStep !== "id-details") return;
 
     const run = () => {
-      syncIdDetailsScrollInset();
       if (alignTop === "start") {
         idDetailsScrollEl.scrollTo({ top: 0, behavior: "smooth" });
         return;
@@ -202,7 +209,7 @@
       const targetRect = targetEl.getBoundingClientRect();
       const paddingTop = 16;
       const paddingBottom = 16;
-      const keyboardInset = getSignupEmailKeyboardInset();
+      const keyboardInset = getIdDetailsKeyboardOverlap();
       const visibleBottom = panelRect.bottom - keyboardInset;
       const maxScroll = Math.max(0, idDetailsScrollEl.scrollHeight - idDetailsScrollEl.clientHeight);
 
@@ -1075,6 +1082,7 @@
 
   const showNationalityStepUi = () => {
     signupEmailStep = "nationality";
+    clearIdDetailsScrollInset();
     emailPage?.classList.remove(
       "is-code-step",
       "is-mobile-step",
@@ -1104,10 +1112,8 @@
       "is-nationality-step",
     );
     emailPage?.classList.add("is-id-details-step");
-    if (idDetailsScrollEl) {
-      idDetailsScrollEl.scrollTop = 0;
-      idDetailsScrollEl.style.paddingBottom = "";
-    }
+    if (idDetailsScrollEl) idDetailsScrollEl.scrollTop = 0;
+    syncIdDetailsScrollInset();
     if (emailPanel) emailPanel.hidden = true;
     if (codePanel) codePanel.hidden = true;
     if (mobilePanel) mobilePanel.hidden = true;
@@ -1121,6 +1127,7 @@
 
   const showPasswordStepUi = () => {
     signupEmailStep = "password";
+    clearIdDetailsScrollInset();
     emailPage?.classList.remove("is-code-step", "is-mobile-step", "is-mobile-code-step", "is-nationality-step", "is-id-details-step");
     emailPage?.classList.add("is-password-step");
     if (emailPanel) emailPanel.hidden = true;
