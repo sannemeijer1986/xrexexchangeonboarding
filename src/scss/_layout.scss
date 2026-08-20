@@ -3789,6 +3789,9 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   width: 100%;
   height: 100%;
   min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .auth-signup-email-page__id-details-form {
@@ -3843,6 +3846,7 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 
 .auth-signup-email-page__id-input-wrap {
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 8px;
   width: 100%;
@@ -3856,6 +3860,16 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   &.is-focused {
     border-color: #fff;
   }
+
+  .auth-signup-email-page__id-input {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+  }
+
+  .auth-signup-email-page__clear {
+    flex-shrink: 0;
+  }
 }
 
 .auth-signup-email-page__id-input {
@@ -3863,7 +3877,6 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   align-items: center;
   flex: 1;
   min-width: 0;
-  width: 100%;
   min-height: 0;
   padding: 0;
   border: 0;
@@ -5240,11 +5253,16 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 }
 
 .auth-signup-email-page__trust {
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 0;
   width: 100%;
-  padding-top: 12px;
+  padding: 20px 0 16px;
+}
+
+.auth-signup-email-page.is-mobile-step:not(.is-mobile-code-step):not(.is-hybrid-mobile-code-active)
+  .auth-signup-email-page__trust {
+  display: flex;
 }
 
 .auth-signup-email-page__trust-heading {
@@ -5259,7 +5277,7 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   width: 32px;
   height: 32px;
   border-radius: 40px;
-  background: rgba(9, 68, 28, 0.75);
+  background: #1b1d1d;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5276,19 +5294,19 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   margin: 0;
   flex: 1;
   min-width: 0;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   line-height: normal;
-  color: #8adca5;
+  color: #5ac47d;
 }
 
 .phone-container p.auth-signup-email-page__trust-body {
   margin: 0;
   padding-left: 42px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 400;
-  line-height: 20px;
-  color: #8adca5;
+  line-height: normal;
+  color: #9b9c9c;
 }
 
 .auth-signup-email-page__footer {

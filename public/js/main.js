@@ -69,6 +69,39 @@
 
   const isPrototypeSignedUp = () => (states.auth ?? 1) >= 2;
 
+  /** Prototype control: block signed-in nav when checked (homepage, tab bar, menu). */
+  const getPrototypeBlockSignedInNav = () => {
+    const input = document.querySelector("[data-prototype-block-signed-in-nav]");
+    if (!input) return true;
+    return Boolean(input.checked);
+  };
+
+  const shouldBlockSignedInNav = () =>
+    isPrototypeSignedUp() && getPrototypeBlockSignedInNav();
+
+  let prototypeSnackbarTimeout = null;
+  const showPrototypeSnackbar = (message) => {
+    const container = document.querySelector(".phone-container");
+    const snackbar = container?.querySelector("[data-snackbar]");
+    if (!snackbar) return;
+    const text = snackbar.querySelector("[data-snackbar-text]");
+    if (text) text.textContent = message;
+    if (prototypeSnackbarTimeout) {
+      clearTimeout(prototypeSnackbarTimeout);
+      prototypeSnackbarTimeout = null;
+    }
+    snackbar.hidden = false;
+    snackbar.classList.remove("is-visible");
+    void snackbar.offsetWidth;
+    requestAnimationFrame(() => snackbar.classList.add("is-visible"));
+    prototypeSnackbarTimeout = setTimeout(() => {
+      snackbar.classList.remove("is-visible");
+      prototypeSnackbarTimeout = setTimeout(() => {
+        if (!snackbar.classList.contains("is-visible")) snackbar.hidden = true;
+      }, 320);
+    }, 2200);
+  };
+
   /** Signed up → visitor while on Wallet: leave tab and show signup welcome. */
   const handleSignedUpToVisitorAuth = () => {
     const activeTab = String(
@@ -500,6 +533,9 @@
     const idNumberClearBtn = emailPage?.querySelector("[data-auth-signup-id-number-clear]");
     const idDobRoot = emailPage?.querySelector("[data-auth-signup-id-dob]");
     const idDobYearInput = idDobRoot?.querySelector('[data-auth-signup-id-dob-segment="year"]');
+    const idDetailsScrollEl = emailPage?.querySelector(
+      ".auth-signup-email-page__panel--id-details",
+    );
     const signupCodeLoader = emailPage?.querySelector("[data-auth-signup-code-loader]");
     const referralSheet = document.querySelector("[data-auth-referral-sheet]");
     const referralSheetPanel = referralSheet?.querySelector(".currency-sheet__panel");
@@ -555,6 +591,26 @@
     let idNumberPartialValue = "";
     let signupIdNumberTypingTimers = [];
 
+    const scrollIdDetailsToTop = () => {
+      if (!idDetailsScrollEl || signupEmailStep !== "id-details") return;
+      idDetailsScrollEl.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    const scrollIdDetailsForDob = () => {
+      if (!idDetailsScrollEl || !idDobRoot || signupEmailStep !== "id-details") return;
+      requestAnimationFrame(() => {
+        const panelRect = idDetailsScrollEl.getBoundingClientRect();
+        const dobRect = idDobRoot.getBoundingClientRect();
+        const paddingTop = 24;
+        const nextScrollTop =
+          idDetailsScrollEl.scrollTop + (dobRect.top - panelRect.top - paddingTop);
+        idDetailsScrollEl.scrollTo({
+          top: Math.max(0, nextScrollTop),
+          behavior: "smooth",
+        });
+      });
+    };
+
     const idDobApi =
       typeof window.initAuthSignupIdDob === "function"
         ? window.initAuthSignupIdDob(idDobRoot, {
@@ -566,6 +622,10 @@
             },
             onFocus: () => {
               unfocusIdNumber();
+              scrollIdDetailsForDob();
+              syncIdDetailsKeyboard();
+            },
+            onBlur: () => {
               syncIdDetailsKeyboard();
             },
           })
@@ -578,7 +638,9 @@
       signupEmailStep === "email" || signupEmailStep === "mobile";
 
     const isSignupKeyboardHugeCtaSticky = () =>
-      isSendCodeKeyboardSticky() || signupEmailStep === "id-details";
+      isSendCodeKeyboardSticky() ||
+      signupEmailStep === "id-details" ||
+      signupEmailStep === "password";
 
     const setKeyboardContinueDisabled = (enabled) => {
       if (isSignupKeyboardHugeCtaSticky()) {
@@ -655,6 +717,7 @@
 
     const focusIdNumber = () => {
       idNumberWrap?.classList.add("is-focused");
+      scrollIdDetailsToTop();
       syncIdDetailsKeyboard();
     };
 
@@ -702,7 +765,7 @@
       if (signupEmailStep !== "id-details") return;
       unfocusIdNumber();
       idDobApi.unfocus?.();
-      hideSignupEmailKeyboard();
+      syncIdDetailsKeyboard();
     };
 
     const resetIdDetailsFields = () => {
@@ -759,11 +822,18 @@
       signupEmailKeyboard?.classList.toggle("is-mobile-numeric-mode", numericMode);
     };
 
+    const isIdDetailsFieldFocused = () =>
+      isIdNumberFocused() || Boolean(idDobApi.isFocused?.());
+
     const syncIdDetailsKeyboard = () => {
       if (signupEmailStep !== "id-details") return;
       syncKeyboardStickyUi();
       syncSignupKeyboardMode();
-      showSignupEmailKeyboard();
+      if (isIdDetailsFieldFocused()) {
+        showSignupEmailKeyboard();
+      } else {
+        hideSignupEmailKeyboard();
+      }
     };
 
     const getPasswordFieldEl = (name) =>
@@ -1234,19 +1304,43 @@
       });
     };
 
-    const closeSignupCompletePage = () => {
+    const playSignupCompletePageDismissDown = () => {
       if (!completePage) return;
+      completePage.hidden = false;
       completePage.classList.remove("is-positioned-for-down", "is-dismiss-down");
+      completePage.classList.add("is-positioned-for-down");
+      void completePage.offsetWidth;
       completePage.classList.remove("is-open");
-      const onEnd = () => {
-        if (!completePage.classList.contains("is-open")) {
-          completePage.hidden = true;
-          window.__authSignupCompleteLottie?.reset?.();
-        }
-        completePage.removeEventListener("transitionend", onEnd);
+      void completePage.offsetWidth;
+      completePage.classList.add("is-dismiss-down");
+    };
+
+    const dismissSignupCompletePageDown = (onClosed) => {
+      if (!completePage) {
+        onClosed?.();
+        return;
+      }
+      if (!completePage.classList.contains("is-open")) {
+        onClosed?.();
+        return;
+      }
+
+      playSignupCompletePageDismissDown();
+
+      let dismissFinished = false;
+      const finish = () => {
+        if (dismissFinished) return;
+        dismissFinished = true;
+        finalizeSignupCompletePageDismiss();
+        onClosed?.();
       };
-      completePage.addEventListener("transitionend", onEnd);
-      window.setTimeout(onEnd, SIGNUP_COMPLETE_TRANSITION_MS + 50);
+
+      completePage.addEventListener("transitionend", finish, { once: true });
+      window.setTimeout(finish, SIGNUP_COMPLETE_TRANSITION_MS + 50);
+    };
+
+    const closeSignupCompletePage = () => {
+      dismissSignupCompletePageDown();
     };
 
     const finalizeSignupCompletePageDismiss = () => {
@@ -1433,6 +1527,7 @@
         "is-hybrid-mobile-code-active",
       );
       emailPage?.classList.add("is-id-details-step");
+      if (idDetailsScrollEl) idDetailsScrollEl.scrollTop = 0;
       syncStepperUi();
       syncKeyboardStickyUi();
       hideSignupEmailKeyboard();
@@ -2264,7 +2359,10 @@
         if (e.target.closest("a")) return;
         toggleNationalityConsent();
       });
-      idNumberBtn?.addEventListener("click", handleIdNumberInteraction);
+      idNumberWrap?.addEventListener("click", (e) => {
+        if (e.target.closest("[data-auth-signup-id-number-clear]")) return;
+        handleIdNumberInteraction();
+      });
       idNumberClearBtn?.addEventListener("mousedown", (e) => {
         e.preventDefault();
       });
@@ -2278,11 +2376,12 @@
         ?.addEventListener("click", openReferralSheet);
 
       referralSheet
-        ?.querySelector("[data-auth-referral-sheet-continue]")
-        ?.addEventListener("click", () => closeReferralSheet());
-      referralSheet
-        ?.querySelector("[data-auth-referral-sheet-skip]")
-        ?.addEventListener("click", () => closeReferralSheet());
+        ?.querySelectorAll(
+          "[data-auth-referral-sheet-continue], [data-auth-referral-sheet-skip], [data-auth-referral-sheet-close]",
+        )
+        .forEach((btn) => {
+          btn.addEventListener("click", () => closeReferralSheet());
+        });
 
       completePage
         ?.querySelector("[data-auth-signup-complete-close]")
@@ -2444,7 +2543,7 @@
                 syncIdDetailsKeyboard();
                 return;
               }
-              if (!idDobApi.isValid?.()) {
+              if (!idDobApi.isValid?.() && !idDobApi.hasValue?.()) {
                 idDobApi.fillDummy?.();
               }
               showSignupEmailKeyboard();
@@ -2570,6 +2669,51 @@
     page
       .querySelector("[data-auth-signup-continue]")
       ?.addEventListener("click", openEmailPage);
+  };
+
+  const initSignedInNavBlocker = () => {
+    const phoneContainer = document.querySelector(".phone-container");
+    const homeView = document.querySelector('[data-tab-view="home"]');
+    if (!phoneContainer) return;
+
+    const isAllowedTarget = (target) =>
+      !!target?.closest?.("[data-home-setup-cta]");
+
+    const isBlockedTarget = (target) => {
+      if (!(target instanceof Element)) return false;
+      if (isAllowedTarget(target)) return false;
+      if (target.closest("[data-menu-trigger]")) return true;
+      if (
+        target.closest(
+          ".tabbar__item[data-tab-target], .tabbar__fab[data-tab-target]",
+        )
+      ) {
+        return true;
+      }
+      if (!homeView?.contains(target)) return false;
+      return !!target.closest(
+        'button, a[href], [role="button"], [data-open-tab], [data-visitor-login-cta]',
+      );
+    };
+
+    const blockIfNeeded = (event) => {
+      if (!shouldBlockSignedInNav()) return;
+      if (!isBlockedTarget(event.target)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      showPrototypeSnackbar("Under constr.: Set user state back to 1");
+    };
+
+    phoneContainer.addEventListener("click", blockIfNeeded, true);
+    phoneContainer.addEventListener(
+      "keydown",
+      (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        blockIfNeeded(event);
+      },
+      true,
+    );
   };
 
   const initBadgeControls = () => {
@@ -10676,6 +10820,7 @@
   initKycChecklistPanel();
   initAuthSignup();
   initBadgeControls();
+  initSignedInNavBlocker();
   const tabNavApi = initTabs();
   setActiveTabFn = tabNavApi.setActiveTab;
   document.addEventListener("auth-signup-return-home", () => {

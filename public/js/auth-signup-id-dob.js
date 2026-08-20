@@ -185,6 +185,7 @@
     const onValidityChange =
       typeof opts.onValidityChange === "function" ? opts.onValidityChange : () => {};
     const onFocus = typeof opts.onFocus === "function" ? opts.onFocus : () => {};
+    const onBlur = typeof opts.onBlur === "function" ? opts.onBlur : () => {};
     const charDelayMs =
       typeof opts.charDelayMs === "number" ? opts.charDelayMs : 20;
     const segmentGapMs =
@@ -219,6 +220,7 @@
     let dobFocused = false;
     let typingTimers = [];
     let typingGeneration = 0;
+    let dobWasFocusedOnPointerDown = false;
 
     const DUMMY_YEAR = "1986";
     const DUMMY_MONTH = "02";
@@ -468,6 +470,7 @@
     };
 
     const clearDobFocus = () => {
+      const wasFocused = dobFocused;
       dobFocused = false;
       segmentInputs.forEach((input) => {
         if (document.activeElement === input) {
@@ -475,6 +478,9 @@
         }
       });
       syncSegmentFocusUi();
+      if (wasFocused) {
+        onBlur();
+      }
     };
 
     const cancelTyping = () => {
@@ -609,10 +615,6 @@
       dayInput.addEventListener("keydown", handleSegmentKeyDown);
     }
 
-    if (segmentsWrap) {
-      segmentsWrap.addEventListener("focusout", handleBlurLeave);
-    }
-
     const fillDummy = () => {
       if (isValid) return;
       if (isDummyComplete()) {
@@ -681,21 +683,46 @@
       typingTimers.push(finishTimer);
     };
 
-    const handleSegmentClick = (input) => {
+    const handleDobInteraction = (input) => {
       if (isValid) return;
-      if (!dobFocused) {
+      if (!dobWasFocusedOnPointerDown) {
         focusSegment(input);
         return;
       }
-      fillDummy();
+      if (!hasAnyValue()) {
+        fillDummy();
+      }
+    };
+
+    const captureDobFocusBeforePointer = () => {
+      dobWasFocusedOnPointerDown = dobFocused;
+    };
+
+    const handleSegmentClick = (input) => {
+      handleDobInteraction(input);
     };
 
     if (prototypeFillLabel) {
-      prototypeFillLabel.addEventListener("click", fillDummy);
+      prototypeFillLabel.addEventListener("pointerdown", captureDobFocusBeforePointer);
+      prototypeFillLabel.addEventListener("click", () => handleDobInteraction(yearInput));
+    }
+
+    if (segmentsWrap) {
+      segmentsWrap.addEventListener("pointerdown", captureDobFocusBeforePointer, true);
+      segmentsWrap.addEventListener("focusout", handleBlurLeave);
+      segmentsWrap.addEventListener("click", (event) => {
+        const segmentEl = event.target.closest(".auth-signup-id-dob__segment");
+        const input = segmentEl?.querySelector("[data-auth-signup-id-dob-segment]");
+        if (!input) return;
+        handleDobInteraction(input);
+      });
     }
 
     segmentInputs.forEach((input) => {
-      input.addEventListener("click", () => handleSegmentClick(input));
+      input.addEventListener("click", (event) => {
+        event.stopPropagation();
+        handleSegmentClick(input);
+      });
     });
 
     const reset = () => {

@@ -106,6 +106,9 @@
   const idNumberClearBtn = emailPage?.querySelector("[data-auth-signup-id-number-clear]");
   const idDobRoot = emailPage?.querySelector("[data-auth-signup-id-dob]");
   const idDobYearInput = idDobRoot?.querySelector('[data-auth-signup-id-dob-segment="year"]');
+  const idDetailsScrollEl = emailPage?.querySelector(
+    ".auth-signup-email-page__panel--id-details",
+  );
   const signupCodeLoader = emailPage?.querySelector("[data-auth-signup-code-loader]");
   const referralSheet = document.querySelector("[data-auth-referral-sheet]");
   const referralSheetPanel = referralSheet?.querySelector(".currency-sheet__panel");
@@ -161,6 +164,26 @@
   let idNumberPartialValue = "";
   let signupIdNumberTypingTimers = [];
 
+  const scrollIdDetailsToTop = () => {
+    if (!idDetailsScrollEl || signupEmailStep !== "id-details") return;
+    idDetailsScrollEl.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const scrollIdDetailsForDob = () => {
+    if (!idDetailsScrollEl || !idDobRoot || signupEmailStep !== "id-details") return;
+    requestAnimationFrame(() => {
+      const panelRect = idDetailsScrollEl.getBoundingClientRect();
+      const dobRect = idDobRoot.getBoundingClientRect();
+      const paddingTop = 24;
+      const nextScrollTop =
+        idDetailsScrollEl.scrollTop + (dobRect.top - panelRect.top - paddingTop);
+      idDetailsScrollEl.scrollTo({
+        top: Math.max(0, nextScrollTop),
+        behavior: "smooth",
+      });
+    });
+  };
+
   const idDobApi =
     typeof window.initAuthSignupIdDob === "function"
       ? window.initAuthSignupIdDob(idDobRoot, {
@@ -172,6 +195,10 @@
           },
           onFocus: () => {
             unfocusIdNumber();
+            scrollIdDetailsForDob();
+            syncIdDetailsKeyboard();
+          },
+          onBlur: () => {
             syncIdDetailsKeyboard();
           },
         })
@@ -184,7 +211,9 @@
     signupEmailStep === "email" || signupEmailStep === "mobile";
 
   const isSignupKeyboardHugeCtaSticky = () =>
-    isSendCodeKeyboardSticky() || signupEmailStep === "id-details";
+    isSendCodeKeyboardSticky() ||
+    signupEmailStep === "id-details" ||
+    signupEmailStep === "password";
 
   const setKeyboardContinueDisabled = (enabled) => {
     if (isSignupKeyboardHugeCtaSticky()) {
@@ -261,6 +290,7 @@
 
   const focusIdNumber = () => {
     idNumberWrap?.classList.add("is-focused");
+    scrollIdDetailsToTop();
     syncIdDetailsKeyboard();
   };
 
@@ -308,7 +338,7 @@
     if (signupEmailStep !== "id-details") return;
     unfocusIdNumber();
     idDobApi.unfocus?.();
-    hideSignupEmailKeyboard();
+    syncIdDetailsKeyboard();
   };
 
   const resetIdDetailsFields = () => {
@@ -848,37 +878,13 @@
     });
   };
 
-  const closeSignupCompletePage = () => {
-    if (!completePage) return;
-    completePage.classList.remove("is-positioned-for-down", "is-dismiss-down");
-    completePage.classList.remove("is-open");
-    const onEnd = () => {
-      if (!completePage.classList.contains("is-open")) {
-        completePage.hidden = true;
-        window.__authSignupCompleteLottie?.reset?.();
-      }
-      completePage.removeEventListener("transitionend", onEnd);
-    };
-    completePage.addEventListener("transitionend", onEnd);
-    window.setTimeout(onEnd, SIGNUP_COMPLETE_TRANSITION_MS + 50);
-  };
-
-  const AUTH_STATE_STORAGE_KEY = "xrexexchange.authState.v1";
-
-  const finishSignupAndExplore = () => {
-    const finish = () => {
-      try {
-        if (window.localStorage) {
-          window.localStorage.setItem(AUTH_STATE_STORAGE_KEY, "2");
-        }
-      } catch (_) {
-        // ignore storage errors
-      }
-      window.location.href = next;
-    };
-
-    if (!completePage?.classList.contains("is-open")) {
-      finish();
+  const dismissSignupCompletePageDown = (onClosed) => {
+    if (!completePage) {
+      onClosed?.();
+      return;
+    }
+    if (!completePage.classList.contains("is-open")) {
+      onClosed?.();
       return;
     }
 
@@ -896,10 +902,32 @@
       completePage.hidden = true;
       completePage.classList.remove("is-positioned-for-down", "is-dismiss-down");
       completePage.style.removeProperty("transition");
-      finish();
+      window.__authSignupCompleteLottie?.reset?.();
+      onClosed?.();
     };
     completePage.addEventListener("transitionend", onEnd, { once: true });
     window.setTimeout(onEnd, SIGNUP_COMPLETE_TRANSITION_MS + 50);
+  };
+
+  const closeSignupCompletePage = () => {
+    dismissSignupCompletePageDown();
+  };
+
+  const AUTH_STATE_STORAGE_KEY = "xrexexchange.authState.v1";
+
+  const finishSignupAndExplore = () => {
+    const finish = () => {
+      try {
+        if (window.localStorage) {
+          window.localStorage.setItem(AUTH_STATE_STORAGE_KEY, "2");
+        }
+      } catch (_) {
+        // ignore storage errors
+      }
+      window.location.href = next;
+    };
+
+    dismissSignupCompletePageDown(finish);
   };
 
   const finishSignupFlow = () => {
@@ -1004,6 +1032,7 @@
       "is-nationality-step",
     );
     emailPage?.classList.add("is-id-details-step");
+    if (idDetailsScrollEl) idDetailsScrollEl.scrollTop = 0;
     if (emailPanel) emailPanel.hidden = true;
     if (codePanel) codePanel.hidden = true;
     if (mobilePanel) mobilePanel.hidden = true;
@@ -1201,11 +1230,18 @@
     syncSignupEmailKeyboardVisible();
   };
 
+  const isIdDetailsFieldFocused = () =>
+    isIdNumberFocused() || Boolean(idDobApi.isFocused?.());
+
   const syncIdDetailsKeyboard = () => {
     if (signupEmailStep !== "id-details") return;
     syncKeyboardStickyUi();
     syncSignupKeyboardMode();
-    showSignupEmailKeyboard();
+    if (isIdDetailsFieldFocused()) {
+      showSignupEmailKeyboard();
+    } else {
+      hideSignupEmailKeyboard();
+    }
   };
 
   const resetEmailField = () => {
@@ -1670,7 +1706,10 @@
       if (e.target.closest("a")) return;
       toggleNationalityConsent();
     });
-    idNumberBtn?.addEventListener("click", handleIdNumberInteraction);
+    idNumberWrap?.addEventListener("click", (e) => {
+      if (e.target.closest("[data-auth-signup-id-number-clear]")) return;
+      handleIdNumberInteraction();
+    });
     idNumberClearBtn?.addEventListener("mousedown", (e) => {
       e.preventDefault();
     });
@@ -1684,11 +1723,12 @@
       ?.addEventListener("click", openReferralSheet);
 
     referralSheet
-      ?.querySelector("[data-auth-referral-sheet-continue]")
-      ?.addEventListener("click", () => closeReferralSheet());
-    referralSheet
-      ?.querySelector("[data-auth-referral-sheet-skip]")
-      ?.addEventListener("click", () => closeReferralSheet());
+      ?.querySelectorAll(
+        "[data-auth-referral-sheet-continue], [data-auth-referral-sheet-skip], [data-auth-referral-sheet-close]",
+      )
+      .forEach((btn) => {
+        btn.addEventListener("click", () => closeReferralSheet());
+      });
 
     completePage
       ?.querySelector("[data-auth-signup-complete-close]")
@@ -1843,7 +1883,7 @@
               syncIdDetailsKeyboard();
               return;
             }
-            if (!idDobApi.isValid?.()) {
+            if (!idDobApi.isValid?.() && !idDobApi.hasValue?.()) {
               idDobApi.fillDummy?.();
             }
             showSignupEmailKeyboard();

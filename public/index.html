@@ -2622,11 +2622,11 @@ Max 100K</span>
                             <div class="auth-signup-email-page__trust">
                                 <div class="auth-signup-email-page__trust-heading">
                                     <span class="auth-signup-email-page__trust-icon" aria-hidden="true">
-                                        <img src="assets/icon_shield_large.svg" alt="" width="20" height="20" />
+                                        <img src="assets/icon_shield_green.svg" alt="" width="20" height="20" />
                                     </span>
-                                    <p class="auth-signup-email-page__trust-title">Why we ask</p>
+                                    <p class="auth-signup-email-page__trust-title">For sign-in verification and security alerts</p>
                                 </div>
-                                <p class="auth-signup-email-page__trust-body">Your number keeps your account safer. We'll only use it to protect you, not for marketing.</p>
+                                <p class="auth-signup-email-page__trust-body">Verifies sign-ins and flags unusual activity. Never sold or used for marketing.</p>
                             </div>
                         </div>
                     </div>
@@ -2713,7 +2713,7 @@ Max 100K</span>
         </section>
 
         <div class="currency-sheet auth-referral-sheet auth-referral-sheet--tbd" data-auth-referral-sheet hidden aria-modal="true" role="dialog" aria-label="Referral code">
-            <button class="currency-sheet__backdrop" type="button" tabindex="-1" aria-hidden="true"></button>
+            <button class="currency-sheet__backdrop" type="button" data-auth-referral-sheet-close aria-label="Close"></button>
             <div class="currency-sheet__panel">
                 <div class="currency-sheet__handle-wrap">
                     <div class="currency-sheet__handle"></div>
@@ -6698,9 +6698,9 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
         </div>
     </div>
 
-    <div class="build-badge" role="note" aria-label="Prototype state controls">
+    <div class="build-badge" role="note" aria-label="Onboarding iteration 1.0 state controls">
         <button class="build-badge__header" type="button" aria-expanded="true" aria-controls="prototypeStatesBody">
-            <span class="build-badge__title">Prototype controls</span>
+            <span class="build-badge__title">Onboarding iteration 1.0</span>
             <span class="build-badge__chevron" aria-hidden="true">
                 <img class="build-badge__chevron-icon" src="assets/icon_back.svg" alt="" />
                 <img class="build-badge__chevron-icon build-badge__chevron-icon--collapsed"
@@ -6725,6 +6725,13 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
                         <span>Show truncated email</span>
                     </label>
                 </div>
+                <div class="build-badge__section-row">
+                    <label class="build-badge__checkbox">
+                        <input type="checkbox" data-prototype-block-signed-in-nav checked
+                            aria-label="Block signed in nav" />
+                        <span>Block signed in nav</span>
+                    </label>
+                </div>
             </div>
             <div class="build-badge__section-row">
                 <div class="build-badge__section-title">Language</div>
@@ -6743,16 +6750,6 @@ When your reserved funds run out, we'll automatically pre-fund again to keep you
                         aria-label="Prototype version">
                         <option value="lite-mvp" selected>Lite MVP</option>
                         <option value="concepts">Concepts</option>
-                    </select>
-                </div>
-            </div>
-            <div class="build-badge__section-row">
-                <div class="build-badge__section-title">Merge mail/phone</div>
-                <div class="build-badge__checkbox-group">
-                    <select class="build-badge__select" id="prototype-merge-mail-phone" data-prototype-merge-mail-phone
-                        aria-label="Merge mail and phone flow">
-                        <option value="hybrid">Hybrid</option>
-                        <option value="prog" selected>Prog. discl...</option>
                     </select>
                 </div>
             </div>
