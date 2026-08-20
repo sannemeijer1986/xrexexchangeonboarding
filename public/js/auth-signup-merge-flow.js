@@ -27,8 +27,17 @@
   const emailPage = document.querySelector("[data-auth-signup-email-page]");
   const phoneContainer = document.querySelector(".phone-container");
   const signupEmailKeyboard = document.querySelector('[data-fake-keyboard="signup-email"]');
-  const keyboardContinueBtn = signupEmailKeyboard?.querySelector(
+  const keyboardSendCodeBar = signupEmailKeyboard?.querySelector(
+    "[data-fake-keyboard-signup-email-send-bar]",
+  );
+  const keyboardCompactBar = signupEmailKeyboard?.querySelector(
+    "[data-fake-keyboard-signup-email-compact-bar]",
+  );
+  const keyboardSendCodeBtn = signupEmailKeyboard?.querySelector(
     "[data-fake-keyboard-signup-email-continue]",
+  );
+  const keyboardContinueBtn = signupEmailKeyboard?.querySelector(
+    "[data-fake-keyboard-signup-email-continue-compact]",
   );
   const keyboardDoneBtn = signupEmailKeyboard?.querySelector(
     "[data-fake-keyboard-signup-email-done]",
@@ -130,13 +139,13 @@
     }
     if (!isHybridManagedStep()) {
       if (footerBtn) footerBtn.textContent = "Continue";
+      if (keyboardSendCodeBtn) keyboardSendCodeBtn.textContent = "Continue";
       if (keyboardContinueBtn) keyboardContinueBtn.textContent = "Continue";
       return;
     }
-    if (keyboardContinueBtn) {
-      keyboardContinueBtn.textContent =
-        phase === "email" || phase === "mobile" ? "Send code" : "Continue";
-    }
+    const label = phase === "email" || phase === "mobile" ? "Send code" : "Continue";
+    if (keyboardSendCodeBtn) keyboardSendCodeBtn.textContent = label;
+    if (keyboardContinueBtn) keyboardContinueBtn.textContent = label;
   };
 
   const syncHybridEmailPresentation = () => {
@@ -178,6 +187,9 @@
         footerBtn.disabled = !valid;
       }
     }
+    if (keyboardSendCodeBtn && !keyboardSendCodeBtn.hidden) {
+      keyboardSendCodeBtn.disabled = !valid;
+    }
     if (keyboardContinueBtn && !keyboardContinueBtn.hidden) {
       keyboardContinueBtn.disabled = !valid;
     }
@@ -185,10 +197,15 @@
 
   const syncSignupKeyboardMode = () => {
     const codeStep = phase === "code" || phase === "mobile-code";
+    const sendCodeSticky = phase === "email" || phase === "mobile";
     signupEmailKeyboard?.classList.toggle("is-code-mode", codeStep);
     signupEmailKeyboard?.classList.toggle("is-mobile-numeric-mode", phase === "mobile");
-    if (keyboardContinueBtn) keyboardContinueBtn.hidden = codeStep;
-    if (keyboardDoneBtn) keyboardDoneBtn.hidden = !codeStep;
+    signupEmailKeyboard?.classList.toggle("is-send-code-sticky", sendCodeSticky);
+    if (keyboardSendCodeBar) keyboardSendCodeBar.hidden = !sendCodeSticky;
+    if (keyboardCompactBar) keyboardCompactBar.hidden = sendCodeSticky;
+    if (keyboardSendCodeBtn) keyboardSendCodeBtn.hidden = !sendCodeSticky;
+    if (keyboardContinueBtn) keyboardContinueBtn.hidden = codeStep || sendCodeSticky;
+    if (keyboardDoneBtn) keyboardDoneBtn.hidden = !codeStep || sendCodeSticky;
     syncChromeLabels();
   };
 
@@ -970,6 +987,7 @@
     dismissFromOutside: dismissHybridFromOutside,
     isProtectedTarget: isHybridProtectedTarget,
     syncActionUi: syncHybridActionUi,
+    syncSignupKeyboardMode,
     openEmailStep: () => {
       resetHybridVerify();
       window.setTimeout(() => {

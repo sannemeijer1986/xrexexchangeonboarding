@@ -131,6 +131,10 @@
                             data-bwignore
                             data-dashlane-ignore
                         >
+                            <span class="auth-signup-email-page__field-icon" aria-hidden="true">
+                                <img class="auth-signup-email-page__field-icon-circle" src="../assets/icon_circle_dark.svg" alt="" width="24" height="24" />
+                                <img class="auth-signup-email-page__field-icon-glyph" src="../assets/icon_mail.svg" alt="" width="15" height="15" />
+                            </span>
                             <div class="auth-signup-email-page__input-main">
                                 <input
                                     class="auth-signup-email-page__input"
@@ -164,12 +168,9 @@
                     <div class="auth-signup-email-page__copy auth-signup-email-page__copy--code">
                         <p class="auth-signup-email-page__moustache">Sign up · Step 1<span class="auth-signup-email-page__moustache-suffix">/3</span></p>
                         <h2 class="auth-signup-email-page__title">What’s your email?</h2>
-                        <button type="button" class="auth-signup-email-page__email-edit" data-auth-signup-email-edit>
-                            <span class="auth-signup-email-page__email-display">
-                                <span class="auth-signup-email-page__email-display-prefix">Code sent to </span>
-                                <span class="auth-signup-email-page__email-display-value" data-auth-signup-email-display>mail@sanne.com</span>
-                            </span>
-                            <img class="auth-signup-email-page__email-edit-icon" src="../assets/edit_gray.svg" alt="" width="20" height="20" />
+                        <button type="button" class="auth-signup-email-page__email-edit" data-auth-signup-email-edit aria-label="Edit email">
+                            <img class="auth-signup-email-page__email-sent-check" src="../assets/icon_check_green.svg" alt="" width="20" height="20" aria-hidden="true" />
+                            <span class="auth-signup-email-page__email-sent-value" data-auth-signup-email-display>mail@sanne.com</span>
                         </button>
                     </div>
                     <div class="auth-signup-email-page__code-section">
@@ -701,7 +702,17 @@
         <div class="fake-keyboard fake-keyboard--signup-email" data-fake-keyboard="signup-email" aria-hidden="true" hidden>
             <div class="fake-keyboard__panel" role="presentation">
                 <div class="fake-keyboard__sticky fake-keyboard__sticky--signup-email">
-                    <div class="fake-keyboard__top-actions fake-keyboard__top-actions--signup-email">
+                    <div class="fake-keyboard__send-code-bar" data-fake-keyboard-signup-email-send-bar hidden>
+                        <button
+                            class="fake-keyboard__send-code-btn"
+                            type="button"
+                            data-fake-keyboard-signup-email-continue
+                            disabled
+                        >
+                            Send code
+                        </button>
+                    </div>
+                    <div class="fake-keyboard__top-actions fake-keyboard__top-actions--signup-email" data-fake-keyboard-signup-email-compact-bar>
                         <button class="fake-keyboard__dismiss" type="button" data-fake-keyboard-signup-email-close aria-label="Dismiss keyboard">
                             <img src="../assets/icon_chevron_down_white.svg" alt="" width="24" height="24" />
                         </button>
@@ -709,7 +720,7 @@
                         <button
                             class="fake-keyboard__preview fake-keyboard__preview--signup-email"
                             type="button"
-                            data-fake-keyboard-signup-email-continue
+                            data-fake-keyboard-signup-email-continue-compact
                             disabled
                         >
                             Continue

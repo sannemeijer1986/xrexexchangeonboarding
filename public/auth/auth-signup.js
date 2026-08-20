@@ -111,8 +111,17 @@
     ? Array.from(emailPage.querySelectorAll(".auth-signup-email-page__step"))
     : [];
   const signupEmailKeyboard = document.querySelector('[data-fake-keyboard="signup-email"]');
-  const keyboardContinueBtn = signupEmailKeyboard?.querySelector(
+  const keyboardSendCodeBar = signupEmailKeyboard?.querySelector(
+    "[data-fake-keyboard-signup-email-send-bar]",
+  );
+  const keyboardCompactBar = signupEmailKeyboard?.querySelector(
+    "[data-fake-keyboard-signup-email-compact-bar]",
+  );
+  const keyboardSendCodeBtn = signupEmailKeyboard?.querySelector(
     "[data-fake-keyboard-signup-email-continue]",
+  );
+  const keyboardContinueBtn = signupEmailKeyboard?.querySelector(
+    "[data-fake-keyboard-signup-email-continue-compact]",
   );
   const keyboardDoneBtn = signupEmailKeyboard?.querySelector(
     "[data-fake-keyboard-signup-email-done]",
@@ -159,6 +168,17 @@
 
   const isVerificationCodeStep = () =>
     signupEmailStep === "code" || signupEmailStep === "mobile-code";
+
+  const isSendCodeKeyboardSticky = () =>
+    signupEmailStep === "email" || signupEmailStep === "mobile";
+
+  const setKeyboardContinueDisabled = (enabled) => {
+    if (isSendCodeKeyboardSticky()) {
+      if (keyboardSendCodeBtn) keyboardSendCodeBtn.disabled = !enabled;
+      return;
+    }
+    if (keyboardContinueBtn) keyboardContinueBtn.disabled = !enabled;
+  };
 
   const isNationalityStepComplete = () => nationalitySelected && nationalityConsentChecked;
 
@@ -500,6 +520,7 @@
     const sendCodeStep = signupEmailStep === "email" || signupEmailStep === "mobile";
     const label = sendCodeStep ? "Send code" : "Continue";
     if (emailContinueBtn) emailContinueBtn.textContent = label;
+    if (keyboardSendCodeBtn) keyboardSendCodeBtn.textContent = label;
     if (keyboardContinueBtn) keyboardContinueBtn.textContent = label;
   };
 
@@ -508,23 +529,23 @@
     if (signupEmailStep === "email") {
       const enabled = emailInput?.value.trim() === SIGNUP_DUMMY_EMAIL;
       if (emailContinueBtn) emailContinueBtn.disabled = !enabled;
-      if (keyboardContinueBtn) keyboardContinueBtn.disabled = !enabled;
+      setKeyboardContinueDisabled(enabled);
     } else if (signupEmailStep === "password") {
       const enabled = isPasswordStepComplete();
       if (emailContinueBtn) emailContinueBtn.disabled = !enabled;
-      if (keyboardContinueBtn) keyboardContinueBtn.disabled = !enabled;
+      setKeyboardContinueDisabled(enabled);
     } else if (signupEmailStep === "mobile") {
       const enabled = mobileInput?.value.trim() === SIGNUP_DUMMY_MOBILE;
       if (emailContinueBtn) emailContinueBtn.disabled = !enabled;
-      if (keyboardContinueBtn) keyboardContinueBtn.disabled = !enabled;
+      setKeyboardContinueDisabled(enabled);
     } else if (signupEmailStep === "nationality") {
       const enabled = isNationalityStepComplete();
       if (emailContinueBtn) emailContinueBtn.disabled = !enabled;
-      if (keyboardContinueBtn) keyboardContinueBtn.disabled = !enabled;
+      setKeyboardContinueDisabled(enabled);
     } else if (signupEmailStep === "id-details") {
       const enabled = isIdDetailsStepComplete();
       if (emailContinueBtn) emailContinueBtn.disabled = !enabled;
-      if (keyboardContinueBtn) keyboardContinueBtn.disabled = !enabled;
+      setKeyboardContinueDisabled(enabled);
     }
   };
 
@@ -534,9 +555,15 @@
   };
 
   const syncKeyboardStickyUi = () => {
+    const sendCodeSticky = isSendCodeKeyboardSticky();
     const hideContinue = isVerificationCodeStep();
-    if (keyboardContinueBtn) keyboardContinueBtn.hidden = hideContinue;
-    if (keyboardDoneBtn) keyboardDoneBtn.hidden = !hideContinue;
+
+    if (keyboardSendCodeBar) keyboardSendCodeBar.hidden = !sendCodeSticky;
+    if (keyboardCompactBar) keyboardCompactBar.hidden = sendCodeSticky;
+    if (keyboardSendCodeBtn) keyboardSendCodeBtn.hidden = !sendCodeSticky;
+    if (keyboardContinueBtn) keyboardContinueBtn.hidden = hideContinue || sendCodeSticky;
+    if (keyboardDoneBtn) keyboardDoneBtn.hidden = !hideContinue || sendCodeSticky;
+    signupEmailKeyboard?.classList.toggle("is-send-code-sticky", sendCodeSticky);
     syncSignupKeyboardMode();
   };
 
@@ -1481,6 +1508,7 @@
       ?.addEventListener("click", handleEmailBack);
     emailField?.addEventListener("click", handleEmailFieldInteraction);
     emailContinueBtn?.addEventListener("click", handleSignupPrimaryAction);
+    keyboardSendCodeBtn?.addEventListener("click", handleSignupPrimaryAction);
     keyboardContinueBtn?.addEventListener("click", handleSignupPrimaryAction);
     emailEditBtn?.addEventListener("click", returnToEmailStep);
     mobileField?.addEventListener("click", handleMobileFieldInteraction);
