@@ -180,6 +180,11 @@
 
     const onValidityChange =
       typeof opts.onValidityChange === "function" ? opts.onValidityChange : () => {};
+    const onFocus = typeof opts.onFocus === "function" ? opts.onFocus : () => {};
+    const charDelayMs =
+      typeof opts.charDelayMs === "number" ? opts.charDelayMs : 20;
+    const segmentGapMs =
+      typeof opts.segmentGapMs === "number" ? opts.segmentGapMs : 200;
     const assetBase = opts.assetBase || "assets/";
 
     const yearInput = root.querySelector('[data-auth-signup-id-dob-segment="year"]');
@@ -208,6 +213,12 @@
     let isValid = false;
     let yearFocused = false;
     let dobFocused = false;
+    let typingTimers = [];
+    let typingGeneration = 0;
+
+    const DUMMY_YEAR = "1986";
+    const DUMMY_MONTH = "02";
+    const DUMMY_DAY = "21";
 
     const segmentInputs = [yearInput, monthInput, dayInput].filter(Boolean);
 
@@ -394,8 +405,12 @@
     };
 
     const setDobFocused = (input) => {
+      const wasFocused = dobFocused;
       dobFocused = true;
       syncSegmentFocusUi(input);
+      if (!wasFocused) {
+        onFocus();
+      }
     };
 
     const clearDobFocus = () => {
@@ -407,6 +422,15 @@
       });
       syncSegmentFocusUi();
     };
+
+    const cancelTyping = () => {
+      typingTimers.forEach((timer) => clearTimeout(timer));
+      typingTimers = [];
+      typingGeneration += 1;
+    };
+
+    const isDummyComplete = () =>
+      state.yearRaw === DUMMY_YEAR && state.month === DUMMY_MONTH && state.day === DUMMY_DAY;
 
     const focusSegment = (input) => {
       if (!input) return;
@@ -509,6 +533,7 @@
     if (yearInput) {
       yearInput.addEventListener("focus", () => {
         yearFocused = true;
+        setDobFocused(yearInput);
       });
       yearInput.addEventListener("input", handleYearInput);
       yearInput.addEventListener("blur", handleYearBlur);
@@ -517,6 +542,7 @@
     }
 
     if (monthInput) {
+      monthInput.addEventListener("focus", () => setDobFocused(monthInput));
       monthInput.addEventListener("input", handleMonthInput);
       monthInput.addEventListener("blur", handleMonthBlur);
       monthInput.addEventListener("keydown", (e) => handleSegmentKeyDown(e, monthInput));
@@ -524,6 +550,7 @@
     }
 
     if (dayInput) {
+      dayInput.addEventListener("focus", () => setDobFocused(dayInput));
       dayInput.addEventListener("input", handleDayInput);
       dayInput.addEventListener("blur", handleDayBlur);
       dayInput.addEventListener("keydown", (e) => handleSegmentKeyDown(e, dayInput));
@@ -535,17 +562,71 @@
     }
 
     const fillDummy = () => {
-      state.yearRaw = "1986";
-      state.month = "02";
-      state.day = "21";
+      if (isValid) return;
+      if (isDummyComplete()) {
+        state.calendar = "gregorian";
+        state.calendarSource = "manual";
+        state.gregorianYear = 1986;
+        syncToggleUi();
+        runFullValidation();
+        return;
+      }
+
+      cancelTyping();
+      const generation = typingGeneration;
+      state.yearRaw = "";
+      state.month = "";
+      state.day = "";
       state.calendar = "gregorian";
       state.calendarSource = "manual";
-      state.gregorianYear = 1986;
-      if (yearInput) yearInput.value = state.yearRaw;
-      if (monthInput) monthInput.value = state.month;
-      if (dayInput) dayInput.value = state.day;
-      syncToggleUi();
-      runFullValidation();
+      state.gregorianYear = null;
+      state.status = "idle";
+      state.errorCode = undefined;
+      state.errorSegment = undefined;
+      state.errorMessage = "";
+      state.confirmMessage = "";
+      state.hintMessage = "";
+      submitValue = "";
+      isValid = false;
+      clearSegmentErrors();
+      segmentInputs.forEach((input) => {
+        input.value = "";
+      });
+      syncUi();
+      onValidityChange(false);
+
+      const segments = [
+        { input: yearInput, key: "yearRaw", value: DUMMY_YEAR },
+        { input: monthInput, key: "month", value: DUMMY_MONTH },
+        { input: dayInput, key: "day", value: DUMMY_DAY },
+      ];
+
+      let delay = 0;
+      segments.forEach(({ input, key, value }, segmentIndex) => {
+        if (segmentIndex > 0) {
+          delay += segmentGapMs;
+        }
+        value.split("").forEach((_, charIndex) => {
+          const timer = window.setTimeout(() => {
+            if (generation !== typingGeneration) return;
+            const partial = value.slice(0, charIndex + 1);
+            state[key] = partial;
+            if (input) input.value = partial;
+            focusSegment(input);
+            emitValidity();
+          }, delay);
+          typingTimers.push(timer);
+          delay += charDelayMs;
+        });
+      });
+
+      const finishTimer = window.setTimeout(() => {
+        if (generation !== typingGeneration) return;
+        state.gregorianYear = 1986;
+        syncToggleUi();
+        runFullValidation();
+      }, delay);
+      typingTimers.push(finishTimer);
     };
 
     const handleSegmentClick = (input) => {
@@ -566,6 +647,7 @@
     });
 
     const reset = () => {
+      cancelTyping();
       state.yearRaw = "";
       state.month = "";
       state.day = "";

@@ -532,6 +532,7 @@
     const PASSWORD_RULE_KEYS = ["length", "special", "number", "case"];
     const SIGNUP_EMAIL_KEYBOARD_DELAY_MS = 350;
     const SIGNUP_EMAIL_CHAR_DELAY_MS = 20;
+    const SIGNUP_DUMMY_ID_NUMBER = "A123456789";
     const SIGNUP_CODE_LOADER_VISIBLE_MS = 1500;
     const SIGNUP_COMPLETE_TRANSITION_MS = 350;
     let signupEmailStep = "email";
@@ -548,15 +549,19 @@
     let nationalitySelected = false;
     let nationalityConsentChecked = false;
     let idNumberFilled = false;
+    let idNumberPartialValue = "";
+    let signupIdNumberTypingTimers = [];
 
     const idDobApi =
       typeof window.initAuthSignupIdDob === "function"
         ? window.initAuthSignupIdDob(idDobRoot, {
             assetBase: "assets/",
+            charDelayMs: SIGNUP_EMAIL_CHAR_DELAY_MS,
             onValidityChange: () => {
               syncIdDetailsUi();
               syncActionButtons();
             },
+            onFocus: () => unfocusIdNumber(),
           })
         : { isValid: () => false, reset: () => {}, fillDummy: () => {}, getSubmitValue: () => "", unfocus: () => {}, isFocused: () => false };
 
@@ -578,17 +583,22 @@
 
     const isIdDetailsStepComplete = () => idNumberFilled && idDobApi.isValid();
 
-    const syncIdFieldUi = (btn, filled) => {
-      if (!btn) return;
-      btn.classList.toggle("is-filled", filled);
-      const placeholder = btn.querySelector(".auth-signup-email-page__id-input-placeholder");
-      const value = btn.querySelector(".auth-signup-email-page__id-input-value");
-      if (placeholder) placeholder.hidden = filled;
-      if (value) value.hidden = !filled;
+    const syncIdNumberUi = () => {
+      if (!idNumberBtn) return;
+      const displayValue = idNumberFilled ? SIGNUP_DUMMY_ID_NUMBER : idNumberPartialValue;
+      const hasDisplay = displayValue.length > 0;
+      idNumberBtn.classList.toggle("is-filled", hasDisplay);
+      const placeholder = idNumberBtn.querySelector(".auth-signup-email-page__id-input-placeholder");
+      const value = idNumberBtn.querySelector(".auth-signup-email-page__id-input-value");
+      if (placeholder) placeholder.hidden = hasDisplay;
+      if (value) {
+        value.hidden = !hasDisplay;
+        value.textContent = displayValue;
+      }
     };
 
     const syncIdDetailsUi = () => {
-      syncIdFieldUi(idNumberBtn, idNumberFilled);
+      syncIdNumberUi();
       if (signupEmailStep === "id-details" && emailContinueBtn) {
         emailContinueBtn.hidden = false;
         emailContinueBtn.textContent = "Continue";
@@ -596,10 +606,39 @@
       }
     };
 
+    const cancelSignupIdNumberTyping = () => {
+      signupIdNumberTypingTimers.forEach((timer) => clearTimeout(timer));
+      signupIdNumberTypingTimers = [];
+    };
+
     const fillIdNumber = () => {
-      idNumberFilled = true;
-      syncIdDetailsUi();
+      if (idNumberFilled) {
+        focusIdNumber();
+        syncIdNumberUi();
+        return;
+      }
+
+      cancelSignupIdNumberTyping();
+      idNumberPartialValue = "";
+      focusIdNumber();
+      syncIdNumberUi();
       syncActionButtons();
+
+      SIGNUP_DUMMY_ID_NUMBER.split("").forEach((_, index) => {
+        const timer = window.setTimeout(() => {
+          idNumberPartialValue = SIGNUP_DUMMY_ID_NUMBER.slice(0, index + 1);
+          syncIdNumberUi();
+          if (index === SIGNUP_DUMMY_ID_NUMBER.length - 1) {
+            idNumberFilled = true;
+            idNumberPartialValue = "";
+            syncIdDetailsUi();
+            syncActionButtons();
+            return;
+          }
+          syncActionButtons();
+        }, SIGNUP_EMAIL_CHAR_DELAY_MS * index);
+        signupIdNumberTypingTimers.push(timer);
+      });
     };
 
     const isIdNumberFocused = () => idNumberBtn?.classList.contains("is-focused");
@@ -614,6 +653,7 @@
 
     const handleIdNumberInteraction = () => {
       if (!isIdNumberFocused()) {
+        idDobApi.unfocus?.();
         focusIdNumber();
         return;
       }
@@ -629,6 +669,8 @@
     };
 
     const resetIdDetailsFields = () => {
+      cancelSignupIdNumberTyping();
+      idNumberPartialValue = "";
       idNumberFilled = false;
       unfocusIdNumber();
       idDobApi.reset();
@@ -1990,6 +2032,7 @@
       else if (signupEmailStep === "mobile-code") unfocusMobileCodeEntry();
       else if (signupEmailStep === "password") unfocusAllPasswordFields();
       else if (signupEmailStep === "mobile") unfocusSignupMobile();
+      else if (signupEmailStep === "id-details") dismissIdDetailsFocus();
       else unfocusSignupEmailField();
     };
 
@@ -2000,6 +2043,7 @@
       else if (signupEmailStep === "mobile-code") unfocusMobileCodeEntry();
       else if (signupEmailStep === "password") unfocusAllPasswordFields();
       else if (signupEmailStep === "mobile") unfocusSignupMobile();
+      else if (signupEmailStep === "id-details") dismissIdDetailsFocus();
       else unfocusSignupEmailField();
     };
 
@@ -2174,7 +2218,7 @@
         if (e.target.closest("a")) return;
         toggleNationalityConsent();
       });
-      idNumberBtn?.addEventListener("click", fillIdNumber);
+      idNumberBtn?.addEventListener("click", handleIdNumberInteraction);
       emailPage
         ?.querySelector("[data-auth-signup-referral-add]")
         ?.addEventListener("click", openReferralSheet);
@@ -2376,6 +2420,12 @@
           if (window.__hybridSignup.dismissFromOutside?.()) return;
         }
 
+        if (signupEmailStep === "id-details") {
+          if (e.target.closest("[data-auth-signup-id-number]")) return;
+          if (e.target.closest("[data-auth-signup-id-dob]")) return;
+          dismissIdDetailsFocus();
+        }
+
         if (!signupEmailKeyboard?.classList.contains("is-visible")) return;
         if (signupEmailKeyboard.contains(e.target)) return;
         if (e.target.closest("[data-auth-signup-email-field]")) return;
@@ -2391,6 +2441,8 @@
         if (e.target.closest("[data-auth-signup-email-edit]")) return;
         if (e.target.closest("[data-auth-signup-mobile-edit]")) return;
         if (e.target.closest("[data-auth-signup-email-back]")) return;
+        if (e.target.closest("[data-auth-signup-id-number]")) return;
+        if (e.target.closest("[data-auth-signup-id-dob]")) return;
         dismissSignupEmailKeyboardFromOutside();
       });
     }
