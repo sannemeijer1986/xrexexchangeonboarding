@@ -222,6 +222,22 @@
 
     const segmentInputs = [yearInput, monthInput, dayInput].filter(Boolean);
 
+    segmentInputs.forEach((input) => {
+      input.readOnly = true;
+      input.addEventListener("paste", (event) => event.preventDefault());
+    });
+
+    const blockManualEdit = (event) => {
+      const key = event.key;
+      if (key === "Backspace" || key === "Delete") {
+        event.preventDefault();
+        return;
+      }
+      if (key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        event.preventDefault();
+      }
+    };
+
     const syncToggleUi = () => {
       if (yearLabel) {
         yearLabel.textContent = "Year";
@@ -515,12 +531,8 @@
       focusSegment(dayInput || monthInput || yearInput);
     };
 
-    const handleSegmentKeyDown = (event, input) => {
-      if (event.key !== "Backspace") return;
-      const atStart = input.selectionStart === 0 && input.selectionEnd === 0;
-      if (!atStart || input.value.length > 0) return;
-      event.preventDefault();
-      focusPreviousSegment(input);
+    const handleSegmentKeyDown = (event) => {
+      blockManualEdit(event);
     };
 
     const handleBlurLeave = (event) => {
@@ -537,24 +549,21 @@
       });
       yearInput.addEventListener("input", handleYearInput);
       yearInput.addEventListener("blur", handleYearBlur);
-      yearInput.addEventListener("keydown", (e) => handleSegmentKeyDown(e, yearInput));
-      yearInput.addEventListener("paste", handlePaste);
+      yearInput.addEventListener("keydown", handleSegmentKeyDown);
     }
 
     if (monthInput) {
       monthInput.addEventListener("focus", () => setDobFocused(monthInput));
       monthInput.addEventListener("input", handleMonthInput);
       monthInput.addEventListener("blur", handleMonthBlur);
-      monthInput.addEventListener("keydown", (e) => handleSegmentKeyDown(e, monthInput));
-      monthInput.addEventListener("paste", handlePaste);
+      monthInput.addEventListener("keydown", handleSegmentKeyDown);
     }
 
     if (dayInput) {
       dayInput.addEventListener("focus", () => setDobFocused(dayInput));
       dayInput.addEventListener("input", handleDayInput);
       dayInput.addEventListener("blur", handleDayBlur);
-      dayInput.addEventListener("keydown", (e) => handleSegmentKeyDown(e, dayInput));
-      dayInput.addEventListener("paste", handlePaste);
+      dayInput.addEventListener("keydown", handleSegmentKeyDown);
     }
 
     if (segmentsWrap) {
