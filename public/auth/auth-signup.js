@@ -169,7 +169,7 @@
           },
           onFocus: () => unfocusIdNumber(),
         })
-      : { isValid: () => false, reset: () => {}, fillDummy: () => {}, getSubmitValue: () => "", unfocus: () => {}, isFocused: () => false };
+      : { isValid: () => false, reset: () => {}, fillDummy: () => {}, getSubmitValue: () => "", unfocus: () => {}, isFocused: () => false, hasValue: () => false, clearAllAndFocusYear: () => {} };
 
   const isVerificationCodeStep = () =>
     signupEmailStep === "code" || signupEmailStep === "mobile-code";
@@ -266,6 +266,31 @@
     if (!idNumberFilled) {
       fillIdNumber();
     }
+  };
+
+  const hasIdNumberValue = () => idNumberFilled || idNumberPartialValue.length > 0;
+
+  const clearIdNumber = () => {
+    if (!hasIdNumberValue()) return;
+    cancelSignupIdNumberTyping();
+    idNumberPartialValue = "";
+    idNumberFilled = false;
+    focusIdNumber();
+    syncIdDetailsUi();
+    syncActionButtons();
+  };
+
+  const handleIdDetailsBackspace = () => {
+    if (signupEmailStep !== "id-details") return false;
+    if (isIdNumberFocused() && hasIdNumberValue()) {
+      clearIdNumber();
+      return true;
+    }
+    if (idDobApi.isFocused?.() && idDobApi.hasValue?.()) {
+      idDobApi.clearAllAndFocusYear?.();
+      return true;
+    }
+    return false;
   };
 
   const dismissIdDetailsFocus = () => {
@@ -1783,6 +1808,10 @@
         });
         btn.addEventListener("click", (e) => {
           e.preventDefault();
+          if (signupEmailStep === "id-details") {
+            handleIdDetailsBackspace();
+            return;
+          }
           if (signupEmailStep === "password") {
             handleSignupPasswordDelete();
             return;
@@ -1810,6 +1839,15 @@
           handleSignupPasswordDelete(name);
         }
       });
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (signupEmailStep !== "id-details") return;
+      if (e.key !== "Backspace" && e.key !== "Delete") return;
+      if (!emailPage?.classList.contains("is-open")) return;
+      if (handleIdDetailsBackspace()) {
+        e.preventDefault();
+      }
     });
 
     document.addEventListener("pointerdown", (e) => {

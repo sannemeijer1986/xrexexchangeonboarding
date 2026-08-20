@@ -3907,6 +3907,21 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   align-items: center;
   gap: 12px;
   width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+.auth-signup-email-page__referral-row:focus-visible {
+  outline: 2px solid #3f78ff;
+  outline-offset: 2px;
 }
 
 .auth-signup-email-page__referral-icon {
@@ -3914,15 +3929,15 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  border-radius: 100px;
   background: #2d2f2f;
 }
 .auth-signup-email-page__referral-icon img {
   display: block;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
 }
 
 .auth-signup-email-page__referral-copy {
@@ -3931,13 +3946,15 @@ html[data-prototype-auth="2"] .limits-panel__footer {
   display: flex;
   flex-direction: column;
   gap: 1px;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .auth-signup-email-page__referral-tag {
   font-size: 12px;
   font-weight: 600;
   line-height: normal;
-  color: #5ac47d;
+  color: #9b9c9c;
 }
 
 .auth-signup-email-page__referral-title {
@@ -3949,22 +3966,11 @@ html[data-prototype-auth="2"] .limits-panel__footer {
 
 .auth-signup-email-page__referral-add {
   flex-shrink: 0;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  font-family: inherit;
   font-size: 16px;
   font-weight: 600;
   line-height: normal;
   color: #3f78ff;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-.auth-signup-email-page__referral-add:focus-visible {
-  outline: 2px solid #3f78ff;
-  outline-offset: 2px;
-  border-radius: 8px;
+  white-space: nowrap;
 }
 
 .auth-signup-id-dob__status-area {

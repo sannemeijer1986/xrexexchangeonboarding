@@ -497,6 +497,7 @@
     const nationalityConsentBtn = emailPage?.querySelector("[data-auth-signup-nationality-consent]");
     const idNumberBtn = emailPage?.querySelector("[data-auth-signup-id-number]");
     const idDobRoot = emailPage?.querySelector("[data-auth-signup-id-dob]");
+    const idDobYearInput = idDobRoot?.querySelector('[data-auth-signup-id-dob-segment="year"]');
     const signupCodeLoader = emailPage?.querySelector("[data-auth-signup-code-loader]");
     const referralSheet = document.querySelector("[data-auth-referral-sheet]");
     const referralSheetPanel = referralSheet?.querySelector(".currency-sheet__panel");
@@ -561,9 +562,12 @@
               syncIdDetailsUi();
               syncActionButtons();
             },
-            onFocus: () => unfocusIdNumber(),
+            onFocus: () => {
+              unfocusIdNumber();
+              syncIdDetailsKeyboard();
+            },
           })
-        : { isValid: () => false, reset: () => {}, fillDummy: () => {}, getSubmitValue: () => "", unfocus: () => {}, isFocused: () => false };
+        : { isValid: () => false, reset: () => {}, fillDummy: () => {}, getSubmitValue: () => "", unfocus: () => {}, isFocused: () => false, hasValue: () => false, clearAllAndFocusYear: () => {} };
 
     const isVerificationCodeStep = () =>
       signupEmailStep === "code" || signupEmailStep === "mobile-code";
@@ -571,8 +575,11 @@
     const isSendCodeKeyboardSticky = () =>
       signupEmailStep === "email" || signupEmailStep === "mobile";
 
+    const isSignupKeyboardHugeCtaSticky = () =>
+      isSendCodeKeyboardSticky() || signupEmailStep === "id-details";
+
     const setKeyboardContinueDisabled = (enabled) => {
-      if (isSendCodeKeyboardSticky()) {
+      if (isSignupKeyboardHugeCtaSticky()) {
         if (keyboardSendCodeBtn) keyboardSendCodeBtn.disabled = !enabled;
         return;
       }
@@ -645,6 +652,7 @@
 
     const focusIdNumber = () => {
       idNumberBtn?.classList.add("is-focused");
+      syncIdDetailsKeyboard();
     };
 
     const unfocusIdNumber = () => {
@@ -662,10 +670,36 @@
       }
     };
 
+    const hasIdNumberValue = () => idNumberFilled || idNumberPartialValue.length > 0;
+
+    const clearIdNumber = () => {
+      if (!hasIdNumberValue()) return;
+      cancelSignupIdNumberTyping();
+      idNumberPartialValue = "";
+      idNumberFilled = false;
+      focusIdNumber();
+      syncIdDetailsUi();
+      syncActionButtons();
+    };
+
+    const handleIdDetailsBackspace = () => {
+      if (signupEmailStep !== "id-details") return false;
+      if (isIdNumberFocused() && hasIdNumberValue()) {
+        clearIdNumber();
+        return true;
+      }
+      if (idDobApi.isFocused?.() && idDobApi.hasValue?.()) {
+        idDobApi.clearAllAndFocusYear?.();
+        return true;
+      }
+      return false;
+    };
+
     const dismissIdDetailsFocus = () => {
       if (signupEmailStep !== "id-details") return;
       unfocusIdNumber();
       idDobApi.unfocus?.();
+      hideSignupEmailKeyboard();
     };
 
     const resetIdDetailsFields = () => {
@@ -714,10 +748,19 @@
 
     const syncSignupKeyboardMode = () => {
       signupEmailKeyboard?.classList.toggle("is-code-mode", isVerificationCodeStep());
-      signupEmailKeyboard?.classList.toggle(
-        "is-mobile-numeric-mode",
-        signupEmailStep === "mobile",
-      );
+      const numericMode =
+        signupEmailStep === "mobile" ||
+        (signupEmailStep === "id-details" &&
+          idDobApi.isFocused?.() &&
+          !isIdNumberFocused());
+      signupEmailKeyboard?.classList.toggle("is-mobile-numeric-mode", numericMode);
+    };
+
+    const syncIdDetailsKeyboard = () => {
+      if (signupEmailStep !== "id-details") return;
+      syncKeyboardStickyUi();
+      syncSignupKeyboardMode();
+      showSignupEmailKeyboard();
     };
 
     const getPasswordFieldEl = (name) =>
@@ -1004,7 +1047,7 @@
         return;
       }
 
-      const sendCodeSticky = isSendCodeKeyboardSticky();
+      const sendCodeSticky = isSignupKeyboardHugeCtaSticky();
       const hideContinue = isVerificationCodeStep();
 
       if (keyboardSendCodeBar) keyboardSendCodeBar.hidden = !sendCodeSticky;
@@ -2332,6 +2375,18 @@
                 fillSignupMobile();
               }
               showSignupEmailKeyboard();
+              return;
+            }
+            if (signupEmailStep === "id-details") {
+              if (!isIdNumberFocused()) {
+                idDobApi.unfocus?.();
+                focusIdNumber();
+                return;
+              }
+              if (!idNumberFilled) {
+                fillIdNumber();
+              }
+              showSignupEmailKeyboard();
             }
           });
         });
@@ -2370,6 +2425,18 @@
                 fillSignupMobile();
               }
               showSignupEmailKeyboard();
+              return;
+            }
+            if (signupEmailStep === "id-details") {
+              if (!idDobApi.isFocused?.()) {
+                idDobApi.focus?.(idDobYearInput);
+                syncIdDetailsKeyboard();
+                return;
+              }
+              if (!idDobApi.isValid?.()) {
+                idDobApi.fillDummy?.();
+              }
+              showSignupEmailKeyboard();
             }
           });
         });
@@ -2382,6 +2449,10 @@
           });
           btn.addEventListener("click", (e) => {
             e.preventDefault();
+            if (signupEmailStep === "id-details") {
+              handleIdDetailsBackspace();
+              return;
+            }
             if (signupEmailStep === "password") {
               handleSignupPasswordDelete();
               return;
@@ -2411,6 +2482,15 @@
         });
       });
 
+      document.addEventListener("keydown", (e) => {
+        if (signupEmailStep !== "id-details") return;
+        if (e.key !== "Backspace" && e.key !== "Delete") return;
+        if (!emailPage?.classList.contains("is-open")) return;
+        if (handleIdDetailsBackspace()) {
+          e.preventDefault();
+        }
+      });
+
       document.addEventListener("pointerdown", (e) => {
         if (!signupEmailMq.matches || !emailPage?.classList.contains("is-open")) return;
         if (!(e.target instanceof Element)) return;
@@ -2423,6 +2503,7 @@
         if (signupEmailStep === "id-details") {
           if (e.target.closest("[data-auth-signup-id-number]")) return;
           if (e.target.closest("[data-auth-signup-id-dob]")) return;
+          if (signupEmailKeyboard?.contains(e.target)) return;
           dismissIdDetailsFocus();
         }
 

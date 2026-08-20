@@ -175,6 +175,10 @@
         reset: () => {},
         fillDummy: () => {},
         getSubmitValue: () => "",
+        unfocus: () => {},
+        isFocused: () => false,
+        hasValue: () => false,
+        clearAllAndFocusYear: () => {},
       };
     }
 
@@ -228,14 +232,48 @@
     });
 
     const blockManualEdit = (event) => {
-      const key = event.key;
-      if (key === "Backspace" || key === "Delete") {
-        event.preventDefault();
-        return;
-      }
-      if (key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
         event.preventDefault();
       }
+    };
+
+    const hasAnyValue = () =>
+      Boolean(
+        onlyDigits(state.yearRaw) ||
+          onlyDigits(state.month) ||
+          onlyDigits(state.day) ||
+          isValid,
+      );
+
+    const clearValues = () => {
+      cancelTyping();
+      state.yearRaw = "";
+      state.month = "";
+      state.day = "";
+      state.calendar = "gregorian";
+      state.calendarSource = "manual";
+      state.gregorianYear = null;
+      state.status = "idle";
+      state.errorCode = undefined;
+      state.errorSegment = undefined;
+      state.errorMessage = "";
+      state.confirmMessage = "";
+      state.hintMessage = "";
+      submitValue = "";
+      isValid = false;
+      yearFocused = false;
+      segmentInputs.forEach((input) => {
+        input.value = "";
+        input.classList.remove("is-error");
+      });
+      syncUi();
+      onValidityChange(false);
+    };
+
+    const clearAllAndFocusYear = () => {
+      if (!hasAnyValue()) return;
+      clearValues();
+      focusSegment(yearInput);
     };
 
     const syncToggleUi = () => {
@@ -532,6 +570,11 @@
     };
 
     const handleSegmentKeyDown = (event) => {
+      if (event.key === "Backspace" || event.key === "Delete") {
+        event.preventDefault();
+        clearAllAndFocusYear();
+        return;
+      }
       blockManualEdit(event);
     };
 
@@ -656,29 +699,8 @@
     });
 
     const reset = () => {
-      cancelTyping();
-      state.yearRaw = "";
-      state.month = "";
-      state.day = "";
-      state.calendar = "gregorian";
-      state.calendarSource = "manual";
-      state.gregorianYear = null;
-      state.status = "idle";
-      state.errorCode = undefined;
-      state.errorSegment = undefined;
-      state.errorMessage = "";
-      state.confirmMessage = "";
-      state.hintMessage = "";
-      submitValue = "";
-      isValid = false;
-      yearFocused = false;
+      clearValues();
       clearDobFocus();
-      segmentInputs.forEach((input) => {
-        input.value = "";
-        input.classList.remove("is-error");
-      });
-      syncUi();
-      onValidityChange(false);
     };
 
     syncUi();
@@ -686,9 +708,11 @@
     return {
       isValid: () => isValid,
       isFocused: () => dobFocused,
+      hasValue: hasAnyValue,
       focus: focusSegment,
       unfocus: clearDobFocus,
       reset,
+      clearAllAndFocusYear,
       fillDummy,
       getSubmitValue: () => submitValue,
     };
