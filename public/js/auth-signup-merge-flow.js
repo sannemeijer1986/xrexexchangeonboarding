@@ -137,15 +137,18 @@
       window.__syncProgSignupActionLabels?.();
       return;
     }
+    const setLabel = window.__authSignupCta?.setLabel || ((btn, text) => {
+      if (btn) btn.textContent = text;
+    });
     if (!isHybridManagedStep()) {
-      if (footerBtn) footerBtn.textContent = "Continue";
-      if (keyboardSendCodeBtn) keyboardSendCodeBtn.textContent = "Continue";
-      if (keyboardContinueBtn) keyboardContinueBtn.textContent = "Continue";
+      if (footerBtn) setLabel(footerBtn, "Continue");
+      if (keyboardSendCodeBtn) setLabel(keyboardSendCodeBtn, "Continue");
+      if (keyboardContinueBtn) setLabel(keyboardContinueBtn, "Continue");
       return;
     }
     const label = phase === "email" || phase === "mobile" ? "Send code" : "Continue";
-    if (keyboardSendCodeBtn) keyboardSendCodeBtn.textContent = label;
-    if (keyboardContinueBtn) keyboardContinueBtn.textContent = label;
+    if (keyboardSendCodeBtn) setLabel(keyboardSendCodeBtn, label);
+    if (keyboardContinueBtn) setLabel(keyboardContinueBtn, label);
   };
 
   const syncHybridEmailPresentation = () => {
@@ -161,6 +164,7 @@
   };
 
   const syncHybridActionUi = () => {
+    if (window.__authSignupCta?.isLoading?.()) return;
     if (!isHybrid()) {
       if (footerBtn) footerBtn.hidden = false;
       return;
@@ -177,13 +181,16 @@
     const input = phase === "mobile" ? hybridMobileInput : hybridEmailInput;
     const dummy = phase === "mobile" ? SIGNUP_DUMMY_MOBILE : SIGNUP_DUMMY_EMAIL;
     const valid = input?.value.trim() === dummy;
+    const setLabel = window.__authSignupCta?.setLabel || ((btn, text) => {
+      if (btn) btn.textContent = text;
+    });
     if (footerBtn) {
       footerBtn.hidden = false;
       if (isKeyboardVisible() && valid) {
-        footerBtn.textContent = "Continue";
+        setLabel(footerBtn, "Continue");
         footerBtn.disabled = false;
       } else {
-        footerBtn.textContent = "Send code";
+        setLabel(footerBtn, "Send code");
         footerBtn.disabled = !valid;
       }
     }
@@ -504,6 +511,7 @@
 
   const resetHybridVerify = () => {
     cancelEmailTyping();
+    window.__authSignupCta?.clearLoading?.();
     hideHybridCodeLoader();
     phase = "email";
     footerDismissedAfterContinue = false;
@@ -709,6 +717,7 @@
 
   const resetHybridMobile = () => {
     cancelMobileTyping();
+    window.__authSignupCta?.clearLoading?.();
     hideHybridCodeLoader();
     footerDismissedAfterContinue = false;
     if (hybridMobileInput) hybridMobileInput.value = "";
@@ -734,7 +743,7 @@
         return true;
       }
       if (!isKeyboardVisible() && valid) {
-        unlockHybridCode();
+        window.__authSignupCta?.runSendCodeAction?.(unlockHybridCode);
         return true;
       }
       return true;
@@ -750,7 +759,7 @@
         return true;
       }
       if (!isKeyboardVisible() && valid) {
-        unlockHybridMobileCode();
+        window.__authSignupCta?.runSendCodeAction?.(unlockHybridMobileCode);
         return true;
       }
       return true;
@@ -762,16 +771,20 @@
   const handleKeyboardPrimary = () => {
     if (!isHybridManagedStep()) return false;
     if (phase === "email" && hybridEmailInput?.value.trim() === SIGNUP_DUMMY_EMAIL) {
-      unlockHybridCode();
-      hideKeyboard();
-      unfocusHybridEmail();
+      window.__authSignupCta?.runSendCodeAction?.(() => {
+        unlockHybridCode();
+        hideKeyboard();
+        unfocusHybridEmail();
+      });
       return true;
     }
     if (phase === "mobile" && hybridMobileInput?.value.trim() === SIGNUP_DUMMY_MOBILE) {
-      unlockHybridMobileCode();
-      hideKeyboard();
-      hybridMobileField?.classList.remove("is-focused");
-      hybridMobileCursor?.setAttribute("hidden", "");
+      window.__authSignupCta?.runSendCodeAction?.(() => {
+        unlockHybridMobileCode();
+        hideKeyboard();
+        hybridMobileField?.classList.remove("is-focused");
+        hybridMobileCursor?.setAttribute("hidden", "");
+      });
       return true;
     }
     return false;

@@ -519,12 +519,16 @@
   const syncSignupActionLabels = () => {
     const sendCodeStep = signupEmailStep === "email" || signupEmailStep === "mobile";
     const label = sendCodeStep ? "Send code" : "Continue";
-    if (emailContinueBtn) emailContinueBtn.textContent = label;
-    if (keyboardSendCodeBtn) keyboardSendCodeBtn.textContent = label;
-    if (keyboardContinueBtn) keyboardContinueBtn.textContent = label;
+    const setLabel = window.__authSignupCta?.setLabel || ((btn, text) => {
+      if (btn) btn.textContent = text;
+    });
+    if (emailContinueBtn) setLabel(emailContinueBtn, label);
+    if (keyboardSendCodeBtn) setLabel(keyboardSendCodeBtn, label);
+    if (keyboardContinueBtn) setLabel(keyboardContinueBtn, label);
   };
 
   const syncActionButtons = () => {
+    if (window.__authSignupCta?.isLoading?.()) return;
     syncSignupActionLabels();
     if (signupEmailStep === "email") {
       const enabled = emailInput?.value.trim() === SIGNUP_DUMMY_EMAIL;
@@ -720,11 +724,19 @@
       onEntered?.();
       return;
     }
+    window.__authSignupCompleteLottie?.reset?.();
     hideSignupEmailKeyboard();
     completePage.hidden = false;
     requestAnimationFrame(() => {
       completePage.classList.add("is-open");
-      const finish = () => onEntered?.();
+      let played = false;
+      const finish = () => {
+        if (!played) {
+          played = true;
+          window.__authSignupCompleteLottie?.play?.();
+        }
+        onEntered?.();
+      };
       completePage.addEventListener("transitionend", finish, { once: true });
       window.setTimeout(finish, SIGNUP_COMPLETE_TRANSITION_MS + 50);
     });
@@ -735,7 +747,10 @@
     completePage.classList.remove("is-positioned-for-down", "is-dismiss-down");
     completePage.classList.remove("is-open");
     const onEnd = () => {
-      if (!completePage.classList.contains("is-open")) completePage.hidden = true;
+      if (!completePage.classList.contains("is-open")) {
+        completePage.hidden = true;
+        window.__authSignupCompleteLottie?.reset?.();
+      }
       completePage.removeEventListener("transitionend", onEnd);
     };
     completePage.addEventListener("transitionend", onEnd);
@@ -940,7 +955,11 @@
     if (mobilePanel) mobilePanel.hidden = true;
     if (mobileCodePanel) mobileCodePanel.hidden = false;
     if (mobileDisplay) {
-      mobileDisplay.textContent = formatMobileDisplay(mobileInput?.value.trim());
+      window.__authSignupEmailDisplay?.syncSentMobileDisplay?.(
+        mobileDisplay,
+        mobileInput?.value.trim() || SIGNUP_DUMMY_MOBILE,
+        SIGNUP_MOBILE_COUNTRY_CODE,
+      );
     }
     syncStepperUi();
     syncKeyboardStickyUi();
@@ -969,6 +988,7 @@
   };
 
   const returnFromMobileStep = () => {
+    window.__authSignupCta?.clearLoading?.();
     hideSignupCodeLoader();
     resetMobileField();
     resetMobileCodeField();
@@ -976,6 +996,7 @@
   };
 
   const returnToMobileStep = () => {
+    window.__authSignupCta?.clearLoading?.();
     hideSignupCodeLoader();
     unfocusMobileCodeEntry();
     showMobileStepUi();
@@ -1159,6 +1180,7 @@
   };
 
   const returnToEmailStep = () => {
+    window.__authSignupCta?.clearLoading?.();
     hideSignupCodeLoader();
     unfocusCodeEntry();
     showEmailStepUi();
@@ -1395,7 +1417,7 @@
   const handleSignupPrimaryAction = () => {
     if (signupEmailStep === "email") {
       if (!emailInput?.value.trim()) return;
-      advanceToCodeStep();
+      window.__authSignupCta?.runSendCodeAction?.(advanceToCodeStep);
       return;
     }
     if (signupEmailStep === "password") {
@@ -1415,7 +1437,7 @@
     }
     if (signupEmailStep === "mobile") {
       if (mobileInput?.value.trim() !== SIGNUP_DUMMY_MOBILE) return;
-      advanceToMobileCodeStep();
+      window.__authSignupCta?.runSendCodeAction?.(advanceToMobileCodeStep);
     }
   };
 

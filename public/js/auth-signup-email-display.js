@@ -97,6 +97,41 @@
       .forEach((el) => syncSentEmailDisplay(el, rawEmail));
   };
 
+  const syncSentMobileDisplay = (displayEl, localNumber, countryCode = "+886") => {
+    if (!displayEl) return;
+    const local = String(localNumber || "0975561399").trim();
+    const full = `${countryCode} ${local}`;
+    displayEl.dataset.authSignupMobileFull = full;
+    displayEl.textContent = full;
+    displayEl.title = full;
+  };
+
+  const syncAllSentMobileDisplays = (localNumber, countryCode = "+886") => {
+    document.querySelectorAll("[data-auth-signup-mobile-display]").forEach((el) => {
+      syncSentMobileDisplay(el, localNumber, countryCode);
+    });
+  };
+
+  const refreshAllSentMobileDisplays = (countryCode = "+886") => {
+    const mobileInput = document.querySelector("[data-auth-signup-mobile-input]");
+    const stored =
+      document.querySelector("[data-auth-signup-mobile-display]")?.dataset.authSignupMobileFull || "";
+    const local = mobileInput?.value.trim() || stored.replace(/^\+\d+\s*/, "") || "0975561399";
+    syncAllSentMobileDisplays(local, countryCode);
+  };
+
+  const installCodeGridSeparators = () => {
+    document.querySelectorAll(".auth-signup-email-page__code-grid").forEach((grid) => {
+      if (grid.querySelector(".auth-signup-email-page__code-separator")) return;
+      const cells = grid.querySelectorAll(".auth-signup-email-page__code-cell");
+      if (cells.length !== 6) return;
+      const separator = document.createElement("span");
+      separator.className = "auth-signup-email-page__code-separator";
+      separator.setAttribute("aria-hidden", "true");
+      cells[2].after(separator);
+    });
+  };
+
   const refreshAllSentEmailDisplays = () => {
     const emailInput = document.querySelector("[data-auth-signup-email-input]");
     const hybridInput = document.querySelector("[data-auth-signup-hybrid-email-input]");
@@ -119,7 +154,7 @@
 
     document
       .querySelectorAll(
-        "[data-auth-signup-email-edit], [data-auth-signup-hybrid-email-submitted], .auth-signup-email-page__copy--code",
+        "[data-auth-signup-email-edit], [data-auth-signup-mobile-edit], [data-auth-signup-hybrid-email-submitted], .auth-signup-email-page__copy--code",
       )
       .forEach((el) => resizeObserver.observe(el));
   };
@@ -137,12 +172,17 @@
     syncSentEmailDisplay,
     syncAllSentEmailDisplays,
     refreshAllSentEmailDisplays,
+    syncSentMobileDisplay,
+    syncAllSentMobileDisplays,
+    refreshAllSentMobileDisplays,
     installSentEmailDisplayObserver,
+    installCodeGridSeparators,
   };
 
   const boot = () => {
     installSentEmailDisplayObserver();
     installPrototypeControl();
+    installCodeGridSeparators();
   };
 
   if (document.readyState === "loading") {

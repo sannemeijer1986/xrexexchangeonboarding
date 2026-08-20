@@ -233,6 +233,7 @@
                                 <div class="auth-signup-email-page__copy">
                                     <p class="auth-signup-email-page__moustache">Sign up · Step 3</p>
                                     <h2 class="auth-signup-email-page__title">Where you live and your nationality</h2>
+                                    <p class="auth-signup-email-page__desc">Your country of residence determines which terms of service apply</p>
                                 </div>
                                 <div class="auth-signup-email-page__nationality-form">
                                     <div class="auth-signup-email-page__nationality-fields">
@@ -543,12 +544,10 @@
                                 <div class="auth-signup-email-page__copy auth-signup-email-page__copy--code">
                                     <p class="auth-signup-email-page__moustache">Sign up · Step 2<span class="auth-signup-email-page__moustache-suffix">/3</span></p>
                                     <h2 class="auth-signup-email-page__title">What’s your phone number?</h2>
-                                    <button type="button" class="auth-signup-email-page__email-edit" data-auth-signup-mobile-edit>
-                                        <span class="auth-signup-email-page__email-display">
-                                            <span class="auth-signup-email-page__email-display-prefix">Code sent to </span>
-                                            <span class="auth-signup-email-page__email-display-value" data-auth-signup-mobile-display>+886 0975561399</span>
-                                        </span>
-                                        <img class="auth-signup-email-page__email-edit-icon" src="../assets/edit_gray.svg" alt="" width="20" height="20" />
+                                    <button type="button" class="auth-signup-email-page__email-edit" data-auth-signup-mobile-edit aria-label="Edit phone number">
+                                        <img class="auth-signup-email-page__email-sent-check" src="../assets/icon_check_green.svg" alt="" width="20" height="20" aria-hidden="true" />
+                                        <span class="auth-signup-email-page__email-sent-value" data-auth-signup-mobile-display>+886 0975561399</span>
+                                        <img class="auth-signup-email-page__email-edit-icon" src="../assets/edit_gray.svg" alt="" width="16" height="16" aria-hidden="true" />
                                     </button>
                                 </div>
                                 <div class="auth-signup-email-page__code-section">
@@ -620,12 +619,13 @@
 
             <footer class="auth-signup-email-page__footer">
                 <button
-                    class="auth-signup-email-page__continue"
+                    class="auth-signup-email-page__continue auth-signup-cta"
                     type="button"
                     data-auth-signup-email-continue
                     disabled
                 >
-                    Continue
+                    <span class="auth-signup-cta__label">Continue</span>
+                    <img class="auth-signup-cta__loader" src="../assets/icon_loading.svg" alt="" width="24" height="24" aria-hidden="true" hidden />
                 </button>
             </footer>
 
@@ -637,7 +637,14 @@
             </div>
         </section>
 
-        <section class="auth-signup-complete-page" data-auth-signup-complete-page hidden aria-label="Sign up complete">
+        <section
+            class="auth-signup-complete-page"
+            data-auth-signup-complete-page
+            data-lottie-success="../assets/success_animation.lottie"
+            data-lottie-confetti="../assets/Celebration.lottie"
+            hidden
+            aria-label="Sign up complete"
+        >
             <header class="auth-signup-complete-page__header">
                 <button class="auth-signup-complete-page__icon-btn" type="button" data-auth-signup-complete-close aria-label="Close">
                     <img src="../assets/icon_close.svg" alt="" />
@@ -645,7 +652,14 @@
             </header>
             <div class="auth-signup-complete-page__body">
                 <div class="auth-signup-complete-page__hero">
-                    <img class="auth-signup-complete-page__icon" src="../assets/icon_success_screen.svg" alt="" width="60" height="60" />
+                    <div class="auth-signup-complete-page__icon-wrap">
+                        <div class="auth-signup-complete-page__confetti" data-auth-signup-complete-confetti hidden aria-hidden="true">
+                            <canvas class="auth-signup-complete-page__confetti-canvas" data-auth-signup-complete-confetti-canvas></canvas>
+                        </div>
+                        <div class="auth-signup-complete-page__icon" data-auth-signup-complete-success aria-hidden="true">
+                            <canvas class="auth-signup-complete-page__icon-canvas" data-auth-signup-complete-success-canvas></canvas>
+                        </div>
+                    </div>
                     <h2 class="auth-signup-complete-page__title">Your account is ready</h2>
                     <p class="auth-signup-complete-page__desc">Next, we'll verify your identity — required for all Taiwan-regulated exchanges.</p>
                 </div>
@@ -705,12 +719,13 @@
                 <div class="fake-keyboard__sticky fake-keyboard__sticky--signup-email">
                     <div class="fake-keyboard__send-code-bar" data-fake-keyboard-signup-email-send-bar hidden>
                         <button
-                            class="fake-keyboard__send-code-btn"
+                            class="fake-keyboard__send-code-btn auth-signup-cta"
                             type="button"
                             data-fake-keyboard-signup-email-continue
                             disabled
                         >
-                            Send code
+                            <span class="auth-signup-cta__label">Send code</span>
+                            <img class="auth-signup-cta__loader" src="../assets/icon_loading.svg" alt="" width="24" height="24" aria-hidden="true" hidden />
                         </button>
                     </div>
                     <div class="fake-keyboard__top-actions fake-keyboard__top-actions--signup-email" data-fake-keyboard-signup-email-compact-bar>
@@ -806,6 +821,8 @@
     <script defer src="../js/auth-signup-resend-countdown.js"></script>
     <script defer src="../js/auth-signup-id-dob.js"></script>
     <script defer src="../js/auth-signup-email-display.js"></script>
+    <script defer src="../js/auth-signup-cta-loading.js"></script>
+    <script type="module" src="../js/auth-signup-complete-lottie.js"></script>
     <script defer src="auth-signup.js"></script>
 </body>
 

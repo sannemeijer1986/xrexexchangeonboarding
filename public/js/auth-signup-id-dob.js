@@ -523,9 +523,18 @@
       runFullValidation();
     };
 
+    const handleSegmentClick = () => {
+      if (isValid) return;
+      fillDummy();
+    };
+
     if (prototypeFillLabel) {
       prototypeFillLabel.addEventListener("click", fillDummy);
     }
+
+    segmentInputs.forEach((input) => {
+      input.addEventListener("click", handleSegmentClick);
+    });
 
     const reset = () => {
       state.yearRaw = "";
